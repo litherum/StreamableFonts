@@ -9,12 +9,12 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constexpr constant float pointSize = 10;
-constexpr constant float scalar = 20;
-constexpr constant float repulsion = 1;
+constexpr constant float pointSize = 15;
+constexpr constant float scalar = .5;
+constexpr constant float repulsion = 0.5;
 constexpr constant float tickDuration = 0.0010;
 constexpr constant float mass = 1;
-constexpr constant float friction = 0.012;
+constexpr constant float friction = 0.0075;
 
 struct Particle {
     float4 position;
@@ -35,16 +35,18 @@ kernel void computeShader(device Particle* particles [[ buffer(0) ]], constant u
         auto dist = distance(otherPosition, position);
         auto direction = normalize(otherPosition - position);
         float score = scores[count * index + i];
-        force += direction * score * scalar * (dist * dist * dist * dist * dist * dist);
+        force += direction * score * scalar * pow(dist - 0.01, 4);
         force -= direction * repulsion * -log(pow(dist, 0.0625));
     }
     averagePosition /= count;
-    force += float3(0, -log(position.yz + float2(1))) * time * 5;
+    force += float3(0, -log(position.yz + float2(1))) * time / 2;
     auto acceleration = force / mass;
     velocity += acceleration * tickDuration;
     velocity *= 1 - friction;
     position += velocity * tickDuration - averagePosition;
     auto newPosition = clamp(position, -0.99, 0.99);
+    if (length(velocity) > 300)
+        velocity = normalize(velocity) * 10;
     if (newPosition.x != position.x)
         velocity.x *= -1;
     if (newPosition.y != position.y)
@@ -83,5 +85,5 @@ fragment float4 fragmentShader(constant uint2& screenSize [[ buffer(0) ]], Fragm
     float centerScreenSpaceY = -fragmentIn.center.y * screenSize.y / 2 + screenSize.y / 2;
     float2 centerScreenSpace = float2(centerScreenSpaceX, centerScreenSpaceY);
 
-    return float4(1, 0, 0, smoothstep(pointSize / 2, pointSize / 2 - 1, distance(fragmentIn.position.xy, centerScreenSpace.xy)));
+    return float4(1, 0, 0, 0.75 * smoothstep(pointSize / 2, pointSize / 2 - 1, distance(fragmentIn.position.xy, centerScreenSpace.xy)));
 }
