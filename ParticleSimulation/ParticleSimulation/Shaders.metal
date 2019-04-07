@@ -9,45 +9,50 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constexpr constant float pointSize = 20;
-constexpr constant float scalar = .25;
-constexpr constant float repulsion = 0.006;
-constexpr constant float tickDuration = 0.01;
+constexpr constant float pointSize = 10;
+constexpr constant float scalar = 20;
+constexpr constant float repulsion = 1;
+constexpr constant float tickDuration = 0.0010;
 constexpr constant float mass = 1;
-constexpr constant float friction = 0.2;
+constexpr constant float friction = 0.012;
 
 struct Particle {
     float4 position;
     float4 velocity;
 };
 
-kernel void computeShader(device Particle* particles [[ buffer(0) ]], constant uint& count [[ buffer(1) ]], device float* scores [[ buffer(2) ]], uint index [[ thread_position_in_grid ]]) {
-    float4 force = float4(0);
-    auto particlePosition = particles[index].position;
-    auto velocity = particles[index].velocity;
+kernel void computeShader(device Particle* particles [[ buffer(0) ]], constant uint& count [[ buffer(1) ]], device float* scores [[ buffer(2) ]], constant uint& time [[ buffer(3) ]], uint index [[ thread_position_in_grid ]]) {
+    float3 force = float3(0);
+    auto position = particles[index].position.xyz;
+    auto velocity = particles[index].velocity.xyz;
+
+    float3 averagePosition = float3(0);
     for (uint i = 0; i < count; ++i) {
         if (i == index)
             continue;
-        auto otherParticlePosition = particles[i].position;
-        auto dist = distance(otherParticlePosition, particlePosition);
-        auto direction = normalize(otherParticlePosition - particlePosition);
+        auto otherPosition = particles[i].position.xyz;
+        averagePosition += otherPosition;
+        auto dist = distance(otherPosition, position);
+        auto direction = normalize(otherPosition - position);
         float score = scores[count * index + i];
-        force += direction * score * scalar;
-        force -= direction * repulsion / (dist * dist);
+        force += direction * score * scalar * (dist * dist * dist * dist * dist * dist);
+        force -= direction * repulsion * -log(pow(dist, 0.0625));
     }
+    averagePosition /= count;
+    force += float3(0, -log(position.yz + float2(1))) * time * 5;
     auto acceleration = force / mass;
     velocity += acceleration * tickDuration;
     velocity *= 1 - friction;
-    particlePosition += velocity * tickDuration;
-    auto newParticlePosition = clamp(particlePosition, -0.99, 0.99);
-    if (newParticlePosition.x != particlePosition.x)
+    position += velocity * tickDuration - averagePosition;
+    auto newPosition = clamp(position, -0.99, 0.99);
+    if (newPosition.x != position.x)
         velocity.x *= -1;
-    if (newParticlePosition.y != particlePosition.y)
+    if (newPosition.y != position.y)
         velocity.y *= -1;
-    if (newParticlePosition.z != particlePosition.z)
+    if (newPosition.z != position.z)
         velocity.z *= -1;
-    particles[index].velocity = velocity;
-    particles[index].position = newParticlePosition;
+    particles[index].velocity = float4(velocity, 0);
+    particles[index].position = float4(newPosition, 1);
 }
 
 struct VertexIn {
@@ -62,7 +67,7 @@ struct VertexOut {
 
 vertex VertexOut vertexShader(VertexIn vertexIn [[ stage_in ]]) {
     VertexOut result;
-    result.position = float4(vertexIn.position.xyz, 1);
+    result.position = float4(vertexIn.position.xy, 0.5, 1);
     result.pointSize = pointSize;
     result.center = vertexIn.position.xy;
     return result;

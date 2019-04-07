@@ -18,10 +18,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
     var queue: MTLCommandQueue!
     var particleBuffer: MTLBuffer!
     var countBuffer: MTLBuffer!
+    var timeBuffer: MTLBuffer!
     var scoresBuffer: MTLBuffer!
     var renderPipelineState: MTLRenderPipelineState!
     var computePipelineState: MTLComputePipelineState!
     var particleCount = 0
+    var time = UInt32(0)
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
 
@@ -44,16 +46,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
         particleCount = 2216
         var particles = [float4]()
         for _ in 0 ..< particleCount {
-            particles.append(float4(x: Float.random(in: -0.9 ..< 0.9), y: Float.random(in: -0.9 ..< 0.9), z: Float.random(in: -0.9 ..< 0.9), w: 0))
-            particles.append(float4(x: Float.random(in: -0.9 ..< 0.9), y: Float.random(in: -0.9 ..< 0.9), z: Float.random(in: -0.9 ..< 0.9), w: 0))
+            particles.append(float4(x: Float.random(in: -0.9 ..< 0.9), y: Float.random(in: -0.9 ..< 0.9), z: Float.random(in: -0.9 ..< 0.9), w: 1))
+            particles.append(float4(x: Float.random(in: -1 ..< 1), y: Float.random(in: -1 ..< 1), z: Float.random(in: -1 ..< 1), w: 0) / 10)
         }
         particleBuffer = device.makeBuffer(bytes: particles, length: MemoryLayout<float4>.size * 2 * particleCount, options: .storageModeManaged)
 
         let countData = [UInt32(particleCount)]
         countBuffer = device.makeBuffer(bytes: countData, length: MemoryLayout<UInt32>.size, options: .storageModeManaged)
 
+        timeBuffer = device.makeBuffer(length: MemoryLayout<UInt32>.size, options: .storageModeManaged)
+
         let url = Bundle.main.url(forResource: "ChineseWebsiteFloatScores", withExtension: "data")!
         let floatScoresData = try! Data(contentsOf: url)
+        assert(floatScoresData.count == MemoryLayout<Float>.size * particleCount * particleCount)
         floatScoresData.withUnsafeBytes {(body: UnsafeRawBufferPointer) in
             scoresBuffer = device.makeBuffer(bytes: body.baseAddress!, length: floatScoresData.count, options: .storageModeManaged)
         }
@@ -100,19 +105,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
         let computeCommandEncoder = commandBuffer.makeComputeCommandEncoder()!
         computeCommandEncoder.setComputePipelineState(computePipelineState)
         computeCommandEncoder.setBuffers([particleBuffer, countBuffer, scoresBuffer], offsets: [0, 0, 0], range: 0 ..< 3)
+        computeCommandEncoder.setBytes(&time, length: MemoryLayout<UInt32>.size, index: 3)
         computeCommandEncoder.dispatchThreads(MTLSize(width: particleCount, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 1, height: 1, depth: 1))
         computeCommandEncoder.endEncoding()
 
+        let screenSize = [UInt32(mtkView.bounds.width), UInt32(mtkView.bounds.height)]
         let renderCommandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: mtkView.currentRenderPassDescriptor!)!
         renderCommandEncoder.setRenderPipelineState(renderPipelineState)
+        renderCommandEncoder.setViewport(MTLViewport(originX: 0, originY: 0, width: Double(mtkView.bounds.width), height: Double(mtkView.bounds.height), znear: 0, zfar: 1))
         renderCommandEncoder.setVertexBuffer(particleBuffer, offset: 0, index: 0)
-        let screenSize = [UInt32(mtkView.bounds.width), UInt32(mtkView.bounds.height)]
         renderCommandEncoder.setFragmentBytes(screenSize, length: MemoryLayout<UInt32>.size * screenSize.count, index: 0)
         renderCommandEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: particleCount)
         renderCommandEncoder.endEncoding()
 
         commandBuffer.present(mtkView.currentDrawable!)
         commandBuffer.commit()
+
+        time += 1
     }
 }
 

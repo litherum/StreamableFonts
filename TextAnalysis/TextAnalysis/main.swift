@@ -9,7 +9,7 @@
 import Foundation
 import AppKit
 
-let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsites.plist"))
+/*let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsites.plist"))
 guard let plist = try!PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as? [[String : String]] else {
     fatalError()
 }
@@ -107,10 +107,10 @@ for probe in union {
 }
 
 let scoresData = try! PropertyListSerialization.data(fromPropertyList: scores, format: .xml, options: 0)
-try! scoresData.write(to: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))
+try! scoresData.write(to: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))*/
 
-/*let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))
-let scores = try! PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as! [[String : Any]]*/
+let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))
+let scores = try! PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as! [[String : Any]]
 
 let particleCount = scores.count
 var floatScores = [Float]()
