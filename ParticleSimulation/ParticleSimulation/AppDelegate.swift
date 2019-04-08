@@ -24,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
     var computePipelineState: MTLComputePipelineState!
     var particleCount = 0
     var time = UInt32(0)
+    var ready = false
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
 
@@ -88,6 +89,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
         let computePipelineDescriptor = MTLComputePipelineDescriptor()
         computePipelineDescriptor.computeFunction = computeFunction
         computePipelineState = try! device.makeComputePipelineState(descriptor: computePipelineDescriptor, options: MTLPipelineOption(), reflection: nil)
+
+        ready = true
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -97,9 +100,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
     }
     
     func draw(in view: MTKView) {
-        guard mtkView != nil else {
+        guard ready == true else {
             return
         }
+
         let commandBuffer = queue.makeCommandBuffer()!
 
         let computeCommandEncoder = commandBuffer.makeComputeCommandEncoder()!
@@ -108,6 +112,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
         computeCommandEncoder.setBytes(&time, length: MemoryLayout<UInt32>.size, index: 3)
         computeCommandEncoder.dispatchThreads(MTLSize(width: particleCount, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 1, height: 1, depth: 1))
         computeCommandEncoder.endEncoding()
+
+        let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder()!
+        blitCommandEncoder.synchronize(resource: particleBuffer)
+        blitCommandEncoder.endEncoding()
 
         let screenSize = [UInt32(mtkView.bounds.width), UInt32(mtkView.bounds.height)]
         let renderCommandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: mtkView.currentRenderPassDescriptor!)!
@@ -119,6 +127,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
         renderCommandEncoder.endEncoding()
 
         commandBuffer.present(mtkView.currentDrawable!)
+
+        ready = false
+
+        commandBuffer.addCompletedHandler {(commandBuffer) in
+            let memory = self.particleBuffer.contents().bindMemory(to: float4.self, capacity: self.particleCount * 2)
+            var particles = [float4]()
+            for i in 0 ..< self.particleCount {
+                particles.append(memory[i * 2])
+                particles.append(memory[i * 2 + 1])
+            }
+            let data = Data(bytes: &particles, count: MemoryLayout<float4>.size * self.particleCount * 2)
+            let url = URL(fileURLWithPath: NSTemporaryDirectory() + "/positions.data")
+            try! data.write(to: url)
+            print("\(url.absoluteString)")
+            self.ready = true
+        }
+
         commandBuffer.commit()
 
         time += 1

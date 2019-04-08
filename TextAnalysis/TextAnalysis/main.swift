@@ -9,7 +9,7 @@
 import Foundation
 import AppKit
 
-/*let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsites.plist"))
+let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsites.plist"))
 guard let plist = try!PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as? [[String : String]] else {
     fatalError()
 }
@@ -54,6 +54,7 @@ for set in sets {
             union.insert(character)
         }
     }
+    print("Union size: \(union.count)")
 }
 
 print("Union count: \(union.count)")
@@ -61,10 +62,12 @@ print("Union count: \(union.count)")
 var scores = [[String : Any]]()
 
 var index = 0
+var allBuddyScores = [[Double]]()
 for probe in union {
     var buddyScore = Double(-1)
     var bestBuddy: Character?
     var candidateScores = [[String : Any]]()
+    var buddyScores = [Double]()
     for candidate in union {
         guard probe != candidate else {
             continue
@@ -89,6 +92,8 @@ for probe in union {
         let probability2 = Double(neither) / Double(neither + has2)
         let probability = probability1 * probability2
 
+        buddyScores.append(probability)
+
         var candidateScoreDictionary = [String : Any]()
         candidateScoreDictionary["Candidate"] = String(candidate)
         candidateScoreDictionary["Score"] = probability
@@ -98,6 +103,10 @@ for probe in union {
             bestBuddy = candidate
         }
     }
+    buddyScores.sort {(left, right) -> Bool in
+        return left > right
+    }
+    allBuddyScores.append(buddyScores)
     var scoreDictionary = [String : Any]()
     scoreDictionary["Probe"] = String(probe)
     scoreDictionary["Candidates"] = candidateScores
@@ -105,12 +114,16 @@ for probe in union {
     print("\(index)\t\(probe)\t\(bestBuddy!)\t\(buddyScore)")
     index += 1
 }
+allBuddyScores.sort {(left, right) -> Bool in
+    return left[0] < right[0]
+}
+print("Median buddy score: \(allBuddyScores[allBuddyScores.count / 2])")
 
 let scoresData = try! PropertyListSerialization.data(fromPropertyList: scores, format: .xml, options: 0)
-try! scoresData.write(to: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))*/
+try! scoresData.write(to: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))
 
-let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))
-let scores = try! PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as! [[String : Any]]
+/*let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))
+let scores = try! PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as! [[String : Any]]*/
 
 let particleCount = scores.count
 var floatScores = [Float]()
