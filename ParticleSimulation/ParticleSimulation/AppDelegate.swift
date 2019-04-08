@@ -117,10 +117,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
         blitCommandEncoder.synchronize(resource: particleBuffer)
         blitCommandEncoder.endEncoding()
 
-        let screenSize = [UInt32(mtkView.bounds.width), UInt32(mtkView.bounds.height)]
+        let screenSize = [UInt32(window.screen!.convertRectToBacking(mtkView.bounds).width), UInt32(window.screen!.convertRectToBacking(mtkView.bounds).height)]
         let renderCommandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: mtkView.currentRenderPassDescriptor!)!
         renderCommandEncoder.setRenderPipelineState(renderPipelineState)
-        renderCommandEncoder.setViewport(MTLViewport(originX: 0, originY: 0, width: Double(mtkView.bounds.width), height: Double(mtkView.bounds.height), znear: 0, zfar: 1))
         renderCommandEncoder.setVertexBuffer(particleBuffer, offset: 0, index: 0)
         renderCommandEncoder.setFragmentBytes(screenSize, length: MemoryLayout<UInt32>.size * screenSize.count, index: 0)
         renderCommandEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: particleCount)
