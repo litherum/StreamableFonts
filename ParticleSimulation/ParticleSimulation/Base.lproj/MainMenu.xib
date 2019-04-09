@@ -11,9 +11,10 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="ParticleSimulation" customModuleProvider="target">
             <connections>
+                <outlet property="mtkView" destination="taa-st-Og7" id="ffS-eY-1uO"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -683,10 +684,33 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="480" height="360"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1440"/>
-            <view key="contentView" id="EiT-Mj-1SZ" customClass="MTKView">
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="360"/>
                 <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="taa-st-Og7" customClass="MTKView">
+                        <rect key="frame" x="20" y="20" width="440" height="279"/>
+                    </customView>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Cy3-uY-ckH">
+                        <rect key="frame" x="14" y="312" width="104" height="32"/>
+                        <buttonCell key="cell" type="push" title="Write Data" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Z3w-Fr-hDL">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="writeData:" target="Voe-Tx-rLC" id="Gb6-lw-VCe"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="taa-st-Og7" secondAttribute="bottom" constant="20" symbolic="YES" id="18J-bA-Iid"/>
+                    <constraint firstAttribute="trailing" secondItem="taa-st-Og7" secondAttribute="trailing" constant="20" symbolic="YES" id="3rO-3S-VAQ"/>
+                    <constraint firstItem="taa-st-Og7" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" symbolic="YES" id="CuP-US-KMn"/>
+                    <constraint firstItem="Cy3-uY-ckH" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="20" symbolic="YES" id="ean-FM-tLU"/>
+                    <constraint firstItem="taa-st-Og7" firstAttribute="top" secondItem="Cy3-uY-ckH" secondAttribute="bottom" constant="20" symbolic="YES" id="lja-wr-blF"/>
+                    <constraint firstItem="Cy3-uY-ckH" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" symbolic="YES" id="xFj-hh-2ha"/>
+                </constraints>
             </view>
         </window>
     </objects>

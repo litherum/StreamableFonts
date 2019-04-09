@@ -13,7 +13,7 @@ import Metal
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
     @IBOutlet var window: NSWindow!
-    var mtkView: MTKView!
+    @IBOutlet var mtkView: MTKView!
     var device: MTLDevice!
     var queue: MTLCommandQueue!
     var particleBuffer: MTLBuffer!
@@ -24,14 +24,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
     var computePipelineState: MTLComputePipelineState!
     var particleCount = 0
     var time = UInt32(0)
+    var shouldWriteData = false
     var ready = false
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
+    @IBAction func writeData(_ sender: NSButton) {
+        shouldWriteData = true
+    }
 
-        guard let mtkView = window.contentView as? MTKView else {
-            fatalError()
-        }
-        self.mtkView = mtkView
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
         mtkView.delegate = self
         mtkView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
 
@@ -113,9 +113,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
         computeCommandEncoder.dispatchThreads(MTLSize(width: particleCount, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 1, height: 1, depth: 1))
         computeCommandEncoder.endEncoding()
 
-        let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder()!
-        blitCommandEncoder.synchronize(resource: particleBuffer)
-        blitCommandEncoder.endEncoding()
+        if shouldWriteData {
+            let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder()!
+            blitCommandEncoder.synchronize(resource: particleBuffer)
+            blitCommandEncoder.endEncoding()
+        }
 
         let screenSize = [UInt32(window.screen!.convertRectToBacking(mtkView.bounds).width), UInt32(window.screen!.convertRectToBacking(mtkView.bounds).height)]
         let renderCommandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: mtkView.currentRenderPassDescriptor!)!
@@ -127,20 +129,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
 
         commandBuffer.present(mtkView.currentDrawable!)
 
-        ready = false
-
-        commandBuffer.addCompletedHandler {(commandBuffer) in
-            let memory = self.particleBuffer.contents().bindMemory(to: float4.self, capacity: self.particleCount * 2)
-            var particles = [float4]()
-            for i in 0 ..< self.particleCount {
-                particles.append(memory[i * 2])
-                particles.append(memory[i * 2 + 1])
+        if shouldWriteData {
+            shouldWriteData = false
+            ready = false
+            commandBuffer.addCompletedHandler {(commandBuffer) in
+                let memory = self.particleBuffer.contents().bindMemory(to: float4.self, capacity: self.particleCount * 2)
+                var particles = [float4]()
+                for i in 0 ..< self.particleCount {
+                    particles.append(memory[i * 2])
+                    particles.append(memory[i * 2 + 1])
+                }
+                let data = Data(bytes: &particles, count: MemoryLayout<float4>.size * self.particleCount * 2)
+                let url = URL(fileURLWithPath: NSTemporaryDirectory() + "/positions.data")
+                try! data.write(to: url)
+                print("\(url.absoluteString)")
+                self.ready = true
             }
-            let data = Data(bytes: &particles, count: MemoryLayout<float4>.size * self.particleCount * 2)
-            let url = URL(fileURLWithPath: NSTemporaryDirectory() + "/positions.data")
-            try! data.write(to: url)
-            print("\(url.absoluteString)")
-            self.ready = true
         }
 
         commandBuffer.commit()
