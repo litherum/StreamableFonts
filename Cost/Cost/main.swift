@@ -59,60 +59,41 @@ characterOrderPairs.sort {(left, right) -> Bool in
     return left.position < right.position
 }
 
-var frequencyOrder = characterOrderPairs.map {(characterOrderPair) in
-    return characterOrderPair.character
-}
-frequencyOrder.reverse()
-
 do {
     var dict = [String : Bool]()
     for score in scores {
         dict[score["Probe"]! as! String] = false
     }
-
-    var m = [String : [String : Double]]()
-    for score in scores {
-        var row = [String : Double]()
-        for s in score["Candidates"]! as! [[String : Any]] {
-            let t = s["Score"]! as! Double
-            row[s["Candidate"]! as! String] = t
-        }
-        m[score["Probe"]! as! String] = row
-    }
-
+    var seed = characterOrderPairs[characterOrderPairs.count - 1].character
     characterOrderPairs = []
-    var workList = [CharacterOrderPair]()
-    var workMap = [String : Float]()
-    workList.append(CharacterOrderPair(character: frequencyOrder[0], position: 0))
-    workMap[frequencyOrder[0]] = 0
-    while !workList.isEmpty {
-        let item = workList[0]
-        workList.remove(at: 0)
-        workMap.removeValue(forKey: item.character)
-        if dict[item.character]! == true {
-            continue
-        }
-        characterOrderPairs.append(CharacterOrderPair(character: item.character, position: 0))
-        print("\(characterOrderPairs.count)")
-        dict[item.character] = true
-        for k in m[item.character]! {
-            if dict[k.key]! == false && !k.value.isNaN && (workMap[k.key] == nil || workMap[k.key]! < Float(k.value)) {
-                workList.append(CharacterOrderPair(character: k.key, position: Float(k.value)))
-                workMap[k.key] = Float(k.value)
+    while true {
+        dict[seed] = true
+        characterOrderPairs.append(CharacterOrderPair(character: seed, position: 0))
+        var index: Int!
+        for i in 0 ..< scores.count {
+            if scores[i]["Probe"]! as! String == seed {
+                index = i
+                break
             }
         }
-        workList.sort {(left, right) -> Bool in
-            return left.position > right.position
-        }
-        if workList.isEmpty && characterOrderPairs.count != scores.count {
-            for f in frequencyOrder {
-                if dict[f] == false {
-                    workList.append(CharacterOrderPair(character: f, position: 0))
-                    workMap[f] = 0
-                    break
-                }
+        assert(index != nil)
+        let row = scores[index]["Candidates"] as! [[String : Any]]
+        var best: Double!
+        var bestCandidate = ""
+        for i in 0 ..< row.count {
+            guard dict[row[i]["Candidate"] as! String] == false else {
+                continue
+            }
+            let s = row[i]["Score"] as! Double
+            if best == nil || s > best {
+                best = s
+                bestCandidate = row[i]["Candidate"] as! String
             }
         }
+        if best == nil {
+            break
+        }
+        seed = bestCandidate
     }
     assert(characterOrderPairs.count == scores.count)
 }
