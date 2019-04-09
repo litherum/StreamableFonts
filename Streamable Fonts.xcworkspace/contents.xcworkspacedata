@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:Cost/Cost.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:TextAnalysis/TextAnalysis.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:FontInvestigation/FontInvestigation.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:RangeRequests/RangeRequests.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:WebView/WebView.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ParticleSimulation/ParticleSimulation.xcodeproj">
+   </FileRef>
+</Workspace>
