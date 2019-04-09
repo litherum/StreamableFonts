@@ -59,45 +59,6 @@ characterOrderPairs.sort {(left, right) -> Bool in
     return left.position < right.position
 }
 
-do {
-    var dict = [String : Bool]()
-    for score in scores {
-        dict[score["Probe"]! as! String] = false
-    }
-    var seed = characterOrderPairs[characterOrderPairs.count - 1].character
-    characterOrderPairs = []
-    while true {
-        dict[seed] = true
-        characterOrderPairs.append(CharacterOrderPair(character: seed, position: 0))
-        var index: Int!
-        for i in 0 ..< scores.count {
-            if scores[i]["Probe"]! as! String == seed {
-                index = i
-                break
-            }
-        }
-        assert(index != nil)
-        let row = scores[index]["Candidates"] as! [[String : Any]]
-        var best: Double!
-        var bestCandidate = ""
-        for i in 0 ..< row.count {
-            guard dict[row[i]["Candidate"] as! String] == false else {
-                continue
-            }
-            let s = row[i]["Score"] as! Double
-            if best == nil || s > best {
-                best = s
-                bestCandidate = row[i]["Candidate"] as! String
-            }
-        }
-        if best == nil {
-            break
-        }
-        seed = bestCandidate
-    }
-    assert(characterOrderPairs.count == scores.count)
-}
-
 /*for _ in 0 ..< characterOrderPairs.count {
     for _ in 0 ..< characterOrderPairs.count {
         characterOrderPairs.swapAt(Int.random(in: 0 ..< characterOrderPairs.count), Int.random(in: 0 ..< characterOrderPairs.count))
