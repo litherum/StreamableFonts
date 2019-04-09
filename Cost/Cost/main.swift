@@ -65,42 +65,22 @@ var frequencyOrder = characterOrderPairs.map {(characterOrderPair) in
 frequencyOrder.reverse()
 
 do {
-    characterOrderPairs = []
     var dict = [String : Bool]()
     for score in scores {
         dict[score["Probe"]! as! String] = false
     }
 
-    var asdf = [CharacterOrderPair]()
     var m = [String : [String : Double]]()
     for score in scores {
         var row = [String : Double]()
         for s in score["Candidates"]! as! [[String : Any]] {
             let t = s["Score"]! as! Double
             row[s["Candidate"]! as! String] = t
-            if !t.isNaN {
-                asdf.append(CharacterOrderPair(character: score["Probe"]! as! String, position: Float(t)))
-            }
         }
         m[score["Probe"]! as! String] = row
     }
-    asdf.sort {(left, right) -> Bool in
-        return left.position > right.position
-    }
-    for asdfasdf in asdf {
-        if dict[asdfasdf.character]! == false {
-            characterOrderPairs.append(CharacterOrderPair(character: asdfasdf.character, position: 0))
-            dict[asdfasdf.character] = true
-        }
-    }
-    for k in dict {
-        if k.value == false {
-            characterOrderPairs.insert(CharacterOrderPair(character: k.key, position: 0), at: 0)
-        }
-    }
-    assert(characterOrderPairs.count == scores.count)
 
-    /*characterOrderPairs = []
+    characterOrderPairs = []
     var workList = [CharacterOrderPair]()
     var workMap = [String : Float]()
     workList.append(CharacterOrderPair(character: frequencyOrder[0], position: 0))
@@ -134,7 +114,7 @@ do {
             }
         }
     }
-    assert(characterOrderPairs.count == scores.count)*/
+    assert(characterOrderPairs.count == scores.count)
 }
 
 /*for _ in 0 ..< characterOrderPairs.count {
