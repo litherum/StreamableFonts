@@ -9,13 +9,21 @@
 import Foundation
 import AppKit
 
-let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsites.plist"))
-guard let plist = try!PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as? [[String : String]] else {
+let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/mmaxfield/tmp/ChineseWebsites.plist"))
+guard let plist = try! PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as? [[String : String]] else {
     fatalError()
 }
 
 let strings = plist.map {(dictionary) -> String in
     return dictionary["Result"]!
+}
+
+for string in strings {
+    var count = 0
+    for character in string {
+        count += 1
+    }
+    print("Original length: \(count)")
 }
 
 let sets = strings.map {(string) -> Set<Character> in
@@ -26,11 +34,16 @@ let sets = strings.map {(string) -> Set<Character> in
     return set
 }
 
-guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(URL(fileURLWithPath: "/Users/litherum/src/GoogleFonts/ofl/mplus1p/Mplus1p-Regular.ttf") as NSURL) as? [CTFontDescriptor] else {
+for set in sets {
+    print("Set size: \(set.count)")
+}
+
+guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(URL(fileURLWithPath: "/Users/mmaxfield/src/GoogleFonts/ofl/mplus1p/Mplus1p-Regular.ttf") as NSURL) as? [CTFontDescriptor] else {
     fatalError()
 }
 let fontDescriptor = fontDescriptors[0]
 let font = CTFontCreateWithFontDescriptor(fontDescriptor, 48, nil)
+print("Font glyph count: \(CTFontGetGlyphCount(font))")
 
 var union = Set<Character>()
 for set in sets {
