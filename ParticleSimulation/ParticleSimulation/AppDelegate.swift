@@ -48,7 +48,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
         var particles = [float4]()
         for _ in 0 ..< particleCount {
             particles.append(float4(x: Float.random(in: -0.9 ..< 0.9), y: Float.random(in: -0.9 ..< 0.9), z: Float.random(in: -0.9 ..< 0.9), w: 1))
-            particles.append(float4(x: Float.random(in: -1 ..< 1), y: Float.random(in: -1 ..< 1), z: Float.random(in: -1 ..< 1), w: 0) / 10)
+            particles.append(float4(x: 0, y: 0, z: 0, w: 0) / 10)
         }
         particleBuffer = device.makeBuffer(bytes: particles, length: MemoryLayout<float4>.size * 2 * particleCount, options: .storageModeManaged)
 
@@ -123,6 +123,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, MTKViewDelegate {
         let renderCommandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: mtkView.currentRenderPassDescriptor!)!
         renderCommandEncoder.setRenderPipelineState(renderPipelineState)
         renderCommandEncoder.setVertexBuffer(particleBuffer, offset: 0, index: 0)
+        renderCommandEncoder.setVertexBytes(&time, length: MemoryLayout<UInt32>.size, index: 1)
+        renderCommandEncoder.setVertexBytes(screenSize, length: MemoryLayout<UInt32>.size * screenSize.count, index: 2)
         renderCommandEncoder.setFragmentBytes(screenSize, length: MemoryLayout<UInt32>.size * screenSize.count, index: 0)
         renderCommandEncoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: particleCount)
         renderCommandEncoder.endEncoding()

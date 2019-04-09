@@ -9,7 +9,7 @@
 import Foundation
 import AppKit
 
-let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/mmaxfield/tmp/ChineseWebsites.plist"))
+/*let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsites.plist"))
 guard let plist = try! PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as? [[String : String]] else {
     fatalError()
 }
@@ -38,7 +38,7 @@ for set in sets {
     print("Set size: \(set.count)")
 }
 
-guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(URL(fileURLWithPath: "/Users/mmaxfield/src/GoogleFonts/ofl/mplus1p/Mplus1p-Regular.ttf") as NSURL) as? [CTFontDescriptor] else {
+guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(URL(fileURLWithPath: "/Users/litherum/src/GoogleFonts/ofl/mplus1p/Mplus1p-Regular.ttf") as NSURL) as? [CTFontDescriptor] else {
     fatalError()
 }
 let fontDescriptor = fontDescriptors[0]
@@ -134,9 +134,9 @@ print("Median buddy score: \(allBuddyScores[allBuddyScores.count / 2])")
 
 let scoresData = try! PropertyListSerialization.data(fromPropertyList: scores, format: .xml, options: 0)
 try! scoresData.write(to: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))
-
-/*let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))
-let scores = try! PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as! [[String : Any]]*/
+*/
+let data = try! Data(contentsOf: URL(fileURLWithPath: "/Users/litherum/tmp/ChineseWebsiteScores.plist"))
+let scores = try! PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions(), format: nil) as! [[String : Any]]
 
 let particleCount = scores.count
 var floatScores = [Float]()
@@ -144,13 +144,22 @@ for i in 0 ..< particleCount {
     print("Looking up \(i)")
     let scoresArray = scores[i]["Candidates"] as! [[String : Any]]
     var dict = [String : Float]()
+    var best: Float?
     for score in scoresArray {
-        dict[score["Candidate"] as! String] = Float(truncating: score["Score"] as! NSNumber)
+        let value = Float(truncating: score["Score"] as! NSNumber)
+        if best == nil || value > best! {
+            best = value
+        }
+        dict[score["Candidate"] as! String] = value
     }
     for j in 0 ..< particleCount {
         let target = scores[j]["Probe"] as! String
         if let result = dict[target] {
-            floatScores.append(result)
+            if best != nil && result == best {
+                floatScores.append(result)
+            } else {
+                floatScores.append(0)
+            }
         } else {
             floatScores.append(0)
         }
