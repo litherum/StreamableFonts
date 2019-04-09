@@ -73,4 +73,4 @@ for website in websites {
         }
     }
 }
-print("Saved \(saved) characters out of a theoretical-possible \(possibleMiss) for a ratio of \(Double(saved) / Double(possibleMiss)).")
+print("Avoided downloading \(saved) characters out of a theoretically-possible \(possibleMiss) for a ratio of \(Double(saved) / Double(possibleMiss)).")
