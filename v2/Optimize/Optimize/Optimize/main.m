@@ -63,7 +63,7 @@ int main(int argc, const char * argv[]) {
         
         MTLCompileOptions *compileOptions = [MTLCompileOptions new];
         id<MTLLibrary> library = [device newLibraryWithSource:source options:compileOptions error:&error];
-        //assert(error == nil);
+        assert(error == nil);
         id<MTLFunction> computeFunction = [library newFunctionWithName:@"computeFunction"];
         
         MTLComputePipelineDescriptor *computePipelineDescriptor = [MTLComputePipelineDescriptor new];
@@ -116,6 +116,7 @@ int main(int argc, const char * argv[]) {
             for (size_t i = 0; i < urlCount; ++i)
                 result += results[i];
             NSLog(@"%" PRIu32, result);
+            NSLog(@"%f ms", (commandBuffer.GPUEndTime - commandBuffer.GPUStartTime) * 1000);
             CFRunLoopStop(CFRunLoopGetMain());
         }];
         [commandBuffer commit];
