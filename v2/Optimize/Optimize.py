@@ -33,12 +33,10 @@ def objective(args):
                 result += size
                 if state == 0:
                     result += min(unnecessarySize, threshold)
+                    unnecessarySize = 0
                 state = 1
             else:
-                if state == 0:
-                    unnecessarySize += size
-                else:
-                    unnecessarySize = size
+                unnecessarySize += size
                 state = 0
     return result
 
