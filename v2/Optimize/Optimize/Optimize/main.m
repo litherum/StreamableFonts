@@ -24,10 +24,8 @@ int main(int argc, const char * argv[]) {
         assert(error == nil);
         assert(jsonSizeArray != nil);
 
-        //int urlCount = 37451;
-        int urlCount = 3745;
-        //int glyphCount = 8676;
-        int glyphCount = 867;
+        int urlCount = 37451;
+        int glyphCount = 8676;
         int glyphBitfieldSize = (glyphCount + 7) / 8;
 
         NSString *source = [NSString stringWithFormat:@"\n"
@@ -109,7 +107,7 @@ int main(int argc, const char * argv[]) {
         id<MTLBuffer> buffers[] = {orderBuffer, glyphSizesBuffer, glyphsBuffer, outputBuffer};
         NSUInteger offsets[] = {0, 0, 0, 0};
         [computeCommandEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 4)];
-        [computeCommandEncoder dispatchThreadgroups:MTLSizeMake(urlCount, 1, 1) threadsPerThreadgroup:MTLSizeMake(1, 1, 1)];
+        [computeCommandEncoder dispatchThreads:MTLSizeMake(urlCount, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
         [computeCommandEncoder endEncoding];
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
             NSLog(@"Complete");
@@ -118,8 +116,10 @@ int main(int argc, const char * argv[]) {
             for (size_t i = 0; i < urlCount; ++i)
                 result += results[i];
             NSLog(@"%" PRIu32, result);
+            CFRunLoopStop(CFRunLoopGetMain());
         }];
         [commandBuffer commit];
     }
+    CFRunLoopRun();
     return 0;
 }
