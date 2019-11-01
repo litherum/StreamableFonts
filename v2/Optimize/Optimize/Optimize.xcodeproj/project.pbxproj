@@ -7,28 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C24DCAAB236C0CA200EED7EB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C24DCAAA236C0CA200EED7EB /* main.m */; };
+		C27288FA236CC434006C9272 /* OptimizeFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = C27288F8236CC434006C9272 /* OptimizeFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C27288FF236CC463006C9272 /* OptimizeFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = C27288FE236CC463006C9272 /* OptimizeFramework.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		C24DCAA5236C0CA200EED7EB /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		C24DCAA7236C0CA200EED7EB /* Optimize */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Optimize; sourceTree = BUILT_PRODUCTS_DIR; };
-		C24DCAAA236C0CA200EED7EB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C27288F6236CC434006C9272 /* OptimizeFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OptimizeFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C27288F8236CC434006C9272 /* OptimizeFramework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OptimizeFramework.h; sourceTree = "<group>"; };
+		C27288F9236CC434006C9272 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C27288FE236CC463006C9272 /* OptimizeFramework.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OptimizeFramework.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C24DCAA4236C0CA200EED7EB /* Frameworks */ = {
+		C27288F3236CC434006C9272 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -41,7 +32,7 @@
 		C24DCA9E236C0CA200EED7EB = {
 			isa = PBXGroup;
 			children = (
-				C24DCAA9236C0CA200EED7EB /* Optimize */,
+				C27288F7236CC434006C9272 /* OptimizeFramework */,
 				C24DCAA8236C0CA200EED7EB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -49,38 +40,52 @@
 		C24DCAA8236C0CA200EED7EB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C24DCAA7236C0CA200EED7EB /* Optimize */,
+				C27288F6236CC434006C9272 /* OptimizeFramework.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C24DCAA9236C0CA200EED7EB /* Optimize */ = {
+		C27288F7236CC434006C9272 /* OptimizeFramework */ = {
 			isa = PBXGroup;
 			children = (
-				C24DCAAA236C0CA200EED7EB /* main.m */,
+				C27288F8236CC434006C9272 /* OptimizeFramework.h */,
+				C27288F9236CC434006C9272 /* Info.plist */,
+				C27288FE236CC463006C9272 /* OptimizeFramework.m */,
 			);
-			path = Optimize;
+			path = OptimizeFramework;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		C27288F1236CC434006C9272 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C27288FA236CC434006C9272 /* OptimizeFramework.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
-		C24DCAA6236C0CA200EED7EB /* Optimize */ = {
+		C27288F5236CC434006C9272 /* OptimizeFramework */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C24DCAAE236C0CA200EED7EB /* Build configuration list for PBXNativeTarget "Optimize" */;
+			buildConfigurationList = C27288FB236CC434006C9272 /* Build configuration list for PBXNativeTarget "OptimizeFramework" */;
 			buildPhases = (
-				C24DCAA3236C0CA200EED7EB /* Sources */,
-				C24DCAA4236C0CA200EED7EB /* Frameworks */,
-				C24DCAA5236C0CA200EED7EB /* CopyFiles */,
+				C27288F1236CC434006C9272 /* Headers */,
+				C27288F2236CC434006C9272 /* Sources */,
+				C27288F3236CC434006C9272 /* Frameworks */,
+				C27288F4236CC434006C9272 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = Optimize;
-			productName = Optimize;
-			productReference = C24DCAA7236C0CA200EED7EB /* Optimize */;
-			productType = "com.apple.product-type.tool";
+			name = OptimizeFramework;
+			productName = OptimizeFramework;
+			productReference = C27288F6236CC434006C9272 /* OptimizeFramework.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
@@ -91,7 +96,7 @@
 				LastUpgradeCheck = 1110;
 				ORGANIZATIONNAME = Litherum;
 				TargetAttributes = {
-					C24DCAA6236C0CA200EED7EB = {
+					C27288F5236CC434006C9272 = {
 						CreatedOnToolsVersion = 11.1;
 					};
 				};
@@ -109,17 +114,27 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C24DCAA6236C0CA200EED7EB /* Optimize */,
+				C27288F5236CC434006C9272 /* OptimizeFramework */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		C27288F4236CC434006C9272 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		C24DCAA3236C0CA200EED7EB /* Sources */ = {
+		C27288F2236CC434006C9272 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C24DCAAB236C0CA200EED7EB /* main.m in Sources */,
+				C27288FF236CC463006C9272 /* OptimizeFramework.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,19 +250,53 @@
 			};
 			name = Release;
 		};
-		C24DCAAF236C0CA200EED7EB /* Debug */ = {
+		C27288FC236CC434006C9272 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = OptimizeFramework/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.litherum.OptimizeFramework;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
-		C24DCAB0236C0CA200EED7EB /* Release */ = {
+		C27288FD236CC434006C9272 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = OptimizeFramework/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.litherum.OptimizeFramework;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
@@ -263,11 +312,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C24DCAAE236C0CA200EED7EB /* Build configuration list for PBXNativeTarget "Optimize" */ = {
+		C27288FB236CC434006C9272 /* Build configuration list for PBXNativeTarget "OptimizeFramework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C24DCAAF236C0CA200EED7EB /* Debug */,
-				C24DCAB0236C0CA200EED7EB /* Release */,
+				C27288FC236CC434006C9272 /* Debug */,
+				C27288FD236CC434006C9272 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

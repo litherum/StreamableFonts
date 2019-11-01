@@ -1,16 +1,29 @@
 //
-//  main.m
-//  Optimize
+//  OptimizeFramework.m
+//  OptimizeFramework
 //
-//  Created by Litherum on 10/31/19.
+//  Created by Litherum on 11/1/19.
 //  Copyright © 2019 Litherum. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#import "OptimizeFramework.h"
 
-int main(int argc, const char * argv[]) {
-    @autoreleasepool {
+@implementation CostFunction {
+    int urlCount;
+    int glyphCount;
+    id<MTLDevice> device;
+    id<MTLComputePipelineState> computePipelineState;
+    id<MTLBuffer> glyphSizesBuffer;
+    id<MTLBuffer> glyphsBuffer;
+    id<MTLBuffer> outputBuffer;
+    id<MTLCommandQueue> commandQueue;
+}
+
+-(instancetype)initWithGlyphCount:(int)glyphCount
+{
+    if (self) {
         NSData *jsonContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Documents/output_glyphs.json"];
         assert(jsonContents != nil);
         NSError *error = nil;
@@ -24,8 +37,8 @@ int main(int argc, const char * argv[]) {
         assert(error == nil);
         assert(jsonSizeArray != nil);
 
-        int urlCount = 37451;
-        int glyphCount = 8676;
+        urlCount = (int)jsonArray.count;
+        self->glyphCount = glyphCount;
         int glyphBitfieldSize = (glyphCount + 7) / 8;
 
         NSString *source = [NSString stringWithFormat:@"\n"
@@ -59,7 +72,7 @@ int main(int argc, const char * argv[]) {
         "    output[tid] = result;\n"
         "}", glyphCount, glyphBitfieldSize];
 
-        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        device = MTLCreateSystemDefaultDevice();
         
         MTLCompileOptions *compileOptions = [MTLCompileOptions new];
         id<MTLLibrary> library = [device newLibraryWithSource:source options:compileOptions error:&error];
@@ -68,18 +81,13 @@ int main(int argc, const char * argv[]) {
         
         MTLComputePipelineDescriptor *computePipelineDescriptor = [MTLComputePipelineDescriptor new];
         computePipelineDescriptor.computeFunction = computeFunction;
-        id<MTLComputePipelineState> computePipelineState = [device newComputePipelineStateWithDescriptor:computePipelineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
+        computePipelineState = [device newComputePipelineStateWithDescriptor:computePipelineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
         assert(error == nil);
-        
-        uint32_t order[glyphCount];
-        for (int i = 0; i < glyphCount; ++i)
-            order[i] = i;
-        id<MTLBuffer> orderBuffer = [device newBufferWithBytes:order length:sizeof(uint32_t) * glyphCount options:MTLResourceStorageModeManaged];
 
         uint32_t glyphSizes[glyphCount];
         for (int i = 0; i < glyphCount; ++i)
             glyphSizes[i] = [jsonSizeArray[i] unsignedIntValue];
-        id<MTLBuffer> glyphSizesBuffer = [device newBufferWithBytes:glyphSizes length:sizeof(uint32_t) * glyphCount options:MTLResourceStorageModeManaged];
+        glyphSizesBuffer = [device newBufferWithBytes:glyphSizes length:sizeof(uint32_t) * glyphCount options:MTLResourceStorageModeManaged];
         
         uint8_t* glyphBitfield = malloc(glyphBitfieldSize * urlCount);
         for (size_t i = 0; i < glyphBitfieldSize * urlCount; ++i)
@@ -94,33 +102,46 @@ int main(int argc, const char * argv[]) {
                 glyphBitfield[glyphBitfieldSize * i + glyphValue / 8] |= (1 << (glyphValue % 8));
             }
         }
-        id<MTLBuffer> glyphsBuffer = [device newBufferWithBytes:glyphBitfield length:glyphBitfieldSize * urlCount options:MTLResourceStorageModeManaged];
+        glyphsBuffer = [device newBufferWithBytes:glyphBitfield length:glyphBitfieldSize * urlCount options:MTLResourceStorageModeManaged];
         free(glyphBitfield);
         
-        id<MTLBuffer> outputBuffer = [device newBufferWithLength:sizeof(uint32_t) * urlCount options:MTLResourceStorageModeShared];
+        outputBuffer = [device newBufferWithLength:sizeof(uint32_t) * urlCount options:MTLResourceStorageModeShared];
 
-        id<MTLCommandQueue> commandQueue = [device newCommandQueue];
-
-        id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
-        id<MTLComputeCommandEncoder> computeCommandEncoder = [commandBuffer computeCommandEncoder];
-        [computeCommandEncoder setComputePipelineState:computePipelineState];
-        id<MTLBuffer> buffers[] = {orderBuffer, glyphSizesBuffer, glyphsBuffer, outputBuffer};
-        NSUInteger offsets[] = {0, 0, 0, 0};
-        [computeCommandEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 4)];
-        [computeCommandEncoder dispatchThreads:MTLSizeMake(urlCount, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
-        [computeCommandEncoder endEncoding];
-        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
-            NSLog(@"Complete");
-            uint32_t* results = outputBuffer.contents;
-            uint32_t result = 0;
-            for (size_t i = 0; i < urlCount; ++i)
-                result += results[i];
-            NSLog(@"%" PRIu32, result);
-            NSLog(@"%f ms", (commandBuffer.GPUEndTime - commandBuffer.GPUStartTime) * 1000);
-            CFRunLoopStop(CFRunLoopGetMain());
-        }];
-        [commandBuffer commit];
+        commandQueue = [device newCommandQueue];
     }
-    CFRunLoopRun();
-    return 0;
+    return self;
 }
+
+-(uint64_t)calculate:(NSArray<NSNumber *> *)order
+{
+    assert(order.count == glyphCount);
+    
+    uint32_t orderData[glyphCount];
+    for (int i = 0; i < glyphCount; ++i)
+        orderData[i] = [order[i] unsignedIntValue];
+    id<MTLBuffer> orderBuffer = [device newBufferWithBytes:orderData length:sizeof(uint32_t) * glyphCount options:MTLResourceStorageModeManaged];
+
+    id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
+    id<MTLComputeCommandEncoder> computeCommandEncoder = [commandBuffer computeCommandEncoder];
+    [computeCommandEncoder setComputePipelineState:computePipelineState];
+    id<MTLBuffer> buffers[] = {orderBuffer, glyphSizesBuffer, glyphsBuffer, outputBuffer};
+    NSUInteger offsets[] = {0, 0, 0, 0};
+    [computeCommandEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 4)];
+    [computeCommandEncoder dispatchThreads:MTLSizeMake(urlCount, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
+    [computeCommandEncoder endEncoding];
+    __block uint64_t result = 0;
+    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+        NSLog(@"Complete");
+        uint32_t* results = self->outputBuffer.contents;
+        for (size_t i = 0; i < self->urlCount; ++i)
+            result += (uint64_t)results[i];
+        NSLog(@"%" PRIu64, result);
+        NSLog(@"%f ms", (commandBuffer.GPUEndTime - commandBuffer.GPUStartTime) * 1000);
+        CFRunLoopStop(CFRunLoopGetMain());
+    }];
+    [commandBuffer commit];
+    CFRunLoopRun();
+    NSLog(@"Returning %" PRIu64, result);
+    return result;
+}
+@end

@@ -1,44 +1,29 @@
 import hyperopt
+import objc
 import json
 
 # FIXME: Consider computing these files here with pyobjc-framework-CoreText
 
-glyphSizesFile = open("/Users/litherum/Documents/output_glyph_sizes.json", "r")
-glyphSizes = json.load(glyphSizesFile)
+#glyphSizesFile = open("/Users/litherum/Documents/output_glyph_sizes.json", "r")
+#glyphSizes = json.load(glyphSizesFile)
+#
+#urlsFile = open("/Users/litherum/Documents/output_glyphs.json", "r")
+#urls = json.load(urlsFile)
 
-urlsFile = open("/Users/litherum/Documents/output_glyphs.json", "r")
-urls = json.load(urlsFile)
-
-#urlCount = 37451
-urlCount = 3745
-#glyphCount = 8676
-glyphCount = 867
+urlCount = 37451
+glyphCount = 8676
 unconditionalDownloadSize = 282828
 averageGlyphSize = 170.084
 threshold = 8 * 170
 
+bundle = objc.loadBundle("OptimizeFramework", globals(), bundle_path="/Users/litherum/Build/Products/Debug/OptimizeFramework.framework")
+CostFunction = bundle.classNamed_("CostFunction")
+function = CostFunction.alloc().initWithGlyphCount_(glyphCount)
+print("Loaded bundle.")
+
 def objective(args):
     items = sorted([(i, args[i]) for i in range(len(args))], key=lambda x:x[1])
-    result = 0
-    for i in range(urlCount):
-        result += unconditionalDownloadSize + threshold
-        url = urls[i];
-        necessaryGlyphs = set(url["Glyphs"])
-        state = 0
-        unnecessarySize = 0
-        for item in items:
-            glyph = item[0]
-            size = glyphSizes[glyph]
-            if glyph in necessaryGlyphs:
-                result += size
-                if state == 0:
-                    result += min(unnecessarySize, threshold)
-                    unnecessarySize = 0
-                state = 1
-            else:
-                unnecessarySize += size
-                state = 0
-    return result
+    return function.calculate_([i[0] for i in items])
 
 space = [hyperopt.hp.uniform("glyph " + str(i), 0, glyphCount) for i in range(glyphCount)]
 
