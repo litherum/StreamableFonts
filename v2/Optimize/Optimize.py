@@ -1,18 +1,21 @@
 import hyperopt
 import json
 
-glyphSizesFile = open("/Users/mmaxfield/Build/Products/Debug/output_glyph_sizes.json", "r")
+# FIXME: Consider computing these files here with pyobjc-framework-CoreText
+
+glyphSizesFile = open("/Users/litherum/Documents/output_glyph_sizes.json", "r")
 glyphSizes = json.load(glyphSizesFile)
 
-urlsFile = open("/Users/mmaxfield/Build/Products/Debug/output_glyphs.json", "r")
+urlsFile = open("/Users/litherum/Documents/output_glyphs.json", "r")
 urls = json.load(urlsFile)
 
 threshold = 8 * 170
 
 def objective(args):
     items = sorted([(i, args[i]) for i in range(len(args))], key=lambda x:x[1])
-    result = 0
-    for url in urls:
+    result = 282828 + threshold
+    for i in range(20):
+        url = urls[i];
         necessaryGlyphs = set(url["Glyphs"])
         results = []
         for item in items:
@@ -42,7 +45,7 @@ def objective(args):
 
 #glyphCount = 8676
 glyphCount = 20
-space = [hyperopt.hp.uniform("glyph " + str(glyphCount), 0, glyphCount)] * glyphCount
+space = [hyperopt.hp.uniform("glyph " + str(i), 0, glyphCount) for i in range(glyphCount)]
 
 best = hyperopt.fmin(objective, space, algo=hyperopt.tpe.suggest, max_evals=100)
 
