@@ -21,7 +21,7 @@ static uint32_t bigEndianToLittleEndian32(uint32_t x) {
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NSArray <NSFontDescriptor *> *fontDescriptors = CFBridgingRelease(CTFontManagerCreateFontDescriptorsFromURL((CFURLRef)[NSURL fileURLWithPath:@"/Users/mmaxfield/src/Google Fonts/ofl/mplus1p/Mplus1p-Regular.ttf"]));
+        NSArray <NSFontDescriptor *> *fontDescriptors = CFBridgingRelease(CTFontManagerCreateFontDescriptorsFromURL((CFURLRef)[NSURL fileURLWithPath:@"/Users/litherum/src/Google Fonts/ofl/mplus1p/Mplus1p-Regular.ttf"]));
         assert(fontDescriptors.count == 1);
         NSFontDescriptor *fontDescriptor = fontDescriptors[0];
         NSFont *font = CFBridgingRelease(CTFontCreateWithFontDescriptor((CTFontDescriptorRef)fontDescriptor, 0, NULL));
@@ -39,6 +39,7 @@ int main(int argc, const char * argv[]) {
             uint16_t numGlyphs;
             [maxp getBytes:(UInt8*)&numGlyphs range:NSMakeRange(4, 2)];
             numGlyphs = bigEndianToLittleEndian16(numGlyphs);
+            assert(numGlyphs == [font numberOfGlyphs]);
 
             NSLog(@"%" PRIu16 " glyphs in the font", numGlyphs);
 

@@ -9,45 +9,47 @@ glyphSizes = json.load(glyphSizesFile)
 urlsFile = open("/Users/litherum/Documents/output_glyphs.json", "r")
 urls = json.load(urlsFile)
 
+#urlCount = 37451
+urlCount = 3745
+#glyphCount = 8676
+glyphCount = 867
+unconditionalDownloadSize = 282828
+averageGlyphSize = 170.084
 threshold = 8 * 170
 
 def objective(args):
     items = sorted([(i, args[i]) for i in range(len(args))], key=lambda x:x[1])
-    result = 282828 + threshold
-    for i in range(20):
+    result = 0
+    for i in range(urlCount):
+        result += unconditionalDownloadSize + threshold
         url = urls[i];
         necessaryGlyphs = set(url["Glyphs"])
-        results = []
+        state = 0
+        unnecessarySize = 0
         for item in items:
             glyph = item[0]
             size = glyphSizes[glyph]
-            necessary = glyph in necessaryGlyphs
-            if necessary:
-                if len(results) % 2 == 0:
-                    results.append(size)
-                else:
-                    results[len(results) - 1] += size
+            if glyph in necessaryGlyphs:
+                result += size
+                if state == 0:
+                    result += min(unnecessarySize, threshold)
+                state = 1
             else:
-                if len(results) % 2 == 0:
-                    if len(results) == 0:
-                        results.append(0)
-                        results.append(size)
-                    else:
-                        results[len(results) - 1] += size
+                if state == 0:
+                    unnecessarySize += size
                 else:
-                    results.append(size)
-        for i in range(len(results)):
-            if i % 2 == 0:
-                result += results[i]
-            elif i < len(results) - 1:
-                result += min(results[i], threshold)
+                    unnecessarySize = size
+                state = 0
     return result
 
-#glyphCount = 8676
-glyphCount = 20
 space = [hyperopt.hp.uniform("glyph " + str(i), 0, glyphCount) for i in range(glyphCount)]
 
 best = hyperopt.fmin(objective, space, algo=hyperopt.tpe.suggest, max_evals=100)
+bestArgs = hyperopt.space_eval(space, best)
+bestResult = objective(bestArgs)
 
 print(best)
-print hyperopt.space_eval(space, best)
+print(bestArgs)
+print("On average, downloaded " + str(bestResult / urlCount) + " bytes per url")
+print("On average, downloaded " + str((bestResult / urlCount - (unconditionalDownloadSize + threshold)) / averageGlyphSize) + " glyphs per URL")
+print("On average, downloaded " + str(100 * (bestResult / urlCount - (unconditionalDownloadSize + threshold)) / averageGlyphSize / glyphCount) + "% of glyph data per URL")
