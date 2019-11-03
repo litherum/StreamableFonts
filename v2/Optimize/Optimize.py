@@ -7,12 +7,14 @@ unconditionalDownloadSize = 282828
 averageGlyphSize = 170.084
 threshold = 8 * 170
 
-bundle = objc.loadBundle("OptimizeFramework", globals(), bundle_path="/Users/mmaxfield/Build/Products/Debug/OptimizeFramework.framework")
+bundle = objc.loadBundle("OptimizeFramework", globals(), bundle_path="/Users/litherum/Build/Products/Release/OptimizeFramework.framework")
 CostFunction = bundle.classNamed_("CostFunction")
 print("Initializing...")
 function = CostFunction.alloc().init()
+function.loadData()
 urlCount = function.urlCount()
 glyphCount = function.glyphCount()
+function.createResources()
 print("Initialized.")
 print("Using " + function.deviceName())
 print(str(urlCount) + " urls.")

@@ -17,10 +17,12 @@ FOUNDATION_EXPORT const unsigned char OptimizeFrameworkVersionString[];
 // In this header, you should import all the public headers of your framework using statements like #import <OptimizeFramework/PublicHeader.h>
 
 @interface CostFunction: NSObject
--(instancetype)init;
+- (instancetype)init;
+- (void)loadData;
+- (void)createResources;
 @property NSUInteger glyphCount;
 @property NSUInteger urlCount;
 @property NSString *deviceName;
--(uint64_t)calculate:(NSArray<NSNumber *> *)order;
+- (uint64_t)calculate:(NSArray<NSNumber *> *)order;
 @end
 
