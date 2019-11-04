@@ -27,10 +27,7 @@ NSArray<NSNumber *> *computeFitnesses(CostFunction *costFunction, NSArray<NSArra
     return fitnesses;
 }
 
-NSUInteger weightedPick(NSArray<NSNumber *> *fitnesses) {
-    unsigned long long sum = 0;
-    for (NSUInteger i = 0; i < fitnesses.count; ++i)
-        sum += fitnesses[i].unsignedLongLongValue;
+NSUInteger weightedPick(NSArray<NSNumber *> *fitnesses, unsigned long long sum) {
     double pick = drand48();
     double partial = 0;
     for (NSUInteger i = 0; i < fitnesses.count; ++i) {
@@ -62,7 +59,7 @@ int main(int argc, const char * argv[]) {
         */
         
         NSUInteger populationCount = 10;
-        NSMutableArray<NSMutableArray<NSNumber *> *> *generation = [NSMutableArray arrayWithCapacity:populationCount];
+        NSMutableArray<NSArray<NSNumber *> *> *generation = [NSMutableArray arrayWithCapacity:populationCount];
         for (NSUInteger i = 0; i < populationCount; ++i) {
             NSMutableArray *availableEntries = [NSMutableArray arrayWithCapacity:costFunction.glyphCount];
             for (NSUInteger j = 0; j < costFunction.glyphCount; ++j)
@@ -79,10 +76,13 @@ int main(int argc, const char * argv[]) {
 
         NSArray<NSNumber *> *fitnesses = computeFitnesses(costFunction, generation);
         NSLog(@"%@", fitnesses);
-        
+
+        unsigned long long sum = 0;
+        for (NSUInteger i = 0; i < fitnesses.count; ++i)
+            sum += fitnesses[i].unsignedLongLongValue;
         NSMutableArray<NSArray<NSNumber *> *> *newGeneration = [NSMutableArray arrayWithCapacity:generation.count];
         for (NSUInteger i = 0; i < generation.count; ++i) {
-            NSArray<NSNumber *> *child = crossover(generation[weightedPick(fitnesses)], generation[weightedPick(fitnesses)]);
+            NSArray<NSNumber *> *child = crossover(generation[weightedPick(fitnesses, sum)], generation[weightedPick(fitnesses, sum)]);
             child = mutate(child);
             [newGeneration addObject:child];
         }
