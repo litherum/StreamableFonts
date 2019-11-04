@@ -13,6 +13,8 @@
 @implementation CostFunction {
     NSArray<NSDictionary<NSString *, id> *> *jsonArray;
     NSArray<NSNumber *> *jsonSizeArray;
+    uint32_t unconditionalDownloadSize;
+    uint32_t threshold;
     id<MTLDevice> device;
     id<MTLComputePipelineState> computePipelineState;
     id<MTLBuffer> orderBuffer;
@@ -44,6 +46,16 @@
 
     self.urlCount = jsonArray.count;
     self.glyphCount = jsonSizeArray.count;
+    unconditionalDownloadSize = 282828;
+    threshold = 8 * 170;
+}
+
+- (uint64_t)totalDataSize
+{
+    uint64_t result = unconditionalDownloadSize + threshold;
+    for (int i = 0; i < self.glyphCount; ++i)
+        result += jsonSizeArray[i].unsignedIntValue;
+    return result * self.urlCount;
 }
 
 - (void)createResources
@@ -56,8 +68,8 @@
     "using namespace metal;\n"
     "\n"
     "kernel void computeFunction(device uint32_t* order [[buffer(0)]], device uint32_t* glyphSizes [[buffer(1)]], device uint8_t* glyphs [[buffer(2)]], device uint32_t* output [[buffer(3)]], uint tid [[thread_position_in_grid]]) {\n"
-    "    constexpr uint32_t unconditionalDownloadSize = 282828;\n"
-    "    constexpr uint32_t threshold = 8 * 170;\n"
+    "    constexpr uint32_t unconditionalDownloadSize = %" PRIu32 ";\n"
+    "    constexpr uint32_t threshold = %" PRIu32 ";\n"
     "    uint32_t glyphCount = %lu;\n"
     "    uint32_t glyphBitfieldSize = %lu;\n"
     "    uint8_t state = 0;\n"
@@ -79,7 +91,7 @@
     "        }\n"
     "    }\n"
     "    output[tid] = result;\n"
-    "}", (unsigned long)self.glyphCount, (unsigned long)glyphBitfieldSize];
+    "}", unconditionalDownloadSize, threshold, (unsigned long)self.glyphCount, (unsigned long)glyphBitfieldSize];
 
     device = MTLCreateSystemDefaultDevice();
     self.deviceName = device.name;
@@ -100,7 +112,7 @@
 
     uint32_t glyphSizes[self.glyphCount];
     for (int i = 0; i < self.glyphCount; ++i)
-        glyphSizes[i] = [jsonSizeArray[i] unsignedIntValue];
+        glyphSizes[i] = jsonSizeArray[i].unsignedIntValue;
     glyphSizesBuffer = [device newBufferWithBytes:glyphSizes length:sizeof(uint32_t) * self.glyphCount options:MTLResourceStorageModeManaged];
     
     uint8_t* glyphBitfield = malloc(glyphBitfieldSize * self.urlCount);
@@ -124,19 +136,17 @@
     commandQueue = [device newCommandQueue];
 }
 
-- (uint64_t)calculate:(NSArray<NSNumber *> *)order
+- (void)calculateAsync:(NSArray<NSNumber *> *)order callback:(void (^)(uint64_t))callback
 {
     @autoreleasepool {
-        //NSDate *realStart = [NSDate date];
         assert(order.count == self.glyphCount);
         
         uint32_t orderData[self.glyphCount];
         for (int i = 0; i < self.glyphCount; ++i)
-            orderData[i] = [order[i] unsignedIntValue];
+            orderData[i] = order[i].unsignedIntValue;
         memcpy(orderBuffer.contents, orderData, sizeof(uint32_t) * self.glyphCount);
         [orderBuffer didModifyRange:NSMakeRange(0, sizeof(uint32_t) * self.glyphCount)];
         
-        //NSDate *start = [NSDate date];
         id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
         id<MTLComputeCommandEncoder> computeCommandEncoder = [commandBuffer computeCommandEncoder];
         [computeCommandEncoder setComputePipelineState:computePipelineState];
@@ -145,30 +155,28 @@
         [computeCommandEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 4)];
         [computeCommandEncoder dispatchThreads:MTLSizeMake(self.urlCount, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
         [computeCommandEncoder endEncoding];
-        __block uint64_t result = 0;
-        //__block NSDate *gpuEnd;
-        //__block NSDate *schedulingEnd;
-        //[commandBuffer addScheduledHandler:^(id<MTLCommandBuffer> commandBuffer) {
-        //    schedulingEnd = [NSDate date];
-        //}];
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
-            //gpuEnd = [NSDate date];
-            uint32_t* results = self->outputBuffer.contents;
-            for (size_t i = 0; i < self.urlCount; ++i)
-                result += (uint64_t)results[i];
-            //NSLog(@"GPU time: %f ms", (commandBuffer.GPUEndTime - commandBuffer.GPUStartTime) * 1000);
+            dispatch_sync(dispatch_get_main_queue(), ^() {
+                uint64_t result = 0;
+                uint32_t* results = self->outputBuffer.contents;
+                for (size_t i = 0; i < self.urlCount; ++i)
+                    result += (uint64_t)results[i];
+                callback(result);
+            });
+        }];
+        [commandBuffer commit];
+    }
+}
+
+- (uint64_t)calculate:(NSArray<NSNumber *> *)order
+{
+    @autoreleasepool {
+        __block uint64_t result = 0;
+        [self calculateAsync:order callback:^void (uint64_t resultArgument) {
+            result = resultArgument;
             CFRunLoopStop(CFRunLoopGetMain());
         }];
-        //NSDate *gpuStart = [NSDate date];
-        [commandBuffer commit];
         CFRunLoopRun();
-        //NSDate *end = [NSDate date];
-        //NSLog(@"Total time: %f ms", [end timeIntervalSinceDate:realStart] * 1000);
-        //NSLog(@"Secondary time: %f ms", [end timeIntervalSinceDate:start] * 1000);
-        //NSLog(@"Tertiary time: %f ms", [end timeIntervalSinceDate:gpuStart] * 1000);
-        //NSLog(@"Tertiary2 time: %f ms", [gpuEnd timeIntervalSinceDate:gpuStart] * 1000);
-        //NSLog(@"Tertiary3 time: %f ms", [schedulingEnd timeIntervalSinceDate:gpuStart] * 1000);
-        //NSLog(@"Tertiary4 time: %f ms", [gpuEnd timeIntervalSinceDate:gpuStart] * 1000);
         return result;
     }
 }

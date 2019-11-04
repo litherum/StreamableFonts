@@ -19,10 +19,12 @@ FOUNDATION_EXPORT const unsigned char OptimizeFrameworkVersionString[];
 @interface CostFunction: NSObject
 - (instancetype)init;
 - (void)loadData;
+- (uint64_t)totalDataSize;
 - (void)createResources;
 @property NSUInteger glyphCount;
 @property NSUInteger urlCount;
 @property NSString *deviceName;
+- (void)calculateAsync:(NSArray<NSNumber *> *)order callback:(void (^)(uint64_t))callback;
 - (uint64_t)calculate:(NSArray<NSNumber *> *)order;
 @end
 
