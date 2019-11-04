@@ -17,7 +17,6 @@
     uint32_t threshold;
     id<MTLDevice> device;
     id<MTLComputePipelineState> computePipelineState;
-    id<MTLBuffer> orderBuffer;
     id<MTLBuffer> glyphSizesBuffer;
     id<MTLBuffer> glyphsBuffer;
     id<MTLBuffer> outputBuffer;
@@ -91,7 +90,7 @@
     "        }\n"
     "    }\n"
     "    output[tid] = result;\n"
-    "}", unconditionalDownloadSize, threshold, (unsigned long)self.glyphCount, (unsigned long)glyphBitfieldSize];
+    "}\n", unconditionalDownloadSize, threshold, (unsigned long)self.glyphCount, (unsigned long)glyphBitfieldSize];
 
     device = MTLCreateSystemDefaultDevice();
     self.deviceName = device.name;
@@ -107,8 +106,6 @@
     computePipelineDescriptor.computeFunction = computeFunction;
     computePipelineState = [device newComputePipelineStateWithDescriptor:computePipelineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
     assert(error == nil);
-
-    orderBuffer = [device newBufferWithLength:sizeof(uint32_t) * self.glyphCount options:MTLResourceStorageModeManaged];
 
     uint32_t glyphSizes[self.glyphCount];
     for (int i = 0; i < self.glyphCount; ++i)
@@ -144,8 +141,7 @@
         uint32_t orderData[self.glyphCount];
         for (int i = 0; i < self.glyphCount; ++i)
             orderData[i] = order[i].unsignedIntValue;
-        memcpy(orderBuffer.contents, orderData, sizeof(uint32_t) * self.glyphCount);
-        [orderBuffer didModifyRange:NSMakeRange(0, sizeof(uint32_t) * self.glyphCount)];
+        id<MTLBuffer> orderBuffer = [device newBufferWithBytes:orderData length:sizeof(uint32_t) * self.glyphCount options:MTLResourceStorageModeManaged];
         
         id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
         id<MTLComputeCommandEncoder> computeCommandEncoder = [commandBuffer computeCommandEncoder];
