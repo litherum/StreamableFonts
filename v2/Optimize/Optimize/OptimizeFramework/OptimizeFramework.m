@@ -31,14 +31,14 @@
 
 - (void)loadData
 {
-    NSData *jsonContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Documents/output_glyphs.json"];
+    NSData *jsonContents = [NSData dataWithContentsOfFile:@"/Users/mmaxfield/Library/Mobile Documents/com~apple~CloudDocs/Documents/output_glyphs.json"];
     assert(jsonContents != nil);
     NSError *error = nil;
     jsonArray = [NSJSONSerialization JSONObjectWithData:jsonContents options:0 error:&error];
     assert(error == nil);
     assert(jsonArray != nil);
 
-    NSData *jsonSizeContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Documents/output_glyph_sizes.json"];
+    NSData *jsonSizeContents = [NSData dataWithContentsOfFile:@"/Users/mmaxfield/Library/Mobile Documents/com~apple~CloudDocs/Documents/output_glyph_sizes.json"];
     assert(jsonSizeContents != nil);
     jsonSizeArray = [NSJSONSerialization JSONObjectWithData:jsonSizeContents options:0 error:&error];
     assert(error == nil);
