@@ -23,7 +23,7 @@ struct Arguments {
     uint32_t maximum;
 };
 
-NSUInteger weightedPick(NSArray<NSNumber *> *fitnesses, unsigned long long sum) {
+static NSUInteger weightedPick(NSArray<NSNumber *> *fitnesses, unsigned long long sum) {
     double pick = drand48();
     double partial = 0;
     for (NSUInteger i = 0; i < fitnesses.count; ++i) {
@@ -188,6 +188,7 @@ NSUInteger weightedPick(NSArray<NSNumber *> *fitnesses, unsigned long long sum) 
     [computeCommandEncoder endEncoding];
     __block NSMutableArray<NSArray<NSNumber *> *> *result;
     [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+        assert(commandBuffer.error == nil);
         dispatch_sync(dispatch_get_main_queue(), ^() {
             uint32_t* newGenerationData = self->newGenerationBuffer.contents;
             result = [NSMutableArray arrayWithCapacity:self->populationCount];
@@ -279,7 +280,7 @@ int main(int argc, const char * argv[]) {
         NSArray<NSArray<NSNumber *> *> *generation = seedGeneration(populationCount, costFunction.glyphCount);
 
         unsigned long long best = 0;
-        //for (NSUInteger i = 0; i < 10; ++i) {
+        for (NSUInteger i = 0; i < 10; ++i) {
             NSArray<NSNumber *> *fitnesses = computeFitnesses(costFunction, generation);
             for (NSNumber *fitness in fitnesses) {
                 if (fitness.unsignedLongLongValue > best)
@@ -292,7 +293,7 @@ int main(int argc, const char * argv[]) {
                 sum += fitnesses[i].unsignedLongLongValue;
             NSArray<NSArray<NSNumber *> *> *newGeneration = crossoverMetal(crossoverer, generation, fitnesses, sum);
             generation = newGeneration;
-        //}
+        }
     }
     return 0;
 }

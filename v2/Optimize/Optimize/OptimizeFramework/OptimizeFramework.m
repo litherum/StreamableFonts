@@ -152,6 +152,7 @@
         [computeCommandEncoder dispatchThreads:MTLSizeMake(self.urlCount, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
         [computeCommandEncoder endEncoding];
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+            assert(commandBuffer.error == nil);
             dispatch_sync(dispatch_get_main_queue(), ^() {
                 uint64_t result = 0;
                 uint32_t* results = self->outputBuffer.contents;
