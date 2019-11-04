@@ -91,7 +91,7 @@
     "        }\n"
     "    }\n"
     "    output[tid] = result;\n"
-    "}", unconditionalDownloadSize, threshold, (unsigned long)self.glyphCount, (unsigned long)glyphBitfieldSize];
+    "}", unconditionalDownloadSize, threshold, (unsigned long)self.glyphCount, (unsigned long)glyphBitfieldSize];
 
     device = MTLCreateSystemDefaultDevice();
     self.deviceName = device.name;

@@ -32,8 +32,9 @@ NSArray<NSArray<NSNumber *> *> *seedGeneration(NSUInteger glyphCount) {
 NSArray<NSNumber *> *computeFitnesses(CostFunction *costFunction, NSArray<NSArray<NSNumber *> *> *generation) {
     NSMutableArray<NSNumber *> *fitnesses = [NSMutableArray arrayWithCapacity:generation.count];
     __block NSUInteger count = 0;
+    NSNumber *dummy = [NSNumber numberWithInt:0];
     for (NSUInteger i = 0; i < generation.count; ++i) {
-        [fitnesses addObject:[NSNumber numberWithInt:0]];
+        [fitnesses addObject:dummy];
         [costFunction calculateAsync:generation[i] callback:^void (uint64_t result) {
             assert(costFunction.totalDataSize >= result);
             result = costFunction.totalDataSize - result;
@@ -57,9 +58,75 @@ NSUInteger weightedPick(NSArray<NSNumber *> *fitnesses, unsigned long long sum) 
     return fitnesses.count - 1;
 }
 
+NSArray<NSNumber *> *reverse(NSArray<NSNumber *> *array) {
+    NSMutableArray<NSNumber *> *reverse = [NSMutableArray arrayWithCapacity:array.count];
+    NSNumber *dummy = [NSNumber numberWithInt:0];
+    for (NSUInteger i = 0; i < array.count; ++i)
+        [reverse addObject:dummy];
+    for (NSUInteger i = 0; i < array.count; ++i)
+        reverse[array[i].unsignedIntegerValue] = [NSNumber numberWithUnsignedInteger:i];
+    return reverse;
+}
+
 NSArray<NSNumber *> *crossover(NSArray<NSNumber *> *parent0, NSArray<NSNumber *> *parent1) {
+    // FIXME: Consider doing this in Metal
     assert(parent0.count == parent1.count);
-    return parent0;
+    NSArray<NSNumber *> *reverseParent0 = reverse(parent0);
+    NSArray<NSNumber *> *reverseParent1 = reverse(parent1);
+    
+    NSArray<NSNumber *> *majorParent;
+    NSArray<NSNumber *> *minorParent;
+    NSArray<NSNumber *> *reverseMajorParent;
+    NSArray<NSNumber *> *reverseMinorParent;
+    if (arc4random_uniform(2) == 0) {
+        majorParent = parent0;
+        reverseMajorParent = reverseParent0;
+        minorParent = parent1;
+        reverseMinorParent = reverseParent1;
+    } else {
+        majorParent = parent1;
+        reverseMajorParent = reverseParent1;
+        minorParent = parent0;
+        reverseMinorParent = reverseParent0;
+    }
+
+    NSMutableArray<NSNumber *> *child = [NSMutableArray arrayWithCapacity:parent0.count];
+    uint32_t index0 = arc4random_uniform((uint32_t)parent0.count);
+    uint32_t index1 = arc4random_uniform((uint32_t)parent0.count);
+    uint32_t minimum = MIN(index0, index1);
+    uint32_t maximum = MAX(index0, index1);
+
+    NSNumber *dummy = [NSNumber numberWithInt:0];
+    for (NSUInteger i = 0; i < minimum; ++i)
+        [child addObject:dummy];
+    for (NSUInteger i = minimum; i < maximum; ++i)
+        [child addObject:majorParent[i]];
+    for (NSUInteger i = maximum; i < parent0.count; ++i)
+        [child addObject:dummy];
+    
+    for (NSUInteger i = minimum; i < maximum; ++i) {
+        NSUInteger index = i;
+        NSUInteger item = minorParent[i].unsignedIntegerValue;
+        NSUInteger position = reverseMajorParent[item].unsignedIntegerValue;
+        if (position < minimum || position >= maximum) {
+            while (index >= minimum && index < maximum) {
+                item = majorParent[index].unsignedIntegerValue;
+                index = reverseMinorParent[item].unsignedIntegerValue;
+            }
+            child[index] = minorParent[i];
+        }
+    }
+
+    for (NSUInteger i = 0; i < parent0.count; ++i) {
+        if (child[i] == dummy)
+            child[i] = minorParent[i];
+    }
+
+    NSMutableSet<NSNumber *> *set = [NSMutableSet setWithCapacity:child.count];
+    for (NSNumber *item in child)
+        [set addObject:item];
+    assert(set.count == child.count);
+    return child;
 }
 
 NSArray<NSNumber *> *mutate(NSArray<NSNumber *> *child) {
