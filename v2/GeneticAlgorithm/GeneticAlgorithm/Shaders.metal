@@ -8,6 +8,7 @@ constant uint32_t glyphCount [[function_constant(0)]];
 constant uint32_t glyphBitfieldSize [[function_constant(1)]];
 constant uint32_t urlCount [[function_constant(2)]];
 constant uint32_t generationSize [[function_constant(3)]];
+constant uint32_t maxMutationInstructions [[function_constant(4)]];
 
 constant constexpr uint32_t threshold = 8 * 170;
 constant constexpr uint32_t unconditionalDownloadSize = 282828;
@@ -82,14 +83,10 @@ kernel void mate(device uint32_t* generation [[buffer(0)]], device uint32_t* rev
     }
 }
 
-struct MutationInstructions {
-    device uint32_t* instructions [[id(0)]];
-};
-
 // FIXME: It should be possible to integrate this into mate()
-kernel void mutate(device uint32_t* generation [[buffer(0)]], device MutationInstructions* mutationInstructions [[buffer(1)]], uint tid [[thread_position_in_grid]]) {
+kernel void mutate(device uint32_t* generation [[buffer(0)]], device uint32_t* instructions [[buffer(1)]], uint tid [[thread_position_in_grid]]) {
     device uint32_t* order = generation + glyphCount * tid;
-    device uint32_t* instructions = mutationInstructions[tid].instructions;
+    instructions = instructions + (maxMutationInstructions * 2 + 1) * tid;
     uint32_t instructionCount = instructions[0];
     for (uint32_t i = 0; i < instructionCount; ++i) {
         uint32_t index0 = instructions[i * 2 + 1];

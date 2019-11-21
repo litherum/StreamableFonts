@@ -93,6 +93,7 @@
     [constantValues setConstantValue:&glyphBitfieldSize type:MTLDataTypeUInt withName:@"glyphBitfieldSize"];
     [constantValues setConstantValue:&urlCount type:MTLDataTypeUInt withName:@"urlCount"];
     [constantValues setConstantValue:&generationSize type:MTLDataTypeUInt withName:@"generationSize"];
+    [constantValues setConstantValue:&maxMutationInstructions type:MTLDataTypeUInt withName:@"maxMutationInstructions"];
     fitnessFunction = [library newFunctionWithName:@"fitness" constantValues:constantValues error:&error];
     assert(error == nil);
     reverseGenerationFunction = [library newFunctionWithName:@"reverseGeneration" constantValues:constantValues error:&error];
@@ -148,44 +149,51 @@
 
     matingInstructionsBuffer = [device newBufferWithLength:generationSize * sizeof(struct MatingInstructions) options:MTLResourceStorageModeManaged];
 
-    id<MTLArgumentEncoder> argumentEncoder = [mutateFunction newArgumentEncoderWithBufferIndex:1];
-    mutationInstructionsBuffer = [device newBufferWithLength:(argumentEncoder.encodedLength + (maxMutationInstructions * 2 + 1) * sizeof(uint32_t)) * generationSize options:MTLResourceStorageModeManaged];
+    mutationInstructionsBuffer = [device newBufferWithLength:generationSize * (maxMutationInstructions * 2 + 1) * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
 }
 
 - (void)createMetalStates
 {
-    MTLComputePipelineDescriptor *fitnessPiplineDescriptor = [MTLComputePipelineDescriptor new];
-    fitnessPiplineDescriptor.computeFunction = fitnessFunction;
-    fitnessPiplineDescriptor.buffers[0].mutability = MTLMutabilityImmutable;
-    fitnessPiplineDescriptor.buffers[1].mutability = MTLMutabilityImmutable;
-    fitnessPiplineDescriptor.buffers[2].mutability = MTLMutabilityImmutable;
-    fitnessPiplineDescriptor.buffers[3].mutability = MTLMutabilityMutable;
     NSError *error;
-    fitnessState = [device newComputePipelineStateWithDescriptor:fitnessPiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
-    assert(error == nil);
+    {
+        MTLComputePipelineDescriptor *fitnessPiplineDescriptor = [MTLComputePipelineDescriptor new];
+        fitnessPiplineDescriptor.computeFunction = fitnessFunction;
+        fitnessPiplineDescriptor.buffers[0].mutability = MTLMutabilityImmutable;
+        fitnessPiplineDescriptor.buffers[1].mutability = MTLMutabilityImmutable;
+        fitnessPiplineDescriptor.buffers[2].mutability = MTLMutabilityImmutable;
+        fitnessPiplineDescriptor.buffers[3].mutability = MTLMutabilityMutable;
+        fitnessState = [device newComputePipelineStateWithDescriptor:fitnessPiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
+        assert(error == nil);
+    }
     
-    MTLComputePipelineDescriptor *reverseGenerationPiplineDescriptor = [MTLComputePipelineDescriptor new];
-    reverseGenerationPiplineDescriptor.computeFunction = reverseGenerationFunction;
-    reverseGenerationPiplineDescriptor.buffers[0].mutability = MTLMutabilityImmutable;
-    reverseGenerationPiplineDescriptor.buffers[1].mutability = MTLMutabilityMutable;
-    reverseGenerationState = [device newComputePipelineStateWithDescriptor:reverseGenerationPiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
-    assert(error == nil);
+    {
+        MTLComputePipelineDescriptor *reverseGenerationPiplineDescriptor = [MTLComputePipelineDescriptor new];
+        reverseGenerationPiplineDescriptor.computeFunction = reverseGenerationFunction;
+        reverseGenerationPiplineDescriptor.buffers[0].mutability = MTLMutabilityImmutable;
+        reverseGenerationPiplineDescriptor.buffers[1].mutability = MTLMutabilityMutable;
+        reverseGenerationState = [device newComputePipelineStateWithDescriptor:reverseGenerationPiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
+        assert(error == nil);
+    }
     
-    MTLComputePipelineDescriptor *matePiplineDescriptor = [MTLComputePipelineDescriptor new];
-    matePiplineDescriptor.computeFunction = mateFunction;
-    matePiplineDescriptor.buffers[0].mutability = MTLMutabilityImmutable;
-    matePiplineDescriptor.buffers[1].mutability = MTLMutabilityImmutable;
-    matePiplineDescriptor.buffers[2].mutability = MTLMutabilityMutable;
-    matePiplineDescriptor.buffers[3].mutability = MTLMutabilityImmutable;
-    mateState = [device newComputePipelineStateWithDescriptor:matePiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
-    assert(error == nil);
+    {
+        MTLComputePipelineDescriptor *matePiplineDescriptor = [MTLComputePipelineDescriptor new];
+        matePiplineDescriptor.computeFunction = mateFunction;
+        matePiplineDescriptor.buffers[0].mutability = MTLMutabilityImmutable;
+        matePiplineDescriptor.buffers[1].mutability = MTLMutabilityImmutable;
+        matePiplineDescriptor.buffers[2].mutability = MTLMutabilityMutable;
+        matePiplineDescriptor.buffers[3].mutability = MTLMutabilityImmutable;
+        mateState = [device newComputePipelineStateWithDescriptor:matePiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
+        assert(error == nil);
+    }
     
-    MTLComputePipelineDescriptor *mutatePiplineDescriptor = [MTLComputePipelineDescriptor new];
-    mutatePiplineDescriptor.computeFunction = mutateFunction;
-    mutatePiplineDescriptor.buffers[0].mutability = MTLMutabilityMutable;
-    mutatePiplineDescriptor.buffers[1].mutability = MTLMutabilityImmutable;
-    mutateState = [device newComputePipelineStateWithDescriptor:mutatePiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
-    assert(error == nil);
+    {
+        MTLComputePipelineDescriptor *mutatePiplineDescriptor = [MTLComputePipelineDescriptor new];
+        mutatePiplineDescriptor.computeFunction = mutateFunction;
+        mutatePiplineDescriptor.buffers[0].mutability = MTLMutabilityMutable;
+        mutatePiplineDescriptor.buffers[1].mutability = MTLMutabilityImmutable;
+        mutateState = [device newComputePipelineStateWithDescriptor:mutatePiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
+        assert(error == nil);
+    }
 }
 
 - (void)computeFitnessWithCallback:(void (^)(void))callback
@@ -303,7 +311,6 @@
         fitnesses[i] = (double)count / (double)urlCount;
         assert(fitnesses[i] <= originalFileSize);
         fitnesses[i] = originalFileSize - fitnesses[i];
-        NSLog(@"%" PRIu32 " bytes skipped", fitnesses[i]);
         if (fitnesses[i] > best)
             best = fitnesses[i];
         uint32_t previousSum = sum;
@@ -335,8 +342,6 @@
 
 - (void)populateMutationInstructionsBuffer
 {
-    id<MTLArgumentEncoder> argumentEncoder = [mutateFunction newArgumentEncoderWithBufferIndex:1];
-    NSUInteger offset = argumentEncoder.encodedLength * generationSize;
     for (uint32_t i = 0; i < generationSize; ++i) {
         uint32_t numMutationInstructions = arc4random_uniform(maxMutationInstructions + 1);
         uint32_t mutationInstructions[2 * numMutationInstructions + 1];
@@ -345,12 +350,10 @@
             mutationInstructions[j * 2 + 1] = arc4random_uniform(glyphCount);
             mutationInstructions[j * 2 + 2] = arc4random_uniform(glyphCount);
         }
-        memcpy((char*)mutationInstructionsBuffer.contents + offset, mutationInstructions, sizeof(mutationInstructions));
-        [argumentEncoder setArgumentBuffer:mutationInstructionsBuffer startOffset:0 arrayElement:i];
-        [argumentEncoder setBuffer:mutationInstructionsBuffer offset:offset atIndex:0];
-        offset += sizeof(mutationInstructions);
+        size_t byteOffset = (maxMutationInstructions * 2 + 1) * i * sizeof(uint32_t);
+        memcpy((char*)mutationInstructionsBuffer.contents + byteOffset, mutationInstructions, sizeof(mutationInstructions));
+        [mutationInstructionsBuffer didModifyRange:NSMakeRange(byteOffset, sizeof(mutationInstructions))];
     }
-    [mutationInstructionsBuffer didModifyRange:NSMakeRange(0, offset)];
 }
 
 - (void)validateGeneration
@@ -373,6 +376,7 @@
     [self computeFitnessWithCallback:^() {
         NSLog(@"Reversing generation.");
         [self reverseGenerationWithCallback:^() {
+            [self validateGeneration];
             NSLog(@"Mating.");
             [self mateWithCallback:^() {
                 [self validateGeneration];
