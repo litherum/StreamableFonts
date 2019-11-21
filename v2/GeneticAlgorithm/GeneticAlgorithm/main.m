@@ -55,7 +55,7 @@
         glyphBitfieldSize = (glyphCount + 7) / 8;
         urlCount = MIN(1000, (uint32_t)urlData.count);
         generationSize = 120;
-        maxMutationInstructions = 80 /*(uint32_t)sqrt(glyphCount)*/;
+        maxMutationInstructions = (uint32_t)sqrt(glyphCount);
 
         device = MTLCreateSystemDefaultDevice();
         queue = [device newCommandQueue];
