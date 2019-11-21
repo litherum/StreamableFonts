@@ -375,12 +375,6 @@ int main(int argc, const char * argv[]) {
         Runner *runner = [[Runner alloc] init];
         [runner run];
         [[NSRunLoop mainRunLoop] run];
-
-
-        
-        // Step 1: Calculate fitness for the generation
-        // Step 2: Generate mating and mutation parameters
-        // Step 3: Mate and mutate to create new generation
     }
     return 0;
 }
