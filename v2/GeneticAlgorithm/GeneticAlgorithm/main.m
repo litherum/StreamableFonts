@@ -245,6 +245,10 @@
         [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
     }
     [computeEncoder endEncoding];
+    id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+    assert(generationABuffer.length == generationBBuffer.length);
+    [blitEncoder copyFromBuffer:generationBBuffer sourceOffset:0 toBuffer:generationABuffer destinationOffset:0 size:generationABuffer.length];
+    [blitEncoder endEncoding];
     [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
         assert(commandBuffer.error == nil);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -260,7 +264,7 @@
     id<MTLComputeCommandEncoder> computeEncoder = [commandBuffer computeCommandEncoder];
     {
         [computeEncoder setComputePipelineState:mutateState];
-        id<MTLBuffer> buffers[] = {generationBBuffer, mutationInstructionsBuffer};
+        id<MTLBuffer> buffers[] = {generationABuffer, mutationInstructionsBuffer};
         NSUInteger offsets[] = {0, 0};
         [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
         [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
@@ -279,6 +283,7 @@
 {
     uint32_t* fitnessData = fitnessBuffer.contents;
     uint32_t sum = 0;
+    uint32_t best = 0;
     __block uint32_t* fitnesses = malloc(generationSize * sizeof(uint32_t));
     for (uint32_t i = 0; i < generationSize; ++i) {
         uint32_t* results = fitnessData + urlCount * i;
@@ -286,9 +291,17 @@
         for (uint32_t j = 0; j < urlCount; ++j) {
             count += (uint64_t)results[j];
         }
+        const uint32_t originalFileSize = 1758820;
         fitnesses[i] = (double)count / (double)urlCount;
+        assert(fitnesses[i] <= originalFileSize);
+        fitnesses[i] = originalFileSize - fitnesses[i];
+        if (fitnesses[i] > best)
+            best = fitnesses[i];
+        uint32_t previousSum = sum;
         fitnesses[i] = sum = sum + fitnesses[i];
+        assert(sum >= previousSum);
     }
+    NSLog(@"Best: %" PRId32, best);
     struct MatingInstructions matingInstructions[generationSize];
     for (uint32_t i = 0; i < generationSize; ++i) {
         uint32_t (^pickWeightedIndex)(void) = ^uint32_t(void) {
@@ -342,6 +355,7 @@
                 NSLog(@"Mutating.");
                 [self mutateWithCallback:^() {
                     NSLog(@"Finished.");
+                    //[self run];
                 }];
             }];
         }];
