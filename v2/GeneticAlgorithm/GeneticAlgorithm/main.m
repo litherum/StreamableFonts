@@ -397,16 +397,19 @@
     }];
 }
 
+- (void)runForever
+{
+    [self runWithCallback:^() {
+        [self runForever];
+    }];
+}
+
 @end
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         Runner *runner = [[Runner alloc] init];
-        [runner runWithCallback:^() {
-            [runner runWithCallback:^() {
-                NSLog(@"Totally complete.");
-            }];
-        }];
+        [runner runForever];
         [[NSRunLoop mainRunLoop] run];
     }
     return 0;
