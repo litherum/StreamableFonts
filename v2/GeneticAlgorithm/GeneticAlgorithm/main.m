@@ -53,9 +53,9 @@
 
         glyphCount = (uint32_t)glyphSizes.count;
         glyphBitfieldSize = (glyphCount + 7) / 8;
-        urlCount = (uint32_t)urlData.count;
-        generationSize = 12;
-        maxMutationInstructions = (uint32_t)sqrt(glyphCount);
+        urlCount = MIN(1000, (uint32_t)urlData.count);
+        generationSize = 120;
+        maxMutationInstructions = 80 /*(uint32_t)sqrt(glyphCount)*/;
 
         device = MTLCreateSystemDefaultDevice();
         queue = [device newCommandQueue];
@@ -397,10 +397,14 @@
     }];
 }
 
-- (void)runForever
+- (void)runIterations:(unsigned)iteration withCallback:(void (^)(void))callback
 {
+    if (iteration == 0) {
+        callback();
+        return;
+    }
     [self runWithCallback:^() {
-        [self runForever];
+        [self runIterations:iteration - 1 withCallback:callback];
     }];
 }
 
@@ -409,8 +413,10 @@
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         Runner *runner = [[Runner alloc] init];
-        [runner runForever];
-        [[NSRunLoop mainRunLoop] run];
+        [runner runIterations:1000 withCallback:^() {
+            CFRunLoopStop(CFRunLoopGetMain());
+        }];
+        CFRunLoopRun();
     }
     return 0;
 }
