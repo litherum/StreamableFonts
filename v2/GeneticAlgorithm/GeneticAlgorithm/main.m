@@ -246,8 +246,11 @@
     }
     [computeEncoder endEncoding];
     id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
-    assert(generationABuffer.length == generationBBuffer.length);
-    [blitEncoder copyFromBuffer:generationBBuffer sourceOffset:0 toBuffer:generationABuffer destinationOffset:0 size:generationABuffer.length];
+    {
+        assert(generationABuffer.length == generationBBuffer.length);
+        [blitEncoder copyFromBuffer:generationBBuffer sourceOffset:0 toBuffer:generationABuffer destinationOffset:0 size:generationABuffer.length];
+        [blitEncoder synchronizeResource:generationABuffer];
+    }
     [blitEncoder endEncoding];
     [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
         assert(commandBuffer.error == nil);
@@ -270,6 +273,11 @@
         [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
     }
     [computeEncoder endEncoding];
+    id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+    {
+        [blitEncoder synchronizeResource:generationABuffer];
+    }
+    [blitEncoder endEncoding];
     [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
         assert(commandBuffer.error == nil);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -295,6 +303,7 @@
         fitnesses[i] = (double)count / (double)urlCount;
         assert(fitnesses[i] <= originalFileSize);
         fitnesses[i] = originalFileSize - fitnesses[i];
+        NSLog(@"%" PRIu32 " bytes skipped", fitnesses[i]);
         if (fitnesses[i] > best)
             best = fitnesses[i];
         uint32_t previousSum = sum;
@@ -344,18 +353,34 @@
     [mutationInstructionsBuffer didModifyRange:NSMakeRange(0, offset)];
 }
 
-- (void)run
+- (void)validateGeneration
 {
+    uint32_t* generation = self->generationABuffer.contents;
+    for (uint32_t i = 0; i < self->generationSize; ++i) {
+        uint32_t* order = generation + self->glyphCount * i;
+        NSMutableSet *set = [NSMutableSet setWithCapacity:self->glyphCount];
+        for (uint32_t j = 0; j < self->glyphCount; ++j) {
+            [set addObject:[NSNumber numberWithUnsignedInt:order[j]]];
+        }
+        assert(set.count == self->glyphCount);
+    }
+}
+
+- (void)runWithCallback:(void (^)(void))callback
+{
+    [self validateGeneration];
     NSLog(@"Computing fitness.");
     [self computeFitnessWithCallback:^() {
         NSLog(@"Reversing generation.");
         [self reverseGenerationWithCallback:^() {
             NSLog(@"Mating.");
             [self mateWithCallback:^() {
+                [self validateGeneration];
                 NSLog(@"Mutating.");
                 [self mutateWithCallback:^() {
+                    [self validateGeneration];
                     NSLog(@"Finished.");
-                    //[self run];
+                    callback();
                 }];
             }];
         }];
@@ -373,7 +398,11 @@
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         Runner *runner = [[Runner alloc] init];
-        [runner run];
+        [runner runWithCallback:^() {
+            [runner runWithCallback:^() {
+                NSLog(@"Totally complete.");
+            }];
+        }];
         [[NSRunLoop mainRunLoop] run];
     }
     return 0;
