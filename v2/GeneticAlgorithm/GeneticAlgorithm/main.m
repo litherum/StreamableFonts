@@ -107,21 +107,37 @@
     assert(error == nil);
 }
 
+- (NSArray<NSArray<NSNumber *> *> *)generateInitialGenerationData
+{
+    NSMutableArray<NSMutableArray<NSNumber *> *> *result = [NSMutableArray arrayWithCapacity:generationSize];
+    for (uint32_t i = 0; i < generationSize; ++i) {
+        NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphCount];
+        NSMutableArray<NSNumber *> *candidates = [NSMutableArray arrayWithCapacity:glyphCount];
+        for (uint32_t j = 0; j < glyphCount; ++j)
+            [candidates addObject:[NSNumber numberWithUnsignedInt:j]];
+        for (uint32_t j = 0; j < glyphCount; ++j) {
+            assert(candidates.count == glyphCount - j);
+            uint32_t index = arc4random_uniform(glyphCount - j);
+            [order addObject:candidates[index]];
+            [candidates removeObjectAtIndex:index];
+        }
+        [result addObject:order];
+    }
+    return result;
+}
+
 - (void)createBuffers
 {
     uint32_t initialGenerationData[glyphCount * generationSize];
-    for (uint32_t i = 0; i < generationSize; ++i) {
-        uint32_t* orderData = initialGenerationData + i * glyphCount;
-        NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphCount];
-        for (uint32_t j = 0; j < glyphCount; ++j)
-            [order addObject:[NSNumber numberWithUnsignedInt:j]];
-        for (uint32_t j = 0; j < glyphCount; ++j) {
-            assert(order.count == glyphCount - j);
-            uint32_t index = arc4random_uniform(glyphCount - j);
-            orderData[j] = order[index].unsignedIntValue;
-            [order removeObjectAtIndex:index];
-        }
+    NSArray<NSArray<NSNumber *> *> *initialGeneration = [self generateInitialGenerationData];
+    assert(initialGeneration.count == generationSize);
+    for (NSUInteger i = 0; i < generationSize; ++i) {
+        NSArray<NSNumber *> *order = initialGeneration[i];
+        assert(order.count == glyphCount);
+        for (NSUInteger j = 0; j < glyphCount; ++j)
+            initialGenerationData[i * glyphCount + j] = order[j].unsignedIntValue;
     }
+
     generationABuffer = [device newBufferWithBytes:initialGenerationData length:glyphCount * generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
     generationBBuffer = [device newBufferWithLength:glyphCount * generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
     reverseGenerationBuffer = [device newBufferWithLength:glyphCount * generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
