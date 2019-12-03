@@ -60,7 +60,7 @@
         glyphCount = (uint32_t)glyphSizes.count;
         glyphBitfieldSize = (glyphCount + 7) / 8;
         urlCount = MIN(1000, (uint32_t)urlData.count);
-        generationSize = 120;
+        generationSize = 10;
         maxMutationInstructions = glyphCount / 10;
 
         device = MTLCreateSystemDefaultDevice();
@@ -263,6 +263,35 @@
             [order addObject:[NSNumber numberWithUnsignedInt:orderData[i]]];
         [initialGenerationData addObject:order];
     }*/
+
+    // Best bigram score, regardless of what's already been placed
+    {
+        float bestScores[glyphCount];
+        for (uint32_t i = 0; i < glyphCount; ++i) {
+            bestScores[i] = 0;
+            for (uint32_t j = 0; j < glyphCount; ++j) {
+                if (i == j)
+                    continue;
+                float score = bigramScores[glyphCount * i + j];
+                if (score > bestScores[i])
+                    bestScores[i] = score;
+            }
+        }
+        NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphCount];
+        for (uint32_t i = 0; i < glyphCount; ++i) {
+            float best = 0;
+            uint32_t bestIndex = 0;
+            for (uint32_t j = 0; j < glyphCount; ++j) {
+                if (best <= bestScores[j]) {
+                    best = bestScores[j];
+                    bestIndex = j;
+                }
+            }
+            [order addObject:[NSNumber numberWithUnsignedInt:bestIndex]];
+            bestScores[bestIndex] = -1;
+        }
+        [initialGenerationData addObject:order];
+    }
 
     // FIXME: Consider a sliding window approach, to interpolate between the two above approaches.
 }
