@@ -167,6 +167,40 @@
 - (void)populateIntelligentGenerationData:(NSMutableArray<NSArray<NSNumber *> *> *)initialGenerationData fromBigramScores:(float*)bigramScores
 {
     // FIXME: Move this offline.
+
+    // Pick the most frequent glyph.
+    {
+        uint32_t frequency[glyphCount];
+        for (uint32_t i = 0; i < glyphCount; ++i)
+            frequency[i] = 0;
+        for (NSDictionary<NSString *, id> *urlInfo in urlData) {
+            NSArray<NSNumber *> *glyphs = urlInfo[@"Glyphs"];
+            for (NSNumber *glyph in glyphs) {
+                if (glyph.unsignedShortValue == 0xFFFF)
+                    continue;
+                assert(glyph.unsignedShortValue < glyphCount);
+                ++frequency[glyph.unsignedShortValue];
+            }
+        }
+        NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphCount];
+        NSMutableSet<NSNumber *> *spent = [NSMutableSet setWithCapacity:glyphCount];
+        for (uint32_t i = 0; i < glyphCount; ++i) {
+            uint32_t bestIndex = 0;
+            uint32_t best = 0;
+            for (uint32_t j = 0; j < glyphCount; ++j) {
+                if ([spent containsObject:[NSNumber numberWithUnsignedInt:j]])
+                    continue;
+                if (frequency[j] >= best) {
+                    best = frequency[j];
+                    bestIndex = j;
+                }
+            }
+            [spent addObject:[NSNumber numberWithUnsignedInt:bestIndex]];
+            [order addObject:[NSNumber numberWithUnsignedInt:bestIndex]];
+        }
+        [initialGenerationData addObject:order];
+    }
+
     // Pick the best buddy of the most-recently-placed glyph.
     {
         NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphCount];
@@ -194,7 +228,7 @@
     }
 
     // Pick the best buddy of any of the placed glyphs.
-    {
+    /*{
         uint32_t orderData[glyphCount];
         uint32_t candidates[glyphCount];
         for (uint32_t i = 0; i < glyphCount; ++i)
@@ -228,7 +262,8 @@
         for (uint32_t i = 0; i < glyphCount; ++i)
             [order addObject:[NSNumber numberWithUnsignedInt:orderData[i]]];
         [initialGenerationData addObject:order];
-    }
+    }*/
+
     // FIXME: Consider a sliding window approach, to interpolate between the two above approaches.
 }
 
@@ -264,9 +299,10 @@
         NSDictionary<NSString *, id> *jsonDictionary = urlData[i];
         NSArray<NSNumber *> *glyphs = jsonDictionary[@"Glyphs"];
         for (NSNumber *glyph in glyphs) {
+            if (glyph.unsignedShortValue == 0xFFFF)
+                continue;
             CGGlyph glyphValue = glyph.unsignedShortValue;
-            /*if (glyphValue >= glyphCount)
-                continue;*/
+            assert(glyphValue < glyphCount);
             bitfield[glyphValue / 8] |= (1 << (glyphValue % 8));
         }
     }
