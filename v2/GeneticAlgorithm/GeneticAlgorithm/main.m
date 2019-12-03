@@ -28,10 +28,12 @@
     
     id<MTLDevice> device;
     id<MTLCommandQueue> queue;
+    id<MTLFunction> bigramScoreFunction;
     id<MTLFunction> fitnessFunction;
     id<MTLFunction> reverseGenerationFunction;
     id<MTLFunction> mateFunction;
     id<MTLFunction> mutateFunction;
+    id<MTLBuffer> bigramScoreBuffer;
     id<MTLBuffer> generationABuffer;
     id<MTLBuffer> generationBBuffer;
     id<MTLBuffer> reverseGenerationBuffer;
@@ -40,6 +42,7 @@
     id<MTLBuffer> fitnessBuffer;
     id<MTLBuffer> matingInstructionsBuffer;
     id<MTLBuffer> mutationInstructionsBuffer;
+    id<MTLComputePipelineState> bigramScoreState;
     id<MTLComputePipelineState> fitnessState;
     id<MTLComputePipelineState> reverseGenerationState;
     id<MTLComputePipelineState> mateState;
@@ -58,7 +61,7 @@
         glyphBitfieldSize = (glyphCount + 7) / 8;
         urlCount = MIN(1000, (uint32_t)urlData.count);
         generationSize = 120;
-        maxMutationInstructions = (uint32_t)sqrt(glyphCount);
+        maxMutationInstructions = glyphCount / 10;
 
         device = MTLCreateSystemDefaultDevice();
         queue = [device newCommandQueue];
@@ -97,6 +100,8 @@
     [constantValues setConstantValue:&urlCount type:MTLDataTypeUInt withName:@"urlCount"];
     [constantValues setConstantValue:&generationSize type:MTLDataTypeUInt withName:@"generationSize"];
     [constantValues setConstantValue:&maxMutationInstructions type:MTLDataTypeUInt withName:@"maxMutationInstructions"];
+    bigramScoreFunction = [library newFunctionWithName:@"bigramScore" constantValues:constantValues error:&error];
+    assert(error == nil);
     fitnessFunction = [library newFunctionWithName:@"fitness" constantValues:constantValues error:&error];
     assert(error == nil);
     reverseGenerationFunction = [library newFunctionWithName:@"reverseGeneration" constantValues:constantValues error:&error];
@@ -107,10 +112,10 @@
     assert(error == nil);
 }
 
-- (NSArray<NSArray<NSNumber *> *> *)generateInitialGenerationData
+- (void)finishGeneratingInitialGenerationData:(NSMutableArray<NSArray<NSNumber *> *> *)initialGenerationData
 {
-    NSMutableArray<NSMutableArray<NSNumber *> *> *result = [NSMutableArray arrayWithCapacity:generationSize];
-    for (uint32_t i = 0; i < generationSize; ++i) {
+    assert(initialGenerationData.count <= generationSize);
+    while (initialGenerationData.count < generationSize) {
         NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphCount];
         NSMutableArray<NSNumber *> *candidates = [NSMutableArray arrayWithCapacity:glyphCount];
         for (uint32_t j = 0; j < glyphCount; ++j)
@@ -121,15 +126,13 @@
             [order addObject:candidates[index]];
             [candidates removeObjectAtIndex:index];
         }
-        [result addObject:order];
+        [initialGenerationData addObject:order];
     }
-    return result;
 }
 
-- (void)createBuffers
+- (void)createGenerationBuffer:(NSArray<NSArray<NSNumber *> *> *)initialGeneration
 {
     uint32_t initialGenerationData[glyphCount * generationSize];
-    NSArray<NSArray<NSNumber *> *> *initialGeneration = [self generateInitialGenerationData];
     assert(initialGeneration.count == generationSize);
     for (NSUInteger i = 0; i < generationSize; ++i) {
         NSArray<NSNumber *> *order = initialGeneration[i];
@@ -139,6 +142,112 @@
     }
 
     generationABuffer = [device newBufferWithBytes:initialGenerationData length:glyphCount * generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
+}
+
+- (uint32_t)seedGlyphFromBigramScores:(float*)bigramScores
+{
+    // There are probably a lot of 1.0 scores which tie for best.
+    // We could be more sophisticated here and pick the glyph which is in the most number of documents, or something.
+    float bestScore = 0;
+    uint32_t bestGlyph = 0;
+    for (uint32_t i = 0; i < glyphCount; ++i) {
+        for (uint32_t j = 0; j < glyphCount; ++j) {
+            if (i == j)
+                continue;
+            float score = bigramScores[glyphCount * i + j];
+            if (score >= bestScore) {
+                bestScore = score;
+                bestGlyph = i;
+            }
+        }
+    }
+    return bestGlyph;
+}
+
+- (void)populateIntelligentGenerationData:(NSMutableArray<NSArray<NSNumber *> *> *)initialGenerationData fromBigramScores:(float*)bigramScores
+{
+    // FIXME: Move this offline.
+    // Pick the best buddy of the most-recently-placed glyph.
+    {
+        NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphCount];
+        BOOL spent[glyphCount];
+        for (uint32_t i = 0; i < glyphCount; ++i)
+            spent[i] = NO;
+        uint32_t currentGlyph = [self seedGlyphFromBigramScores:bigramScores];
+        for (uint32_t i = 0; i < glyphCount; ++i) {
+            [order addObject:[NSNumber numberWithUnsignedInt:currentGlyph]];
+            spent[currentGlyph] = YES;
+            float bestScore = 0;
+            uint32_t bestGlyph = glyphCount;
+            for (uint32_t j = 0; j < glyphCount; ++j) {
+                if (spent[j])
+                    continue;
+                float score = bigramScores[glyphCount * currentGlyph + j];
+                if (score >= bestScore) {
+                    bestScore = score;
+                    bestGlyph = j;
+                }
+            }
+            currentGlyph = bestGlyph;
+        }
+        [initialGenerationData addObject:order];
+    }
+
+    // Pick the best buddy of any of the placed glyphs.
+    {
+        uint32_t orderData[glyphCount];
+        uint32_t candidates[glyphCount];
+        for (uint32_t i = 0; i < glyphCount; ++i)
+            candidates[i] = i;
+        uint32_t currentGlyph = [self seedGlyphFromBigramScores:bigramScores];
+        uint32_t candidateIndex = currentGlyph;
+        for (uint32_t i = 0; i < glyphCount; ++i) {
+            orderData[i] = currentGlyph;
+
+            for (uint32_t j = candidateIndex; j < glyphCount - i - 1; ++j)
+                candidates[j] = candidates[j + 1];
+
+            float bestScore = 0;
+            uint32_t bestGlyph = glyphCount;
+            candidateIndex = 0;
+            for (uint32_t j = 0; j < i + 1; ++j) {
+                uint32_t placedGlyph = orderData[j];
+                for (uint32_t j = 0; j < glyphCount - i - 1; ++j) {
+                    float score = bigramScores[glyphCount * placedGlyph + candidates[j]];
+                    if (score >= bestScore) {
+                        bestScore = score;
+                        bestGlyph = candidates[j];
+                        candidateIndex = j;
+                    }
+                }
+            }
+            NSLog(@"Best score: %" PRIu32 " %f", i, bestScore);
+            currentGlyph = bestGlyph;
+        }
+        NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphCount];
+        for (uint32_t i = 0; i < glyphCount; ++i)
+            [order addObject:[NSNumber numberWithUnsignedInt:orderData[i]]];
+        [initialGenerationData addObject:order];
+    }
+    // FIXME: Consider a sliding window approach, to interpolate between the two above approaches.
+}
+
+- (void)prepareGenerationBufferWithCallback:(void (^)(void))callback
+{
+    [self calculateBigramScoresWithCallback:^() {
+        float* bigramScores = self->bigramScoreBuffer.contents;
+        
+        NSMutableArray<NSArray<NSNumber *> *> *initialGenerationData = [NSMutableArray arrayWithCapacity:self->generationSize];
+        [self populateIntelligentGenerationData:initialGenerationData fromBigramScores:bigramScores];
+        [self finishGeneratingInitialGenerationData:initialGenerationData];
+        [self createGenerationBuffer:initialGenerationData];
+        callback();
+    }];
+}
+
+- (void)createBuffers
+{
+    bigramScoreBuffer = [device newBufferWithLength:glyphCount * glyphCount * sizeof(float) options:MTLResourceStorageModeManaged];
     generationBBuffer = [device newBufferWithLength:glyphCount * generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
     reverseGenerationBuffer = [device newBufferWithLength:glyphCount * generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
 
@@ -174,6 +283,15 @@
 - (void)createMetalStates
 {
     NSError *error;
+    {
+        MTLComputePipelineDescriptor *bigramScorePiplineDescriptor = [MTLComputePipelineDescriptor new];
+        bigramScorePiplineDescriptor.computeFunction = bigramScoreFunction;
+        bigramScorePiplineDescriptor.buffers[0].mutability = MTLMutabilityImmutable;
+        bigramScorePiplineDescriptor.buffers[1].mutability = MTLMutabilityMutable;
+        bigramScoreState = [device newComputePipelineStateWithDescriptor:bigramScorePiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
+        assert(error == nil);
+    }
+
     {
         MTLComputePipelineDescriptor *fitnessPiplineDescriptor = [MTLComputePipelineDescriptor new];
         fitnessPiplineDescriptor.computeFunction = fitnessFunction;
@@ -215,6 +333,32 @@
     }
 }
 
+- (void)calculateBigramScoresWithCallback:(void (^)(void))callback
+{
+    id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
+    id<MTLComputeCommandEncoder> computeEncoder = [commandBuffer computeCommandEncoder];
+    {
+        [computeEncoder setComputePipelineState:bigramScoreState];
+        id<MTLBuffer> buffers[] = {urlDataBuffer, bigramScoreBuffer};
+        NSUInteger offsets[] = {0, 0};
+        [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
+        [computeEncoder dispatchThreads:MTLSizeMake(glyphCount, glyphCount, 1) threadsPerThreadgroup:MTLSizeMake(4, 4, 1)];
+    }
+    [computeEncoder endEncoding];
+    id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+    {
+        [blitEncoder synchronizeResource:bigramScoreBuffer];
+    }
+    [blitEncoder endEncoding];
+    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+        assert(commandBuffer.error == nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback();
+        });
+    }];
+    [commandBuffer commit];
+}
+
 - (void)computeFitnessWithCallback:(void (^)(void))callback
 {
     id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
@@ -228,7 +372,9 @@
     }
     [computeEncoder endEncoding];
     id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
-    [blitEncoder synchronizeResource:fitnessBuffer];
+    {
+        [blitEncoder synchronizeResource:fitnessBuffer];
+    }
     [blitEncoder endEncoding];
     [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
         assert(commandBuffer.error == nil);
@@ -437,8 +583,10 @@
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         Runner *runner = [[Runner alloc] init];
-        [runner runIterations:1000 withCallback:^() {
-            CFRunLoopStop(CFRunLoopGetMain());
+        [runner prepareGenerationBufferWithCallback:^() {
+            [runner runIterations:1000 withCallback:^() {
+                CFRunLoopStop(CFRunLoopGetMain());
+            }];
         }];
         CFRunLoopRun();
     }
