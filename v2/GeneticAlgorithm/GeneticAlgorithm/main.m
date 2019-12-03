@@ -44,11 +44,14 @@
     id<MTLComputePipelineState> reverseGenerationState;
     id<MTLComputePipelineState> mateState;
     id<MTLComputePipelineState> mutateState;
+
+    BOOL validateGeneration;
 }
 
 - (instancetype)init
 {
     if (self) {
+        validateGeneration = NO;
         [self loadData];
 
         glyphCount = (uint32_t)glyphSizes.count;
@@ -69,14 +72,14 @@
 
 - (void)loadData
 {
-    NSData *urlDataContents = [NSData dataWithContentsOfFile:@"/Users/mmaxfield/Library/Mobile Documents/com~apple~CloudDocs/Documents/output_glyphs.json"];
+    NSData *urlDataContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Library/Mobile Documents/com~apple~CloudDocs/Documents/output_glyphs.json"];
     assert(urlDataContents != nil);
     NSError *error = nil;
     urlData = [NSJSONSerialization JSONObjectWithData:urlDataContents options:0 error:&error];
     assert(error == nil);
     assert(urlData != nil);
 
-    NSData *glyphSizesContents = [NSData dataWithContentsOfFile:@"/Users/mmaxfield/Library/Mobile Documents/com~apple~CloudDocs/Documents/output_glyph_sizes.json"];
+    NSData *glyphSizesContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Library/Mobile Documents/com~apple~CloudDocs/Documents/output_glyph_sizes.json"];
     assert(glyphSizesContents != nil);
     glyphSizes = [NSJSONSerialization JSONObjectWithData:glyphSizesContents options:0 error:&error];
     assert(error == nil);
@@ -257,7 +260,8 @@
     {
         assert(generationABuffer.length == generationBBuffer.length);
         [blitEncoder copyFromBuffer:generationBBuffer sourceOffset:0 toBuffer:generationABuffer destinationOffset:0 size:generationABuffer.length];
-        [blitEncoder synchronizeResource:generationABuffer];
+        if (validateGeneration)
+            [blitEncoder synchronizeResource:generationABuffer];
     }
     [blitEncoder endEncoding];
     [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
@@ -281,11 +285,11 @@
         [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
     }
     [computeEncoder endEncoding];
-    id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
-    {
+    if (validateGeneration) {
+        id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
         [blitEncoder synchronizeResource:generationABuffer];
+        [blitEncoder endEncoding];
     }
-    [blitEncoder endEncoding];
     [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
         assert(commandBuffer.error == nil);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -371,18 +375,22 @@
 
 - (void)runWithCallback:(void (^)(void))callback
 {
-    [self validateGeneration];
+    if (validateGeneration)
+        [self validateGeneration];
     NSLog(@"Computing fitness.");
     [self computeFitnessWithCallback:^() {
         NSLog(@"Reversing generation.");
         [self reverseGenerationWithCallback:^() {
-            [self validateGeneration];
+            if (self->validateGeneration)
+                [self validateGeneration];
             NSLog(@"Mating.");
             [self mateWithCallback:^() {
-                [self validateGeneration];
+                if (self->validateGeneration)
+                    [self validateGeneration];
                 NSLog(@"Mutating.");
                 [self mutateWithCallback:^() {
-                    [self validateGeneration];
+                    if (self->validateGeneration)
+                        [self validateGeneration];
                     NSLog(@"Finished.");
                     callback();
                 }];
