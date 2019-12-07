@@ -33,6 +33,11 @@
     id<MTLFunction> reverseGenerationFunction;
     id<MTLFunction> mateFunction;
     id<MTLFunction> mutateFunction;
+    id<MTLComputePipelineState> bigramScoreState;
+    id<MTLComputePipelineState> fitnessState;
+    id<MTLComputePipelineState> reverseGenerationState;
+    id<MTLComputePipelineState> mateState;
+    id<MTLComputePipelineState> mutateState;
     id<MTLBuffer> bigramScoreBuffer;
     id<MTLBuffer> generationABuffer;
     id<MTLBuffer> generationBBuffer;
@@ -42,17 +47,13 @@
     id<MTLBuffer> fitnessBuffer;
     id<MTLBuffer> matingInstructionsBuffer;
     id<MTLBuffer> mutationInstructionsBuffer;
-    id<MTLComputePipelineState> bigramScoreState;
-    id<MTLComputePipelineState> fitnessState;
-    id<MTLComputePipelineState> reverseGenerationState;
-    id<MTLComputePipelineState> mateState;
-    id<MTLComputePipelineState> mutateState;
 
     BOOL validateGeneration;
 }
 
 - (instancetype)init
 {
+    self = [super init];
     if (self) {
         validateGeneration = NO;
         [self loadData];
@@ -67,8 +68,8 @@
         queue = [device newCommandQueue];
 
         [self loadShaders];
-        [self createBuffers];
         [self createMetalStates];
+        [self createBuffers];
     }
     return self;
 }
