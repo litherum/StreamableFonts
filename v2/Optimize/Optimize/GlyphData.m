@@ -16,14 +16,14 @@
     self = [super init];
 
     if (self != nil) {
-        NSData *urlDataContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Library/Mobile Documents/com~apple~CloudDocs/Documents/output_glyphs.json"];
+        NSData *urlDataContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Library/Mobile Documents/com~apple~CloudDocs/Documents/urlGlyphsPruned.json"];
         assert(urlDataContents != nil);
         NSError *error = nil;
         _urlData = [NSJSONSerialization JSONObjectWithData:urlDataContents options:0 error:&error];
         assert(error == nil);
         assert(self.urlData != nil);
 
-        NSData *glyphSizesContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Library/Mobile Documents/com~apple~CloudDocs/Documents/output_glyph_sizes.json"];
+        NSData *glyphSizesContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Library/Mobile Documents/com~apple~CloudDocs/Documents/gyphSizesPruned.json"];
         assert(glyphSizesContents != nil);
         _glyphSizes = [NSJSONSerialization JSONObjectWithData:glyphSizesContents options:0 error:&error];
         assert(error == nil);
