@@ -147,4 +147,63 @@
     bestBuffer = [device newBufferWithLength:generationSize * sizeof(struct Best) options:MTLResourceStorageModeManaged];
 }
 
+- (void)runWithGlyphIndex:(uint32_t)glyphIndex andCallback:(void (^)(void))callback
+{
+    /*
+    id<MTLBuffer> generationABuffer;
+    id<MTLBuffer> generationBBuffer;
+    id<MTLBuffer> glyphSizesBuffer;
+    id<MTLBuffer> urlBitmapsBuffer;
+    id<MTLBuffer> possibleFitnessesPerURLBuffer;
+    id<MTLBuffer> possibleFitnessesBuffer;
+    id<MTLBuffer> bestBuffer;
+     */
+    id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
+    id<MTLComputeCommandEncoder> computeEncoder = [commandBuffer computeCommandEncoder];
+    {
+        [computeEncoder setComputePipelineState:possibleFitnessesState];
+        id<MTLBuffer> buffers[] = {generationABuffer, glyphSizesBuffer, urlBitmapsBuffer, possibleFitnessesPerURLBuffer};
+        NSUInteger offsets[] = {0, 0, 0, 0};
+        [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 4)];
+        [computeEncoder setBytes:&glyphIndex length:sizeof(uint32_t) atIndex:4];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, urlCount, glyphCount) threadsPerThreadgroup:MTLSizeMake(2, 2, 2)];
+    }
+    {
+        [computeEncoder setComputePipelineState:sumPossibleFitnessesState];
+        id<MTLBuffer> buffers[] = {generationABuffer, possibleFitnessesBuffer};
+        NSUInteger offsets[] = {0, 0};
+        [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, glyphCount, 1) threadsPerThreadgroup:MTLSizeMake(4, 4, 1)];
+    }
+    {
+        [computeEncoder setComputePipelineState:selectBestPossibilityState];
+        id<MTLBuffer> buffers[] = {possibleFitnessesBuffer, bestBuffer};
+        NSUInteger offsets[] = {0, 0};
+        [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
+    }
+    {
+        [computeEncoder setComputePipelineState:performRotationState];
+        id<MTLBuffer> buffers[] = {generationABuffer, bestBuffer, generationBBuffer};
+        NSUInteger offsets[] = {0, 0, 0};
+        [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 3)];
+        [computeEncoder setBytes:&glyphIndex length:sizeof(uint32_t) atIndex:3];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
+    }
+    [computeEncoder endEncoding];
+    id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+    {
+        assert(generationABuffer.length == generationBBuffer.length);
+        [blitEncoder copyFromBuffer:generationBBuffer sourceOffset:0 toBuffer:generationABuffer destinationOffset:0 size:generationABuffer.length];
+    }
+    [blitEncoder endEncoding];
+    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+        assert(commandBuffer.error == nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback();
+        });
+    }];
+    [commandBuffer commit];
+}
+
 @end

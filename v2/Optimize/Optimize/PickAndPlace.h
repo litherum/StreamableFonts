@@ -14,4 +14,5 @@
 
 @interface PickAndPlace : NSObject
 - (instancetype)initWithGlyphData:(GlyphData *)glyphData;
+- (void)runWithGlyphIndex:(uint32_t)glyphIndex andCallback:(void (^)(void))callback;
 @end
