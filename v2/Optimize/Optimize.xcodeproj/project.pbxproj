@@ -32,6 +32,7 @@
 		C22198F5239C4FC700FE8F2E /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C22198FA239C526900FE8F2E /* BigramScores.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198F9239C526900FE8F2E /* BigramScores.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C22198FC239C52A000FE8F2E /* BigramScores.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198FB239C52A000FE8F2E /* BigramScores.m */; };
+		C2219904239C60AD00FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C2219903239C60AD00FE8F2E /* main.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -119,6 +120,15 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C22198FF239C60AD00FE8F2E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -149,6 +159,8 @@
 		C22198EF239C4FBC00FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C22198F9239C526900FE8F2E /* BigramScores.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BigramScores.h; sourceTree = "<group>"; };
 		C22198FB239C52A000FE8F2E /* BigramScores.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BigramScores.m; sourceTree = "<group>"; };
+		C2219901239C60AD00FE8F2E /* CodepointsToGlyphs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CodepointsToGlyphs; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2219903239C60AD00FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,6 +195,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C22198FE239C60AD00FE8F2E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -193,6 +212,7 @@
 				C22198BA239B783200FE8F2E /* PickAndPlace */,
 				C22198D1239BA10500FE8F2E /* SaveSeeds */,
 				C22198EE239C4FBC00FE8F2E /* ScoreBigrams */,
+				C2219902239C60AD00FE8F2E /* CodepointsToGlyphs */,
 				C2219898239A28E500FE8F2E /* Products */,
 				C22198C0239B788500FE8F2E /* Frameworks */,
 			);
@@ -205,6 +225,7 @@
 				C22198B9239B783200FE8F2E /* PickAndPlace */,
 				C22198D0239BA10500FE8F2E /* SaveSeeds */,
 				C22198ED239C4FBC00FE8F2E /* ScoreBigrams */,
+				C2219901239C60AD00FE8F2E /* CodepointsToGlyphs */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -281,6 +302,14 @@
 				C22198EF239C4FBC00FE8F2E /* main.m */,
 			);
 			path = ScoreBigrams;
+			sourceTree = "<group>";
+		};
+		C2219902239C60AD00FE8F2E /* CodepointsToGlyphs */ = {
+			isa = PBXGroup;
+			children = (
+				C2219903239C60AD00FE8F2E /* main.m */,
+			);
+			path = CodepointsToGlyphs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -378,6 +407,23 @@
 			productReference = C22198ED239C4FBC00FE8F2E /* ScoreBigrams */;
 			productType = "com.apple.product-type.tool";
 		};
+		C2219900239C60AD00FE8F2E /* CodepointsToGlyphs */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C2219905239C60AD00FE8F2E /* Build configuration list for PBXNativeTarget "CodepointsToGlyphs" */;
+			buildPhases = (
+				C22198FD239C60AD00FE8F2E /* Sources */,
+				C22198FE239C60AD00FE8F2E /* Frameworks */,
+				C22198FF239C60AD00FE8F2E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CodepointsToGlyphs;
+			productName = CodepointsToGlyphs;
+			productReference = C2219901239C60AD00FE8F2E /* CodepointsToGlyphs */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -399,6 +445,9 @@
 					C22198EC239C4FBC00FE8F2E = {
 						CreatedOnToolsVersion = 11.0;
 					};
+					C2219900239C60AD00FE8F2E = {
+						CreatedOnToolsVersion = 11.0;
+					};
 				};
 			};
 			buildConfigurationList = C2219891239A28E500FE8F2E /* Build configuration list for PBXProject "Optimize" */;
@@ -418,6 +467,7 @@
 				C22198B8239B783200FE8F2E /* PickAndPlace */,
 				C22198CF239BA10500FE8F2E /* SaveSeeds */,
 				C22198EC239C4FBC00FE8F2E /* ScoreBigrams */,
+				C2219900239C60AD00FE8F2E /* CodepointsToGlyphs */,
 			);
 		};
 /* End PBXProject section */
@@ -470,6 +520,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				C22198F0239C4FBC00FE8F2E /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C22198FD239C60AD00FE8F2E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2219904239C60AD00FE8F2E /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -701,6 +759,22 @@
 			};
 			name = Release;
 		};
+		C2219906239C60AD00FE8F2E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C2219907239C60AD00FE8F2E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -745,6 +819,15 @@
 			buildConfigurations = (
 				C22198F2239C4FBC00FE8F2E /* Debug */,
 				C22198F3239C4FBC00FE8F2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C2219905239C60AD00FE8F2E /* Build configuration list for PBXNativeTarget "CodepointsToGlyphs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C2219906239C60AD00FE8F2E /* Debug */,
+				C2219907239C60AD00FE8F2E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
