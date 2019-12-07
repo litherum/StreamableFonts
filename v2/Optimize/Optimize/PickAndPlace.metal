@@ -7,12 +7,12 @@
 //
 
 #include <metal_stdlib>
+#include "SharedShaders.h"
 #include "PickAndPlaceShared.h"
 
 using namespace metal;
 
-constant uint32_t glyphCount [[function_constant(0)]];
-constant uint32_t glyphBitfieldSize [[function_constant(1)]];
+constant uint32_t glyphCount [[function_constant(1)]];
 constant uint32_t urlCount [[function_constant(2)]];
 constant uint32_t generationSize [[function_constant(3)]];
 
@@ -55,10 +55,6 @@ private:
     uint32_t i{0};
     int32_t offset{0};
 };
-
-inline bool glyphIsNecessary(device uint32_t* urlBitmaps, uint urlIndex, uint32_t glyph) {
-    return urlBitmaps[glyphBitfieldSize * urlIndex + glyph / 8] & (1 << (glyph % 8));
-}
 
 kernel void possibleFitnesses(device uint32_t* generation [[buffer(0)]], device uint32_t* glyphSizes [[buffer(1)]], device uint32_t* urlBitmaps [[buffer(2)]], device uint32_t* output [[buffer(3)]], constant uint32_t& glyphIndex [[buffer(4)]], uint3 tid [[thread_position_in_grid]]) {
     uint generationIndex = tid.x;

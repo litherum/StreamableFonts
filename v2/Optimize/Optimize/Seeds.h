@@ -14,7 +14,7 @@
 
 @interface Seeds : NSObject
 - (instancetype)init;
-- (instancetype)initWithGlyphData:(GlyphData *)glyphData andBigramScores:(NSData *)bigramScores;
+- (instancetype)initWithGlyphData:(GlyphData *)glyphData andBigramScores:(NSArray<NSArray<NSNumber *> *> *)bigramScores;
 @property (readonly) NSArray<NSArray<NSNumber *> *> *seeds;
 + (void)fillWithRandomSeeds:(NSMutableArray<NSArray<NSNumber *> *> *)array withGlyphCount:(NSUInteger)glyphCount untilCount:(NSUInteger)count;
 @end

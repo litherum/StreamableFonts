@@ -23,6 +23,15 @@
 		C22198D3239BA10500FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198D2239BA10500FE8F2E /* main.m */; };
 		C22198D7239BA33C00FE8F2E /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
 		C22198D8239BA33C00FE8F2E /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C22198DD239C46D800FE8F2E /* Seeds.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198C9239B976100FE8F2E /* Seeds.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C22198DE239C46DC00FE8F2E /* BigramScorer.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198DC239C46CE00FE8F2E /* BigramScorer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C22198E0239C470B00FE8F2E /* BigramScorer.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198DF239C470B00FE8F2E /* BigramScorer.m */; };
+		C22198E3239C485000FE8F2E /* BigramScorer.metal in Sources */ = {isa = PBXBuildFile; fileRef = C22198E2239C485000FE8F2E /* BigramScorer.metal */; };
+		C22198F0239C4FBC00FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198EF239C4FBC00FE8F2E /* main.m */; };
+		C22198F4239C4FC700FE8F2E /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
+		C22198F5239C4FC700FE8F2E /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C22198FA239C526900FE8F2E /* BigramScores.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198F9239C526900FE8F2E /* BigramScores.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C22198FC239C52A000FE8F2E /* BigramScores.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198FB239C52A000FE8F2E /* BigramScores.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +43,13 @@
 			remoteInfo = Optimize;
 		};
 		C22198D9239BA33C00FE8F2E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C2219896239A28E500FE8F2E;
+			remoteInfo = Optimize;
+		};
+		C22198F6239C4FC700FE8F2E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
 			proxyType = 1;
@@ -83,6 +99,26 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C22198EB239C4FBC00FE8F2E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		C22198F8239C4FC700FE8F2E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C22198F5239C4FC700FE8F2E /* Optimize.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -105,6 +141,14 @@
 		C22198CA239B99BC00FE8F2E /* Seeds.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Seeds.m; sourceTree = "<group>"; };
 		C22198D0239BA10500FE8F2E /* SaveSeeds */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SaveSeeds; sourceTree = BUILT_PRODUCTS_DIR; };
 		C22198D2239BA10500FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C22198DC239C46CE00FE8F2E /* BigramScorer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BigramScorer.h; sourceTree = "<group>"; };
+		C22198DF239C470B00FE8F2E /* BigramScorer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BigramScorer.m; sourceTree = "<group>"; };
+		C22198E2239C485000FE8F2E /* BigramScorer.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = BigramScorer.metal; sourceTree = "<group>"; };
+		C22198E4239C48A400FE8F2E /* SharedShaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedShaders.h; sourceTree = "<group>"; };
+		C22198ED239C4FBC00FE8F2E /* ScoreBigrams */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ScoreBigrams; sourceTree = BUILT_PRODUCTS_DIR; };
+		C22198EF239C4FBC00FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C22198F9239C526900FE8F2E /* BigramScores.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BigramScores.h; sourceTree = "<group>"; };
+		C22198FB239C52A000FE8F2E /* BigramScores.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BigramScores.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +175,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C22198EA239C4FBC00FE8F2E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C22198F4239C4FC700FE8F2E /* Optimize.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -140,6 +192,7 @@
 				C2219899239A28E500FE8F2E /* Optimize */,
 				C22198BA239B783200FE8F2E /* PickAndPlace */,
 				C22198D1239BA10500FE8F2E /* SaveSeeds */,
+				C22198EE239C4FBC00FE8F2E /* ScoreBigrams */,
 				C2219898239A28E500FE8F2E /* Products */,
 				C22198C0239B788500FE8F2E /* Frameworks */,
 			);
@@ -151,6 +204,7 @@
 				C2219897239A28E500FE8F2E /* Optimize.framework */,
 				C22198B9239B783200FE8F2E /* PickAndPlace */,
 				C22198D0239BA10500FE8F2E /* SaveSeeds */,
+				C22198ED239C4FBC00FE8F2E /* ScoreBigrams */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -158,8 +212,8 @@
 		C2219899239A28E500FE8F2E /* Optimize */ = {
 			isa = PBXGroup;
 			children = (
+				C22198E5239C4A7100FE8F2E /* PickAndPlace */,
 				C221989B239A28E500FE8F2E /* Info.plist */,
-				C22198C6239B7CF500FE8F2E /* PickAndPlace */,
 				C22198A6239A2BAA00FE8F2E /* GeneticAlgorithm.h */,
 				C22198A7239A2BB600FE8F2E /* GeneticAlgorithm.m */,
 				C22198A9239A2C6F00FE8F2E /* ParticleSimulation.h */,
@@ -169,6 +223,10 @@
 				C22198B0239B744F00FE8F2E /* GlyphData.m */,
 				C22198C9239B976100FE8F2E /* Seeds.h */,
 				C22198CA239B99BC00FE8F2E /* Seeds.m */,
+				C22198F9239C526900FE8F2E /* BigramScores.h */,
+				C22198FB239C52A000FE8F2E /* BigramScores.m */,
+				C22198E4239C48A400FE8F2E /* SharedShaders.h */,
+				C22198E8239C4AF700FE8F2E /* BigramScorer */,
 			);
 			path = Optimize;
 			sourceTree = "<group>";
@@ -188,7 +246,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		C22198C6239B7CF500FE8F2E /* PickAndPlace */ = {
+		C22198D1239BA10500FE8F2E /* SaveSeeds */ = {
+			isa = PBXGroup;
+			children = (
+				C22198D2239BA10500FE8F2E /* main.m */,
+			);
+			path = SaveSeeds;
+			sourceTree = "<group>";
+		};
+		C22198E5239C4A7100FE8F2E /* PickAndPlace */ = {
 			isa = PBXGroup;
 			children = (
 				C22198A2239A294400FE8F2E /* PickAndPlace.h */,
@@ -196,15 +262,25 @@
 				C22198B3239B77E400FE8F2E /* PickAndPlace.metal */,
 				C22198C7239B89A900FE8F2E /* PickAndPlaceShared.h */,
 			);
-			path = PickAndPlace;
+			name = PickAndPlace;
 			sourceTree = "<group>";
 		};
-		C22198D1239BA10500FE8F2E /* SaveSeeds */ = {
+		C22198E8239C4AF700FE8F2E /* BigramScorer */ = {
 			isa = PBXGroup;
 			children = (
-				C22198D2239BA10500FE8F2E /* main.m */,
+				C22198DC239C46CE00FE8F2E /* BigramScorer.h */,
+				C22198DF239C470B00FE8F2E /* BigramScorer.m */,
+				C22198E2239C485000FE8F2E /* BigramScorer.metal */,
 			);
-			path = SaveSeeds;
+			name = BigramScorer;
+			sourceTree = "<group>";
+		};
+		C22198EE239C4FBC00FE8F2E /* ScoreBigrams */ = {
+			isa = PBXGroup;
+			children = (
+				C22198EF239C4FBC00FE8F2E /* main.m */,
+			);
+			path = ScoreBigrams;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -214,10 +290,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C22198DE239C46DC00FE8F2E /* BigramScorer.h in Headers */,
+				C22198FA239C526900FE8F2E /* BigramScores.h in Headers */,
 				C22198A3239A294400FE8F2E /* PickAndPlace.h in Headers */,
 				C22198AC239A2C8300FE8F2E /* ParticleSimulation.h in Headers */,
 				C22198C8239B8D6000FE8F2E /* GeneticAlgorithm.h in Headers */,
 				C22198B2239B745700FE8F2E /* GlyphData.h in Headers */,
+				C22198DD239C46D800FE8F2E /* Seeds.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +359,25 @@
 			productReference = C22198D0239BA10500FE8F2E /* SaveSeeds */;
 			productType = "com.apple.product-type.tool";
 		};
+		C22198EC239C4FBC00FE8F2E /* ScoreBigrams */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C22198F1239C4FBC00FE8F2E /* Build configuration list for PBXNativeTarget "ScoreBigrams" */;
+			buildPhases = (
+				C22198E9239C4FBC00FE8F2E /* Sources */,
+				C22198EA239C4FBC00FE8F2E /* Frameworks */,
+				C22198EB239C4FBC00FE8F2E /* CopyFiles */,
+				C22198F8239C4FC700FE8F2E /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C22198F7239C4FC700FE8F2E /* PBXTargetDependency */,
+			);
+			name = ScoreBigrams;
+			productName = ScoreBigrams;
+			productReference = C22198ED239C4FBC00FE8F2E /* ScoreBigrams */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -296,6 +394,9 @@
 						CreatedOnToolsVersion = 11.0;
 					};
 					C22198CF239BA10500FE8F2E = {
+						CreatedOnToolsVersion = 11.0;
+					};
+					C22198EC239C4FBC00FE8F2E = {
 						CreatedOnToolsVersion = 11.0;
 					};
 				};
@@ -316,6 +417,7 @@
 				C2219896239A28E500FE8F2E /* Optimize */,
 				C22198B8239B783200FE8F2E /* PickAndPlace */,
 				C22198CF239BA10500FE8F2E /* SaveSeeds */,
+				C22198EC239C4FBC00FE8F2E /* ScoreBigrams */,
 			);
 		};
 /* End PBXProject section */
@@ -335,12 +437,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C22198FC239C52A000FE8F2E /* BigramScores.m in Sources */,
 				C22198CB239B99BC00FE8F2E /* Seeds.m in Sources */,
 				C22198B1239B744F00FE8F2E /* GlyphData.m in Sources */,
 				C22198AB239A2C8100FE8F2E /* ParticleSimulation.m in Sources */,
+				C22198E3239C485000FE8F2E /* BigramScorer.metal in Sources */,
 				C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */,
 				C22198A8239A2BB600FE8F2E /* GeneticAlgorithm.m in Sources */,
 				C22198B4239B77E400FE8F2E /* PickAndPlace.metal in Sources */,
+				C22198E0239C470B00FE8F2E /* BigramScorer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,6 +465,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C22198E9239C4FBC00FE8F2E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C22198F0239C4FBC00FE8F2E /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -372,6 +485,11 @@
 			isa = PBXTargetDependency;
 			target = C2219896239A28E500FE8F2E /* Optimize */;
 			targetProxy = C22198D9239BA33C00FE8F2E /* PBXContainerItemProxy */;
+		};
+		C22198F7239C4FC700FE8F2E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C2219896239A28E500FE8F2E /* Optimize */;
+			targetProxy = C22198F6239C4FC700FE8F2E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -567,6 +685,22 @@
 			};
 			name = Release;
 		};
+		C22198F2239C4FBC00FE8F2E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C22198F3239C4FBC00FE8F2E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -602,6 +736,15 @@
 			buildConfigurations = (
 				C22198D5239BA10500FE8F2E /* Debug */,
 				C22198D6239BA10500FE8F2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C22198F1239C4FBC00FE8F2E /* Build configuration list for PBXNativeTarget "ScoreBigrams" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C22198F2239C4FBC00FE8F2E /* Debug */,
+				C22198F3239C4FBC00FE8F2E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
