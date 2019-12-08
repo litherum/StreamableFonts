@@ -22,7 +22,7 @@ inline float singleScore(uint both, uint neither, uint just0, uint just1) {
     return (static_cast<float>(both) / static_cast<float>(contains0)) * (static_cast<float>(neither) / static_cast<float>(doesntContain0));
 }
 
-kernel void computeBigramScores(device uint32_t* urlBitmaps [[buffer(0)]], device float* output [[buffer(1)]], uint2 tid [[thread_position_in_grid]]) {
+kernel void computeBigramScores(device uint8_t* urlBitmaps [[buffer(0)]], device float* output [[buffer(1)]], uint2 tid [[thread_position_in_grid]]) {
     uint glyph0 = tid.x;
     uint glyph1 = tid.y;
     uint both = 0;

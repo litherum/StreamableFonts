@@ -138,7 +138,7 @@
         glyphSizesData[i] = glyphData.glyphSizes[i].unsignedIntValue;
     glyphSizesBuffer = [device newBufferWithBytes:glyphSizesData length:glyphCount * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
 
-    urlBitmapsBuffer = [device newBufferWithBytes:glyphData.urlBitmaps length:urlCount * glyphBitfieldSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
+    urlBitmapsBuffer = [device newBufferWithBytes:glyphData.urlBitmaps length:urlCount * glyphBitfieldSize * sizeof(uint8_t) options:MTLResourceStorageModeManaged];
 
     possibleFitnessesPerURLBuffer = [device newBufferWithLength:glyphCount * urlCount * generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
 

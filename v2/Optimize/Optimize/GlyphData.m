@@ -29,11 +29,11 @@
         assert(error == nil);
         assert(self.glyphSizes != nil);
 
-        _urlBitmaps = malloc(self.urlCount * self.glyphBitfieldSize * sizeof(uint32_t));
+        _urlBitmaps = malloc(self.urlCount * self.glyphBitfieldSize * sizeof(uint8_t));
         for (size_t i = 0; i < self.urlCount * self.glyphBitfieldSize; ++i)
             self.urlBitmaps[i] = 0;
         for (NSUInteger i = 0; i < self.urlCount; ++i) {
-            uint32_t* bitfield = self.urlBitmaps + self.glyphBitfieldSize * i;
+            uint8_t* bitfield = self.urlBitmaps + self.glyphBitfieldSize * i;
             NSDictionary<NSString *, id> *jsonDictionary = self.urlData[i];
             NSArray<NSNumber *> *glyphs = jsonDictionary[@"Glyphs"];
             for (NSNumber *glyph in glyphs) {
@@ -66,7 +66,7 @@
 
 - (NSUInteger)urlCount
 {
-    return MIN(100, self.urlData.count);
+    return MIN(10000, self.urlData.count);
 }
 
 @end

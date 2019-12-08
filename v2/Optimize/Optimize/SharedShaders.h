@@ -11,7 +11,7 @@
 
 constant uint32_t glyphBitfieldSize [[function_constant(0)]];
 
-inline bool glyphIsNecessary(device uint32_t* urlBitmaps, uint urlIndex, uint32_t glyph) {
+inline bool glyphIsNecessary(device uint8_t* urlBitmaps, uint urlIndex, uint32_t glyph) {
     return urlBitmaps[glyphBitfieldSize * urlIndex + glyph / 8] & (1 << (glyph % 8));
 }
 

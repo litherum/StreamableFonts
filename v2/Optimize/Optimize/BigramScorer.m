@@ -77,7 +77,7 @@
 
 - (void)createBuffers
 {
-    urlBitmapsBuffer = [device newBufferWithBytes:glyphData.urlBitmaps length:urlCount * glyphBitfieldSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
+    urlBitmapsBuffer = [device newBufferWithBytes:glyphData.urlBitmaps length:urlCount * glyphBitfieldSize * sizeof(uint8_t) options:MTLResourceStorageModeManaged];
 
     bigramScoresBuffer = [device newBufferWithLength:glyphCount * glyphCount * sizeof(float) options:MTLResourceStorageModeManaged];
 }
@@ -91,7 +91,7 @@
         id<MTLBuffer> buffers[] = {urlBitmapsBuffer, bigramScoresBuffer};
         NSUInteger offsets[] = {0, 0};
         [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
-        [computeEncoder dispatchThreads:MTLSizeMake(glyphCount, glyphCount, 1) threadsPerThreadgroup:MTLSizeMake(4, 4, 1)];
+        [computeEncoder dispatchThreads:MTLSizeMake(glyphCount, glyphCount, 1) threadsPerThreadgroup:MTLSizeMake(32, 32, 1)];
     }
     [computeEncoder endEncoding];
     id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
