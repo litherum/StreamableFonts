@@ -167,7 +167,8 @@
         NSUInteger offsets[] = {0, 0, 0, 0};
         [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 4)];
         [computeEncoder setBytes:&glyphIndex length:sizeof(uint32_t) atIndex:4];
-        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, urlCount, glyphCount) threadsPerThreadgroup:MTLSizeMake(8, 8, 8)];
+        assert((uint64_t)generationSize * (uint64_t)urlCount * (uint64_t)glyphCount <= (uint64_t)0xFFFFFFFF);
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, urlCount, glyphCount) threadsPerThreadgroup:MTLSizeMake(4, 8, 32)];
     }
     {
         [computeEncoder setComputePipelineState:sumPossibleFitnessesState];
