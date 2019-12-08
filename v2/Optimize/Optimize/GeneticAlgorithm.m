@@ -72,7 +72,8 @@
 - (void)loadShaders
 {
     NSError *error = nil;
-    id<MTLLibrary> library = [device newLibraryWithFile:@"default.metallib" error:&error];
+    NSBundle *bundle = [NSBundle bundleForClass:[GeneticAlgorithm class]];
+    id<MTLLibrary> library = [device newDefaultLibraryWithBundle:bundle error:&error];
     assert(error == nil);
     MTLFunctionConstantValues *constantValues = [MTLFunctionConstantValues new];
     [constantValues setConstantValue:&glyphCount type:MTLDataTypeUInt withName:@"glyphCount"];
@@ -251,12 +252,12 @@
     float best = 0;
     __block float* cumulativeFitnesses = malloc(generationSize * sizeof(float));
     for (uint32_t i = 0; i < generationSize; ++i) {
+        NSLog(@"Score for index %" PRIu32 ": %f", i, fitnessData[i]);
         best = MAX(best, fitnessData[i]);
         float previousSum = sum;
         cumulativeFitnesses[i] = sum = sum + fitnessData[i];
         assert(sum >= previousSum);
     }
-    NSLog(@"Best: %f", best);
     struct MatingInstructions matingInstructions[generationSize];
     for (uint32_t i = 0; i < generationSize; ++i) {
         uint32_t (^pickWeightedIndex)(void) = ^uint32_t(void) {

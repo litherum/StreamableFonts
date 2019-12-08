@@ -81,7 +81,7 @@ kernel void possibleFitnesses(device uint32_t* generation [[buffer(0)]], device 
     }
 
     uint planeSize = glyphCount * urlCount;
-    output[planeSize * generationIndex + glyphCount * urlIndex + rotationIndex] = result;
+    output[planeSize * generationIndex + glyphCount * urlIndex + rotationIndex] = fontSize - result;
 }
 
 kernel void sumPossibleFitnesses(device uint32_t* possibleFitnesses [[buffer(0)]], device float* output [[buffer(1)]], uint2 tid [[thread_position_in_grid]]) {
@@ -93,19 +93,19 @@ kernel void sumPossibleFitnesses(device uint32_t* possibleFitnesses [[buffer(0)]
     for (uint32_t i = 0; i < urlCount; ++i)
         result += static_cast<float>(possibleFitnesses[planeSize * generationIndex + glyphCount * i + rotationIndex]) / static_cast<float>(fontSize);
 
-    output[glyphCount * generationIndex + rotationIndex] = result;
+    output[glyphCount * generationIndex + rotationIndex] = result / static_cast<float>(urlCount);
 }
 
 kernel void selectBestPossibility(device float* possibleFitnesses [[buffer(0)]], device struct Best* output [[buffer(1)]], uint tid [[thread_position_in_grid]]) {
     uint generationIndex = tid;
 
-    float bestValue = fontSize;
+    float bestValue = 0;
     uint32_t bestIndex = 0;
     for (uint32_t i = 0; i < glyphCount; ++i) {
         float fitness = possibleFitnesses[glyphCount * generationIndex + i];
-        if (fitness < bestValue) {
+        if (fitness > bestValue) {
             bestValue = fitness;
-            bestIndex = 0;
+            bestIndex = i;
         }
     }
 

@@ -272,11 +272,11 @@
 			children = (
 				C2219899239A28E500FE8F2E /* Optimize */,
 				C22198BA239B783200FE8F2E /* PickAndPlace */,
+				C221991C239C93AA00FE8F2E /* GeneticAlgorithm */,
 				C22198D1239BA10500FE8F2E /* SaveSeeds */,
 				C22198EE239C4FBC00FE8F2E /* ScoreBigrams */,
 				C2219902239C60AD00FE8F2E /* CodepointsToGlyphs */,
 				C221990D239C610300FE8F2E /* Prune */,
-				C221991C239C93AA00FE8F2E /* GeneticAlgorithm */,
 				C2219898239A28E500FE8F2E /* Products */,
 				C22198C0239B788500FE8F2E /* Frameworks */,
 			);

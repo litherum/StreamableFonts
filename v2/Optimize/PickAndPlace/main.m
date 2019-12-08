@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
         GlyphData *glyphData = [GlyphData new];
         Seeds *seeds = [Seeds new];
         PickAndPlace *pickAndPlace = [[PickAndPlace alloc] initWithGlyphData:glyphData andSeeds:seeds.seeds];
-        NSUInteger indexCount = 1;
+        NSUInteger indexCount = 2;
         NSMutableArray<NSNumber *> *indices = [NSMutableArray arrayWithCapacity:indexCount];
         for (NSUInteger i = 0; i < indexCount; ++i)
             [indices addObject:[NSNumber numberWithUnsignedInt:arc4random_uniform((uint32_t)glyphData.glyphCount)]];

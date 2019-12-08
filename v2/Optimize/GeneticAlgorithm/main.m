@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
         GlyphData *glyphData = [GlyphData new];
         Seeds *seeds = [Seeds new];
         GeneticAlgorithm *geneticAlgorithm = [[GeneticAlgorithm alloc] initWithGlyphData:glyphData andSeeds:seeds.seeds];
-        [geneticAlgorithm runIterations:1 withCallback:^void (void) {
+        [geneticAlgorithm runIterations:10 withCallback:^void (void) {
             NSLog(@"Complete.");
             CFRunLoopStop(CFRunLoopGetMain());
         }];

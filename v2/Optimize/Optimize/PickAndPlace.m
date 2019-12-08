@@ -171,7 +171,7 @@
     }
     {
         [computeEncoder setComputePipelineState:sumPossibleFitnessesState];
-        id<MTLBuffer> buffers[] = {generationABuffer, possibleFitnessesBuffer};
+        id<MTLBuffer> buffers[] = {possibleFitnessesPerURLBuffer, possibleFitnessesBuffer};
         NSUInteger offsets[] = {0, 0};
         [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
         [computeEncoder dispatchThreads:MTLSizeMake(generationSize, glyphCount, 1) threadsPerThreadgroup:MTLSizeMake(32, 32, 1)];
