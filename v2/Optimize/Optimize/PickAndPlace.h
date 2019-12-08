@@ -13,6 +13,6 @@
 #import "GlyphData.h"
 
 @interface PickAndPlace : NSObject
-- (instancetype)initWithGlyphData:(GlyphData *)glyphData;
-- (void)runWithGlyphIndex:(uint32_t)glyphIndex andCallback:(void (^)(void))callback;
+- (instancetype)initWithGlyphData:(GlyphData *)glyphData andSeeds:(NSArray<NSArray<NSNumber *> *> *)seeds;
+- (void)runWithGlyphIndices:(NSArray<NSNumber *> *)indices andCallback:(void (^)(void))callback;
 @end

@@ -34,6 +34,7 @@
 		C22198FC239C52A000FE8F2E /* BigramScores.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198FB239C52A000FE8F2E /* BigramScores.m */; };
 		C2219904239C60AD00FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C2219903239C60AD00FE8F2E /* main.m */; };
 		C221990F239C610300FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C221990E239C610300FE8F2E /* main.m */; };
+		C2219915239C846F00FE8F2E /* GeneticAlgorithm.metal in Sources */ = {isa = PBXBuildFile; fileRef = C2219914239C846F00FE8F2E /* GeneticAlgorithm.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -173,6 +174,8 @@
 		C2219903239C60AD00FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C221990C239C610300FE8F2E /* Prune */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Prune; sourceTree = BUILT_PRODUCTS_DIR; };
 		C221990E239C610300FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C2219914239C846F00FE8F2E /* GeneticAlgorithm.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = GeneticAlgorithm.metal; sourceTree = "<group>"; };
+		C2219916239C84C800FE8F2E /* GeneticAlgorithmShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneticAlgorithmShared.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,9 +258,8 @@
 			isa = PBXGroup;
 			children = (
 				C22198E5239C4A7100FE8F2E /* PickAndPlace */,
+				C2219913239C839000FE8F2E /* GeneticAlgorithm */,
 				C221989B239A28E500FE8F2E /* Info.plist */,
-				C22198A6239A2BAA00FE8F2E /* GeneticAlgorithm.h */,
-				C22198A7239A2BB600FE8F2E /* GeneticAlgorithm.m */,
 				C22198A9239A2C6F00FE8F2E /* ParticleSimulation.h */,
 				C22198AA239A2C8100FE8F2E /* ParticleSimulation.m */,
 				C22198AD239A2CFE00FE8F2E /* Readme.md */,
@@ -339,6 +341,17 @@
 				C221990E239C610300FE8F2E /* main.m */,
 			);
 			path = Prune;
+			sourceTree = "<group>";
+		};
+		C2219913239C839000FE8F2E /* GeneticAlgorithm */ = {
+			isa = PBXGroup;
+			children = (
+				C22198A6239A2BAA00FE8F2E /* GeneticAlgorithm.h */,
+				C22198A7239A2BB600FE8F2E /* GeneticAlgorithm.m */,
+				C2219914239C846F00FE8F2E /* GeneticAlgorithm.metal */,
+				C2219916239C84C800FE8F2E /* GeneticAlgorithmShared.h */,
+			);
+			name = GeneticAlgorithm;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -542,6 +555,7 @@
 				C22198B1239B744F00FE8F2E /* GlyphData.m in Sources */,
 				C22198AB239A2C8100FE8F2E /* ParticleSimulation.m in Sources */,
 				C22198E3239C485000FE8F2E /* BigramScorer.metal in Sources */,
+				C2219915239C846F00FE8F2E /* GeneticAlgorithm.metal in Sources */,
 				C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */,
 				C22198A8239A2BB600FE8F2E /* GeneticAlgorithm.m in Sources */,
 				C22198B4239B77E400FE8F2E /* PickAndPlace.metal in Sources */,

@@ -66,7 +66,7 @@
 
 - (NSUInteger)urlCount
 {
-    return MIN(10000, self.urlData.count);
+    return MIN(1000, self.urlData.count);
 }
 
 @end

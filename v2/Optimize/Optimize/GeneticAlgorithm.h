@@ -10,5 +10,8 @@
 
 @import Foundation;
 
+#import "GlyphData.h"
+
 @interface GeneticAlgorithm : NSObject
+- (instancetype)initWithGlyphData:(GlyphData *)glyphData andSeeds:(NSArray<NSArray<NSNumber *> *> *)seeds;
 @end

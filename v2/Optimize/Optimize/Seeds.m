@@ -154,6 +154,7 @@
                 }
             }
         }
+        NSLog(@"Best score: %" PRIu32 " %f", i, bestScore);
         currentGlyph = bestGlyph;
     }
     NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphData.glyphCount];

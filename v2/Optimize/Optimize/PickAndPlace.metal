@@ -18,7 +18,6 @@ constant uint32_t generationSize [[function_constant(3)]];
 
 constant constexpr uint32_t threshold = 8 * 170;
 constant constexpr uint32_t unconditionalDownloadSize = 282828;
-constant constexpr uint32_t fontSize = 1758483;
 
 class Rotater {
 public:

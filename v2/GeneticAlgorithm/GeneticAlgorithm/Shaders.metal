@@ -1,8 +1,8 @@
 #include <metal_stdlib>
 
-using namespace metal;
-
 #include "SharedTypes.h"
+
+using namespace metal;
 
 constant uint32_t glyphCount [[function_constant(0)]];
 constant uint32_t glyphBitfieldSize [[function_constant(1)]];
