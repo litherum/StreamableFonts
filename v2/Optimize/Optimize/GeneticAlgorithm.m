@@ -163,4 +163,162 @@
     mutationInstructionsBuffer = [device newBufferWithLength:generationSize * (maxMutationInstructions * 2 + 1) * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
 }
 
+- (void)computeFitnessesWithCallback:(void (^)(void))callback
+{
+    id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
+    id<MTLComputeCommandEncoder> computeEncoder = [commandBuffer computeCommandEncoder];
+    {
+        [computeEncoder setComputePipelineState:fitnessState];
+        id<MTLBuffer> buffers[] = {generationABuffer, glyphSizesBuffer, urlBitmapsBuffer, fitnessesPerURLBuffer};
+        NSUInteger offsets[] = {0, 0, 0, 0};
+        [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 4)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, urlCount, 1) threadsPerThreadgroup:MTLSizeMake(32, 32, 1)];
+    }
+    {
+        [computeEncoder setComputePipelineState:sumFitnessesState];
+        id<MTLBuffer> buffers[] = {fitnessesPerURLBuffer, fitnessBuffer};
+        NSUInteger offsets[] = {0, 0};
+        [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
+    }
+    [computeEncoder endEncoding];
+    id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+    {
+        [blitEncoder synchronizeResource:fitnessBuffer];
+    }
+    [blitEncoder endEncoding];
+    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+        assert(commandBuffer.error == nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback();
+        });
+    }];
+    [commandBuffer commit];
+}
+
+- (void)reverseGenerationWithCallback:(void (^)(void))callback
+{
+    id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
+    id<MTLComputeCommandEncoder> computeEncoder = [commandBuffer computeCommandEncoder];
+    {
+        [computeEncoder setComputePipelineState:reverseGenerationState];
+        id<MTLBuffer> buffers[] = {generationABuffer, reverseGenerationBuffer};
+        NSUInteger offsets[] = {0, 0};
+        [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, glyphCount, 1) threadsPerThreadgroup:MTLSizeMake(32, 32, 1)];
+    }
+    [computeEncoder endEncoding];
+    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+        assert(commandBuffer.error == nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback();
+        });
+    }];
+    [commandBuffer commit];
+}
+
+- (void)mateWithCallback:(void (^)(void))callback
+{
+    id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
+    id<MTLComputeCommandEncoder> computeEncoder = [commandBuffer computeCommandEncoder];
+    {
+        [computeEncoder setComputePipelineState:mateState];
+        id<MTLBuffer> buffers[] = {generationABuffer, reverseGenerationBuffer, generationBBuffer, matingInstructionsBuffer, mutationInstructionsBuffer};
+        NSUInteger offsets[] = {0, 0, 0, 0, 0};
+        [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 5)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
+    }
+    [computeEncoder endEncoding];
+    id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+    {
+        assert(generationABuffer.length == generationBBuffer.length);
+        [blitEncoder copyFromBuffer:generationBBuffer sourceOffset:0 toBuffer:generationABuffer destinationOffset:0 size:generationABuffer.length];
+    }
+    [blitEncoder endEncoding];
+    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+        assert(commandBuffer.error == nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback();
+        });
+    }];
+    [commandBuffer commit];
+}
+
+- (void)populateMatingInstructionsBuffer
+{
+    float* fitnessData = fitnessBuffer.contents;
+    float sum = 0;
+    float best = 0;
+    __block float* cumulativeFitnesses = malloc(generationSize * sizeof(float));
+    for (uint32_t i = 0; i < generationSize; ++i) {
+        best = MAX(best, fitnessData[i]);
+        float previousSum = sum;
+        cumulativeFitnesses[i] = sum = sum + fitnessData[i];
+        assert(sum >= previousSum);
+    }
+    NSLog(@"Best: %f", best);
+    struct MatingInstructions matingInstructions[generationSize];
+    for (uint32_t i = 0; i < generationSize; ++i) {
+        uint32_t (^pickWeightedIndex)(void) = ^uint32_t(void) {
+            float r = (float)arc4random() / (float)UINT32_MAX * sum;
+            // FIXME: Do a binary search here instead
+            uint32_t j;
+            for (j = 0; j < self->generationSize && cumulativeFitnesses[j] <= r; ++j);
+            assert(j < self->generationSize);
+            return j;
+        };
+        matingInstructions[i].parent0 = pickWeightedIndex();
+        matingInstructions[i].parent1 = pickWeightedIndex();
+        uint32_t index0 = arc4random_uniform(glyphCount);
+        uint32_t index1 = arc4random_uniform(glyphCount);
+        matingInstructions[i].lowerIndex = MIN(index0, index1);
+        matingInstructions[i].upperIndex = MAX(index0, index1);
+    }
+    free(cumulativeFitnesses);
+    memcpy(matingInstructionsBuffer.contents, matingInstructions, generationSize * sizeof(struct MatingInstructions));
+    [matingInstructionsBuffer didModifyRange:NSMakeRange(0, generationSize * sizeof(struct MatingInstructions))];
+}
+
+- (void)populateMutationInstructionsBuffer
+{
+    for (uint32_t i = 0; i < generationSize; ++i) {
+        uint32_t numMutationInstructions = arc4random_uniform(maxMutationInstructions + 1);
+        uint32_t mutationInstructions[2 * numMutationInstructions + 1];
+        mutationInstructions[0] = numMutationInstructions;
+        for (uint32_t j = 0; j < numMutationInstructions; ++j) {
+            mutationInstructions[j * 2 + 1] = arc4random_uniform(glyphCount);
+            mutationInstructions[j * 2 + 2] = arc4random_uniform(glyphCount);
+        }
+        size_t byteOffset = (maxMutationInstructions * 2 + 1) * i * sizeof(uint32_t);
+        memcpy((char*)mutationInstructionsBuffer.contents + byteOffset, mutationInstructions, sizeof(mutationInstructions));
+        [mutationInstructionsBuffer didModifyRange:NSMakeRange(byteOffset, sizeof(mutationInstructions))];
+    }
+}
+
+- (void)runWithCallback:(void (^)(void))callback
+{
+    [self computeFitnessesWithCallback:^() {
+        [self reverseGenerationWithCallback:^() {
+            [self mateWithCallback:^() {
+                callback();
+            }];
+        }];
+
+        // GPU runs the reversing code at the same time the CPU gets ready for mating
+        [self populateMatingInstructionsBuffer];
+        [self populateMutationInstructionsBuffer];
+    }];
+}
+
+- (void)runIterations:(unsigned)iteration withCallback:(void (^)(void))callback
+{
+    if (iteration == 0) {
+        callback();
+        return;
+    }
+    [self runWithCallback:^() {
+        [self runIterations:iteration - 1 withCallback:callback];
+    }];
+}
+
 @end

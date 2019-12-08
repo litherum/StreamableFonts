@@ -167,21 +167,21 @@
         NSUInteger offsets[] = {0, 0, 0, 0};
         [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 4)];
         [computeEncoder setBytes:&glyphIndex length:sizeof(uint32_t) atIndex:4];
-        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, urlCount, glyphCount) threadsPerThreadgroup:MTLSizeMake(2, 2, 2)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, urlCount, glyphCount) threadsPerThreadgroup:MTLSizeMake(8, 8, 8)];
     }
     {
         [computeEncoder setComputePipelineState:sumPossibleFitnessesState];
         id<MTLBuffer> buffers[] = {generationABuffer, possibleFitnessesBuffer};
         NSUInteger offsets[] = {0, 0};
         [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
-        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, glyphCount, 1) threadsPerThreadgroup:MTLSizeMake(4, 4, 1)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, glyphCount, 1) threadsPerThreadgroup:MTLSizeMake(32, 32, 1)];
     }
     {
         [computeEncoder setComputePipelineState:selectBestPossibilityState];
         id<MTLBuffer> buffers[] = {possibleFitnessesBuffer, bestBuffer};
         NSUInteger offsets[] = {0, 0};
         [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 2)];
-        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
     }
     {
         [computeEncoder setComputePipelineState:performRotationState];
@@ -189,7 +189,7 @@
         NSUInteger offsets[] = {0, 0, 0};
         [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 3)];
         [computeEncoder setBytes:&glyphIndex length:sizeof(uint32_t) atIndex:3];
-        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(16, 1, 1)];
+        [computeEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
     }
     [computeEncoder endEncoding];
     id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];

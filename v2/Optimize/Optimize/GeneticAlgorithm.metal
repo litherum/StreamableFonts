@@ -41,7 +41,7 @@ kernel void fitness(device uint32_t* generation [[buffer(0)]], device uint32_t* 
             unnecessarySize += size;
         state = glyphIsNecessary;
     }
-    output[urlCount * generationIndex + urlIndex] = result;
+    output[urlCount * generationIndex + urlIndex] = fontSize - result;
 }
 
 kernel void sumFitnesses(device uint32_t* fitnesses [[buffer(0)]], device float* output [[buffer(1)]], uint tid [[thread_position_in_grid]]) {
@@ -51,7 +51,7 @@ kernel void sumFitnesses(device uint32_t* fitnesses [[buffer(0)]], device float*
     for (uint32_t i = 0; i < urlCount; ++i)
         result += static_cast<float>(fitnesses[urlCount * generationIndex + i]) / static_cast<float>(fontSize);
 
-    output[generationIndex] = result;
+    output[generationIndex] = result / static_cast<float>(urlCount);
 }
 
 kernel void reverseGeneration(device uint32_t* generation [[buffer(0)]], device uint32_t* reverseGeneration [[buffer(1)]], uint2 tid [[thread_position_in_grid]]) {

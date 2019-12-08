@@ -14,4 +14,5 @@
 
 @interface GeneticAlgorithm : NSObject
 - (instancetype)initWithGlyphData:(GlyphData *)glyphData andSeeds:(NSArray<NSArray<NSNumber *> *> *)seeds;
+- (void)runIterations:(unsigned)iteration withCallback:(void (^)(void))callback;
 @end
