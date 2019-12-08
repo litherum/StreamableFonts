@@ -38,6 +38,10 @@
 		C221991E239C93AA00FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C221991D239C93AA00FE8F2E /* main.m */; };
 		C2219922239C93C900FE8F2E /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
 		C2219923239C93C900FE8F2E /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C2219929239CAFE200FE8F2E /* ParticleSimulation.metal in Sources */ = {isa = PBXBuildFile; fileRef = C2219928239CAFE200FE8F2E /* ParticleSimulation.metal */; };
+		C2219932239CBA9500FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C2219931239CBA9500FE8F2E /* main.m */; };
+		C2219936239CBAB300FE8F2E /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
+		C2219937239CBAB300FE8F2E /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +67,13 @@
 			remoteInfo = Optimize;
 		};
 		C2219924239C93C900FE8F2E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C2219896239A28E500FE8F2E;
+			remoteInfo = Optimize;
+		};
+		C2219938239CBAB300FE8F2E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
 			proxyType = 1;
@@ -170,6 +181,26 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C221992D239CBA9500FE8F2E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		C221993A239CBAB400FE8F2E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C2219937239CBAB300FE8F2E /* Optimize.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -208,6 +239,10 @@
 		C2219916239C84C800FE8F2E /* GeneticAlgorithmShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneticAlgorithmShared.h; sourceTree = "<group>"; };
 		C221991B239C93AA00FE8F2E /* GeneticAlgorithm */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GeneticAlgorithm; sourceTree = BUILT_PRODUCTS_DIR; };
 		C221991D239C93AA00FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C2219928239CAFE200FE8F2E /* ParticleSimulation.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ParticleSimulation.metal; sourceTree = "<group>"; };
+		C221992A239CB01200FE8F2E /* ParticleSimulationShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticleSimulationShared.h; sourceTree = "<group>"; };
+		C221992F239CBA9500FE8F2E /* ParticleSystem */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ParticleSystem; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2219931239CBA9500FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -264,6 +299,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C221992C239CBA9500FE8F2E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2219936239CBAB300FE8F2E /* Optimize.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -273,6 +316,7 @@
 				C2219899239A28E500FE8F2E /* Optimize */,
 				C22198BA239B783200FE8F2E /* PickAndPlace */,
 				C221991C239C93AA00FE8F2E /* GeneticAlgorithm */,
+				C2219930239CBA9500FE8F2E /* ParticleSystem */,
 				C22198D1239BA10500FE8F2E /* SaveSeeds */,
 				C22198EE239C4FBC00FE8F2E /* ScoreBigrams */,
 				C2219902239C60AD00FE8F2E /* CodepointsToGlyphs */,
@@ -292,6 +336,7 @@
 				C2219901239C60AD00FE8F2E /* CodepointsToGlyphs */,
 				C221990C239C610300FE8F2E /* Prune */,
 				C221991B239C93AA00FE8F2E /* GeneticAlgorithm */,
+				C221992F239CBA9500FE8F2E /* ParticleSystem */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -301,9 +346,8 @@
 			children = (
 				C22198E5239C4A7100FE8F2E /* PickAndPlace */,
 				C2219913239C839000FE8F2E /* GeneticAlgorithm */,
+				C2219927239CAFAF00FE8F2E /* ParticleSimulation */,
 				C221989B239A28E500FE8F2E /* Info.plist */,
-				C22198A9239A2C6F00FE8F2E /* ParticleSimulation.h */,
-				C22198AA239A2C8100FE8F2E /* ParticleSimulation.m */,
 				C22198AD239A2CFE00FE8F2E /* Readme.md */,
 				C22198AF239B743700FE8F2E /* GlyphData.h */,
 				C22198B0239B744F00FE8F2E /* GlyphData.m */,
@@ -402,6 +446,25 @@
 				C221991D239C93AA00FE8F2E /* main.m */,
 			);
 			path = GeneticAlgorithm;
+			sourceTree = "<group>";
+		};
+		C2219927239CAFAF00FE8F2E /* ParticleSimulation */ = {
+			isa = PBXGroup;
+			children = (
+				C22198A9239A2C6F00FE8F2E /* ParticleSimulation.h */,
+				C22198AA239A2C8100FE8F2E /* ParticleSimulation.m */,
+				C2219928239CAFE200FE8F2E /* ParticleSimulation.metal */,
+				C221992A239CB01200FE8F2E /* ParticleSimulationShared.h */,
+			);
+			name = ParticleSimulation;
+			sourceTree = "<group>";
+		};
+		C2219930239CBA9500FE8F2E /* ParticleSystem */ = {
+			isa = PBXGroup;
+			children = (
+				C2219931239CBA9500FE8F2E /* main.m */,
+			);
+			path = ParticleSystem;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -552,6 +615,25 @@
 			productReference = C221991B239C93AA00FE8F2E /* GeneticAlgorithm */;
 			productType = "com.apple.product-type.tool";
 		};
+		C221992E239CBA9500FE8F2E /* ParticleSystem */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C2219933239CBA9500FE8F2E /* Build configuration list for PBXNativeTarget "ParticleSystem" */;
+			buildPhases = (
+				C221992B239CBA9500FE8F2E /* Sources */,
+				C221992C239CBA9500FE8F2E /* Frameworks */,
+				C221992D239CBA9500FE8F2E /* CopyFiles */,
+				C221993A239CBAB400FE8F2E /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C2219939239CBAB300FE8F2E /* PBXTargetDependency */,
+			);
+			name = ParticleSystem;
+			productName = ParticleSystem;
+			productReference = C221992F239CBA9500FE8F2E /* ParticleSystem */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -582,6 +664,9 @@
 					C221991A239C93AA00FE8F2E = {
 						CreatedOnToolsVersion = 11.0;
 					};
+					C221992E239CBA9500FE8F2E = {
+						CreatedOnToolsVersion = 11.0;
+					};
 				};
 			};
 			buildConfigurationList = C2219891239A28E500FE8F2E /* Build configuration list for PBXProject "Optimize" */;
@@ -604,6 +689,7 @@
 				C2219900239C60AD00FE8F2E /* CodepointsToGlyphs */,
 				C221990B239C610300FE8F2E /* Prune */,
 				C221991A239C93AA00FE8F2E /* GeneticAlgorithm */,
+				C221992E239CBA9500FE8F2E /* ParticleSystem */,
 			);
 		};
 /* End PBXProject section */
@@ -627,6 +713,7 @@
 				C22198CB239B99BC00FE8F2E /* Seeds.m in Sources */,
 				C22198B1239B744F00FE8F2E /* GlyphData.m in Sources */,
 				C22198AB239A2C8100FE8F2E /* ParticleSimulation.m in Sources */,
+				C2219929239CAFE200FE8F2E /* ParticleSimulation.metal in Sources */,
 				C22198E3239C485000FE8F2E /* BigramScorer.metal in Sources */,
 				C2219915239C846F00FE8F2E /* GeneticAlgorithm.metal in Sources */,
 				C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */,
@@ -684,6 +771,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C221992B239CBA9500FE8F2E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2219932239CBA9500FE8F2E /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -706,6 +801,11 @@
 			isa = PBXTargetDependency;
 			target = C2219896239A28E500FE8F2E /* Optimize */;
 			targetProxy = C2219924239C93C900FE8F2E /* PBXContainerItemProxy */;
+		};
+		C2219939239CBAB300FE8F2E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C2219896239A28E500FE8F2E /* Optimize */;
+			targetProxy = C2219938239CBAB300FE8F2E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -965,6 +1065,22 @@
 			};
 			name = Release;
 		};
+		C2219934239CBA9500FE8F2E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C2219935239CBA9500FE8F2E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1036,6 +1152,15 @@
 			buildConfigurations = (
 				C2219920239C93AA00FE8F2E /* Debug */,
 				C2219921239C93AA00FE8F2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C2219933239CBA9500FE8F2E /* Build configuration list for PBXNativeTarget "ParticleSystem" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C2219934239CBA9500FE8F2E /* Debug */,
+				C2219935239CBA9500FE8F2E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

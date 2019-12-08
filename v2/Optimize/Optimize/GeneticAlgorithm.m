@@ -311,14 +311,14 @@
     }];
 }
 
-- (void)runIterations:(unsigned)iteration withCallback:(void (^)(void))callback
+- (void)runIterations:(unsigned)iterations withCallback:(void (^)(void))callback
 {
-    if (iteration == 0) {
+    if (iterations == 0) {
         callback();
         return;
     }
     [self runWithCallback:^() {
-        [self runIterations:iteration - 1 withCallback:callback];
+        [self runIterations:iterations - 1 withCallback:callback];
     }];
 }
 
