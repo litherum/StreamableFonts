@@ -42,6 +42,8 @@
 		C2219932239CBA9500FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C2219931239CBA9500FE8F2E /* main.m */; };
 		C2219936239CBAB300FE8F2E /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
 		C2219937239CBAB300FE8F2E /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C2403408239E0F0700332E45 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = C2403407239E0F0700332E45 /* main.mm */; };
+		C240340C239E184400332E45 /* FastText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C221999F239DBF0F00FE8F2E /* FastText.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -243,6 +245,9 @@
 		C221992A239CB01200FE8F2E /* ParticleSimulationShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticleSimulationShared.h; sourceTree = "<group>"; };
 		C221992F239CBA9500FE8F2E /* ParticleSystem */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ParticleSystem; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2219931239CBA9500FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C221999F239DBF0F00FE8F2E /* FastText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FastText.framework; path = ../../../../Build/Products/Debug/FastText.framework; sourceTree = "<group>"; };
+		C2403405239E0F0700332E45 /* SemanticDistances */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SemanticDistances; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2403407239E0F0700332E45 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -307,6 +312,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C2403402239E0F0700332E45 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C240340C239E184400332E45 /* FastText.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -321,6 +334,7 @@
 				C22198EE239C4FBC00FE8F2E /* ScoreBigrams */,
 				C2219902239C60AD00FE8F2E /* CodepointsToGlyphs */,
 				C221990D239C610300FE8F2E /* Prune */,
+				C2403406239E0F0700332E45 /* SemanticDistances */,
 				C2219898239A28E500FE8F2E /* Products */,
 				C22198C0239B788500FE8F2E /* Frameworks */,
 			);
@@ -337,6 +351,7 @@
 				C221990C239C610300FE8F2E /* Prune */,
 				C221991B239C93AA00FE8F2E /* GeneticAlgorithm */,
 				C221992F239CBA9500FE8F2E /* ParticleSystem */,
+				C2403405239E0F0700332E45 /* SemanticDistances */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -372,6 +387,7 @@
 		C22198C0239B788500FE8F2E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C221999F239DBF0F00FE8F2E /* FastText.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -465,6 +481,14 @@
 				C2219931239CBA9500FE8F2E /* main.m */,
 			);
 			path = ParticleSystem;
+			sourceTree = "<group>";
+		};
+		C2403406239E0F0700332E45 /* SemanticDistances */ = {
+			isa = PBXGroup;
+			children = (
+				C2403407239E0F0700332E45 /* main.mm */,
+			);
+			path = SemanticDistances;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -634,6 +658,22 @@
 			productReference = C221992F239CBA9500FE8F2E /* ParticleSystem */;
 			productType = "com.apple.product-type.tool";
 		};
+		C2403404239E0F0700332E45 /* SemanticDistances */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C240340B239E0F0700332E45 /* Build configuration list for PBXNativeTarget "SemanticDistances" */;
+			buildPhases = (
+				C2403401239E0F0700332E45 /* Sources */,
+				C2403402239E0F0700332E45 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SemanticDistances;
+			productName = SemanticDistances;
+			productReference = C2403405239E0F0700332E45 /* SemanticDistances */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -667,6 +707,9 @@
 					C221992E239CBA9500FE8F2E = {
 						CreatedOnToolsVersion = 11.0;
 					};
+					C2403404239E0F0700332E45 = {
+						CreatedOnToolsVersion = 11.0;
+					};
 				};
 			};
 			buildConfigurationList = C2219891239A28E500FE8F2E /* Build configuration list for PBXProject "Optimize" */;
@@ -690,6 +733,7 @@
 				C221990B239C610300FE8F2E /* Prune */,
 				C221991A239C93AA00FE8F2E /* GeneticAlgorithm */,
 				C221992E239CBA9500FE8F2E /* ParticleSystem */,
+				C2403404239E0F0700332E45 /* SemanticDistances */,
 			);
 		};
 /* End PBXProject section */
@@ -776,6 +820,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				C2219932239CBA9500FE8F2E /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C2403401239E0F0700332E45 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2403408239E0F0700332E45 /* main.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1081,6 +1133,22 @@
 			};
 			name = Release;
 		};
+		C2403409239E0F0700332E45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C240340A239E0F0700332E45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1161,6 +1229,15 @@
 			buildConfigurations = (
 				C2219934239CBA9500FE8F2E /* Debug */,
 				C2219935239CBA9500FE8F2E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C240340B239E0F0700332E45 /* Build configuration list for PBXNativeTarget "SemanticDistances" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C2403409239E0F0700332E45 /* Debug */,
+				C240340A239E0F0700332E45 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
