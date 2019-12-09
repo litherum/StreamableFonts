@@ -63,6 +63,8 @@ int main(int argc, const char * argv[]) {
                 [row addObject:[NSNumber numberWithFloat:0]];
             [distances addObject:row];
         }
+        fasttext::Vector vector1(fastText.getDimension());
+        fasttext::Vector vector2(fastText.getDimension());
         for (NSUInteger i = 0; i < mapping.count; ++i) {
             id object1 = mapping[i];
             if ([object1 isEqual:[NSNull null]]) {
@@ -72,7 +74,6 @@ int main(int argc, const char * argv[]) {
                 }
             } else {
                 NSString *string1 = object1;
-                fasttext::Vector vector1(fastText.getDimension());
                 std::string word1 = convertSingleCodePointString(string1);
                 fastText.getWordVector(vector1, word1);
                 for (NSUInteger j = i + 1; j < mapping.count; ++j) {
@@ -82,7 +83,6 @@ int main(int argc, const char * argv[]) {
                         distances[j][i] = [NSNumber numberWithFloat:-1];
                     } else {
                         NSString *string2 = object2;
-                        fasttext::Vector vector2(fastText.getDimension());
                         std::string word2 = convertSingleCodePointString(string2);
                         fastText.getWordVector(vector2, word2);
                         float distance = ::distance(vector1, vector2);
