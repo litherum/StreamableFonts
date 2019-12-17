@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-#import "GlyphData.h"
+#import "Optimize/GlyphData.h"
 #import "BigramScorer.h"
 
 int main(int argc, const char * argv[]) {
@@ -19,7 +19,7 @@ int main(int argc, const char * argv[]) {
             NSError *error = nil;
             NSData *data = [NSJSONSerialization dataWithJSONObject:bigramScores options:0 error:&error];
             assert(error == nil);
-            [data writeToFile:@"/Users/litherum/Documents/bigramScores.json" atomically:NO];
+            [data writeToFile:@"/Users/litherum/Documents/BigramScores.json" atomically:NO];
             CFRunLoopStop(CFRunLoopGetMain());
         }];
         CFRunLoopRun();

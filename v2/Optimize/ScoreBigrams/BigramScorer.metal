@@ -7,7 +7,7 @@
 //
 
 #include <metal_stdlib>
-#include "SharedShaders.h"
+#include "Optimize/SharedShaders.h"
 
 using namespace metal;
 

@@ -8,13 +8,13 @@
 
 @import Foundation;
 
-#import "BigramScores.h"
+#import "TupleScores.h"
 #import "ParticleSimulation.h"
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        BigramScores *bigramScores = [BigramScores new];
-        ParticleSimulation *particleSimulation = [[ParticleSimulation alloc] initWithBigramScores:bigramScores];
+        TupleScores *tupleScores = [[TupleScores alloc] initWithBigramScores];
+        ParticleSimulation *particleSimulation = [[ParticleSimulation alloc] initWithTupleScores:tupleScores];
         NSDate *start = [NSDate date];
         [particleSimulation runIterations:1 withCallback:^void (void) {
             NSDate *end = [NSDate date];

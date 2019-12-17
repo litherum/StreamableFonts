@@ -13,7 +13,7 @@
 #import "ParticleSimulationShared.h"
 
 @implementation ParticleSimulation {
-    BigramScores *bigramScores;
+    TupleScores *tupleScores;
 
     uint32_t glyphCount;
     uint32_t generationSize;
@@ -33,17 +33,17 @@
     id<MTLComputePipelineState> updateParticlesState;
     id<MTLBuffer> particlesABuffer;
     id<MTLBuffer> particlesBBuffer;
-    id<MTLBuffer> bigramScoresBuffer;
+    id<MTLBuffer> tupleScoresBuffer;
 }
 
-- (instancetype)initWithBigramScores:(BigramScores *)bigramScores;
+- (instancetype)initWithTupleScores:(TupleScores *)tupleScores;
 {
     self = [super init];
 
     if (self) {
-        self->bigramScores = bigramScores;
+        self->tupleScores = tupleScores;
 
-        glyphCount = (uint32_t)bigramScores.bigramScores.count;
+        glyphCount = (uint32_t)tupleScores.tupleScores.count;
         generationSize = 100;
         attractionScalar = 50;
         attractionExponent = 2;
@@ -112,16 +112,16 @@
     particlesBBuffer = [device newBufferWithLength:generationSize * glyphCount * sizeof(struct Particle) options:MTLResourceStorageModeManaged];
     free(particles);
 
-    float* bigramScoresData = malloc(glyphCount * glyphCount * sizeof(float));
-    assert(bigramScores.bigramScores.count == glyphCount);
+    float* tupleScoresData = malloc(glyphCount * glyphCount * sizeof(float));
+    assert(tupleScores.tupleScores.count == glyphCount);
     for (uint32_t i = 0; i < glyphCount; ++i) {
-        assert(bigramScores.bigramScores[i].count == glyphCount);
+        assert(tupleScores.tupleScores[i].count == glyphCount);
         for (uint32_t j = 0; j < glyphCount; ++j) {
-            bigramScoresData[glyphCount * i + j] = bigramScores.bigramScores[i][j].unsignedIntValue;
+            tupleScoresData[glyphCount * i + j] = tupleScores.tupleScores[i][j].unsignedIntValue;
         }
     }
-    bigramScoresBuffer = [device newBufferWithBytes:bigramScoresData length:glyphCount * glyphCount * sizeof(float) options:MTLResourceStorageModeManaged];
-    free(bigramScoresData);
+    tupleScoresBuffer = [device newBufferWithBytes:tupleScoresData length:glyphCount * glyphCount * sizeof(float) options:MTLResourceStorageModeManaged];
+    free(tupleScoresData);
 }
 
 - (void)runWithAlignmentForceScalar:(float)alignmentForceScalar andCallback:(void (^)(void))callback
@@ -130,7 +130,7 @@
     id<MTLComputeCommandEncoder> computeEncoder = [commandBuffer computeCommandEncoder];
     {
         [computeEncoder setComputePipelineState:updateParticlesState];
-        id<MTLBuffer> buffers[] = {particlesABuffer, bigramScoresBuffer, particlesBBuffer};
+        id<MTLBuffer> buffers[] = {particlesABuffer, tupleScoresBuffer, particlesBBuffer};
         NSUInteger offsets[] = {0, 0, 0};
         [computeEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(0, 3)];
         [computeEncoder setBytes:&alignmentForceScalar length:sizeof(alignmentForceScalar) atIndex:3];

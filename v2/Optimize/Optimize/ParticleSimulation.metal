@@ -28,7 +28,7 @@ inline float repulsionFunction(float distance) {
     return repulsionScalar * pow(distance, repulsionExponent);
 }
 
-kernel void updateParticles(device Particle* particles [[buffer(0)]], device float* bigramScores [[buffer(1)]], device Particle* output [[buffer(2)]], constant float& alignmentForceScalar [[buffer(3)]], uint2 tid [[thread_position_in_grid]]) {
+kernel void updateParticles(device Particle* particles [[buffer(0)]], device float* tupleScores [[buffer(1)]], device Particle* output [[buffer(2)]], constant float& alignmentForceScalar [[buffer(3)]], uint2 tid [[thread_position_in_grid]]) {
     uint particleIndex = tid.x;
     uint generationIndex = tid.y;
 
@@ -42,7 +42,7 @@ kernel void updateParticles(device Particle* particles [[buffer(0)]], device flo
         float3 otherPosition = particles[i].position;
         float distance = metal::distance(otherPosition, position);
         float3 direction = normalize(otherPosition - position);
-        float score = bigramScores[glyphCount * particleIndex + i];
+        float score = tupleScores[glyphCount * particleIndex + i];
         force += direction * attractionFunction(score, distance);
         force -= direction * repulsionFunction(distance);
     }

@@ -9,13 +9,13 @@
 @import Foundation;
 
 #import "Seeds.h"
-#import "BigramScores.h"
+#import "TupleScores.h"
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         GlyphData *glyphData = [GlyphData new];
-        BigramScores *bigramScores = [BigramScores new];
-        Seeds *seeds = [[Seeds alloc] initWithGlyphData:glyphData andBigramScores:bigramScores.bigramScores];
+        TupleScores *tupleScores = [[TupleScores alloc] initWithBigramScores];
+        Seeds *seeds = [[Seeds alloc] initWithGlyphData:glyphData andTupleScores:tupleScores.tupleScores];
         NSError *error = nil;
         NSData *data = [NSJSONSerialization dataWithJSONObject:seeds.seeds options:0 error:&error];
         assert(error == nil);

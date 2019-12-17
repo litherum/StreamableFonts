@@ -10,9 +10,9 @@
 
 @import Foundation;
 
-#import "BigramScores.h"
+#import "TupleScores.h"
 
 @interface ParticleSimulation : NSObject
-- (instancetype)initWithBigramScores:(BigramScores *)bigramScores;
+- (instancetype)initWithTupleScores:(TupleScores *)tupleScores;
 - (void)runIterations:(unsigned)iterations withCallback:(void (^)(void))callback;
 @end

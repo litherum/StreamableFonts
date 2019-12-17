@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C6E83CA23A985C200EAF706 /* BigramScorer.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198DF239C470B00FE8F2E /* BigramScorer.m */; };
+		1C6E83CB23A985C200EAF706 /* BigramScorer.metal in Sources */ = {isa = PBXBuildFile; fileRef = C22198E2239C485000FE8F2E /* BigramScorer.metal */; };
+		1C6E83CC23A9861E00EAF706 /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
+		1C6E83CD23A9861E00EAF706 /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1C6E83D123A9866000EAF706 /* SharedShaders.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198E4239C48A400FE8F2E /* SharedShaders.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C22198A3239A294400FE8F2E /* PickAndPlace.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198A2239A294400FE8F2E /* PickAndPlace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A4239A296B00FE8F2E /* PickAndPlace.m */; };
 		C22198A8239A2BB600FE8F2E /* GeneticAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A7239A2BB600FE8F2E /* GeneticAlgorithm.m */; };
@@ -24,14 +29,9 @@
 		C22198D7239BA33C00FE8F2E /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
 		C22198D8239BA33C00FE8F2E /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C22198DD239C46D800FE8F2E /* Seeds.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198C9239B976100FE8F2E /* Seeds.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C22198DE239C46DC00FE8F2E /* BigramScorer.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198DC239C46CE00FE8F2E /* BigramScorer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C22198E0239C470B00FE8F2E /* BigramScorer.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198DF239C470B00FE8F2E /* BigramScorer.m */; };
-		C22198E3239C485000FE8F2E /* BigramScorer.metal in Sources */ = {isa = PBXBuildFile; fileRef = C22198E2239C485000FE8F2E /* BigramScorer.metal */; };
 		C22198F0239C4FBC00FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198EF239C4FBC00FE8F2E /* main.m */; };
-		C22198F4239C4FC700FE8F2E /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
-		C22198F5239C4FC700FE8F2E /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C22198FA239C526900FE8F2E /* BigramScores.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198F9239C526900FE8F2E /* BigramScores.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C22198FC239C52A000FE8F2E /* BigramScores.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198FB239C52A000FE8F2E /* BigramScores.m */; };
+		C22198FA239C526900FE8F2E /* TupleScores.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198F9239C526900FE8F2E /* TupleScores.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C22198FC239C52A000FE8F2E /* TupleScores.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198FB239C52A000FE8F2E /* TupleScores.m */; };
 		C2219904239C60AD00FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C2219903239C60AD00FE8F2E /* main.m */; };
 		C221990F239C610300FE8F2E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C221990E239C610300FE8F2E /* main.m */; };
 		C2219915239C846F00FE8F2E /* GeneticAlgorithm.metal in Sources */ = {isa = PBXBuildFile; fileRef = C2219914239C846F00FE8F2E /* GeneticAlgorithm.metal */; };
@@ -47,6 +47,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1C6E83CE23A9861E00EAF706 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C2219896239A28E500FE8F2E;
+			remoteInfo = Optimize;
+		};
 		C22198C3239B788500FE8F2E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
@@ -55,13 +62,6 @@
 			remoteInfo = Optimize;
 		};
 		C22198D9239BA33C00FE8F2E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C2219896239A28E500FE8F2E;
-			remoteInfo = Optimize;
-		};
-		C22198F6239C4FC700FE8F2E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
 			proxyType = 1;
@@ -85,6 +85,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		1C6E83D023A9861E00EAF706 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1C6E83CD23A9861E00EAF706 /* Optimize.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C22198B7239B783200FE8F2E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -133,17 +144,6 @@
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
-		};
-		C22198F8239C4FC700FE8F2E /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				C22198F5239C4FC700FE8F2E /* Optimize.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C22198FF239C60AD00FE8F2E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -231,8 +231,8 @@
 		C22198E4239C48A400FE8F2E /* SharedShaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedShaders.h; sourceTree = "<group>"; };
 		C22198ED239C4FBC00FE8F2E /* ScoreBigrams */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ScoreBigrams; sourceTree = BUILT_PRODUCTS_DIR; };
 		C22198EF239C4FBC00FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C22198F9239C526900FE8F2E /* BigramScores.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BigramScores.h; sourceTree = "<group>"; };
-		C22198FB239C52A000FE8F2E /* BigramScores.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BigramScores.m; sourceTree = "<group>"; };
+		C22198F9239C526900FE8F2E /* TupleScores.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TupleScores.h; sourceTree = "<group>"; };
+		C22198FB239C52A000FE8F2E /* TupleScores.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TupleScores.m; sourceTree = "<group>"; };
 		C2219901239C60AD00FE8F2E /* CodepointsToGlyphs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CodepointsToGlyphs; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2219903239C60AD00FE8F2E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C221990C239C610300FE8F2E /* Prune */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Prune; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -278,7 +278,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C22198F4239C4FC700FE8F2E /* Optimize.framework in Frameworks */,
+				1C6E83CC23A9861E00EAF706 /* Optimize.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,10 +368,9 @@
 				C22198B0239B744F00FE8F2E /* GlyphData.m */,
 				C22198C9239B976100FE8F2E /* Seeds.h */,
 				C22198CA239B99BC00FE8F2E /* Seeds.m */,
-				C22198F9239C526900FE8F2E /* BigramScores.h */,
-				C22198FB239C52A000FE8F2E /* BigramScores.m */,
+				C22198F9239C526900FE8F2E /* TupleScores.h */,
+				C22198FB239C52A000FE8F2E /* TupleScores.m */,
 				C22198E4239C48A400FE8F2E /* SharedShaders.h */,
-				C22198E8239C4AF700FE8F2E /* BigramScorer */,
 			);
 			path = Optimize;
 			sourceTree = "<group>";
@@ -411,20 +410,13 @@
 			name = PickAndPlace;
 			sourceTree = "<group>";
 		};
-		C22198E8239C4AF700FE8F2E /* BigramScorer */ = {
-			isa = PBXGroup;
-			children = (
-				C22198DC239C46CE00FE8F2E /* BigramScorer.h */,
-				C22198DF239C470B00FE8F2E /* BigramScorer.m */,
-				C22198E2239C485000FE8F2E /* BigramScorer.metal */,
-			);
-			name = BigramScorer;
-			sourceTree = "<group>";
-		};
 		C22198EE239C4FBC00FE8F2E /* ScoreBigrams */ = {
 			isa = PBXGroup;
 			children = (
 				C22198EF239C4FBC00FE8F2E /* main.m */,
+				C22198DC239C46CE00FE8F2E /* BigramScorer.h */,
+				C22198DF239C470B00FE8F2E /* BigramScorer.m */,
+				C22198E2239C485000FE8F2E /* BigramScorer.metal */,
 			);
 			path = ScoreBigrams;
 			sourceTree = "<group>";
@@ -498,8 +490,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C22198DE239C46DC00FE8F2E /* BigramScorer.h in Headers */,
-				C22198FA239C526900FE8F2E /* BigramScores.h in Headers */,
+				1C6E83D123A9866000EAF706 /* SharedShaders.h in Headers */,
+				C22198FA239C526900FE8F2E /* TupleScores.h in Headers */,
 				C22198A3239A294400FE8F2E /* PickAndPlace.h in Headers */,
 				C22198AC239A2C8300FE8F2E /* ParticleSimulation.h in Headers */,
 				C22198C8239B8D6000FE8F2E /* GeneticAlgorithm.h in Headers */,
@@ -574,12 +566,12 @@
 				C22198E9239C4FBC00FE8F2E /* Sources */,
 				C22198EA239C4FBC00FE8F2E /* Frameworks */,
 				C22198EB239C4FBC00FE8F2E /* CopyFiles */,
-				C22198F8239C4FC700FE8F2E /* Embed Frameworks */,
+				1C6E83D023A9861E00EAF706 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C22198F7239C4FC700FE8F2E /* PBXTargetDependency */,
+				1C6E83CF23A9861E00EAF706 /* PBXTargetDependency */,
 			);
 			name = ScoreBigrams;
 			productName = ScoreBigrams;
@@ -753,17 +745,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C22198FC239C52A000FE8F2E /* BigramScores.m in Sources */,
+				C22198FC239C52A000FE8F2E /* TupleScores.m in Sources */,
 				C22198CB239B99BC00FE8F2E /* Seeds.m in Sources */,
 				C22198B1239B744F00FE8F2E /* GlyphData.m in Sources */,
 				C22198AB239A2C8100FE8F2E /* ParticleSimulation.m in Sources */,
 				C2219929239CAFE200FE8F2E /* ParticleSimulation.metal in Sources */,
-				C22198E3239C485000FE8F2E /* BigramScorer.metal in Sources */,
 				C2219915239C846F00FE8F2E /* GeneticAlgorithm.metal in Sources */,
 				C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */,
 				C22198A8239A2BB600FE8F2E /* GeneticAlgorithm.m in Sources */,
 				C22198B4239B77E400FE8F2E /* PickAndPlace.metal in Sources */,
-				C22198E0239C470B00FE8F2E /* BigramScorer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -788,6 +778,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C22198F0239C4FBC00FE8F2E /* main.m in Sources */,
+				1C6E83CB23A985C200EAF706 /* BigramScorer.metal in Sources */,
+				1C6E83CA23A985C200EAF706 /* BigramScorer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -834,6 +826,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1C6E83CF23A9861E00EAF706 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C2219896239A28E500FE8F2E /* Optimize */;
+			targetProxy = 1C6E83CE23A9861E00EAF706 /* PBXContainerItemProxy */;
+		};
 		C22198C4239B788500FE8F2E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C2219896239A28E500FE8F2E /* Optimize */;
@@ -843,11 +840,6 @@
 			isa = PBXTargetDependency;
 			target = C2219896239A28E500FE8F2E /* Optimize */;
 			targetProxy = C22198D9239BA33C00FE8F2E /* PBXContainerItemProxy */;
-		};
-		C22198F7239C4FC700FE8F2E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C2219896239A28E500FE8F2E /* Optimize */;
-			targetProxy = C22198F6239C4FC700FE8F2E /* PBXContainerItemProxy */;
 		};
 		C2219925239C93C900FE8F2E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

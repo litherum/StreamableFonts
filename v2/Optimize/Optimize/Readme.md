@@ -24,11 +24,11 @@
 | --------------|--------|---------|
 | `CodepointsToGlyphs` | The font file itself, and `output.json` from the Java tool from Apache Nutch | `output_glyphs.json` and `output_glyph_sizes.json` |
 | `Prune` | `output_glyphs.json` and `output_glyph_sizes.json` | `urlGlyphsPruned.json`, `gyphSizesPruned.json`, and `glyphUnicodeMapping.json` |
-| `ScoreBigrams` | `urlGlyphsPruned.json` and `gyphSizesPruned.json` | `bigramScores.json` |
-| `SaveSeeds` | `urlGlyphsPruned.json`, `gyphSizesPruned.json`, and `bigramScores.json` | `seeds.json` |
+| `ScoreBigrams` | `urlGlyphsPruned.json` and `gyphSizesPruned.json` | `BigramScores.json` |
+| `SaveSeeds` | `urlGlyphsPruned.json`, `gyphSizesPruned.json`, and `BigramScores.json` | `seeds.json` |
 | `SemanticDistances` | `glyphUnicodeMapping.json` and `cc.zh.300.bin` | `glyphVectors.json` and `semanticDistances.json` |
 | `PickAndPlace` | `urlGlyphsPruned.json`, `gyphSizesPruned.json`, and `seeds.json` | |
 | `GeneticAlgorithm` | `urlGlyphsPruned.json`, `gyphSizesPruned.json`, and `seeds.json` | |
-| `ParticleSystem` | `bigramScores.json` | |
+| `ParticleSystem` | `BigramScores.json` | |
 
 

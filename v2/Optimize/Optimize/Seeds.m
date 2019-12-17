@@ -26,16 +26,16 @@
     return self;
 }
 
-- (instancetype)initWithGlyphData:(GlyphData *)glyphData andBigramScores:(NSArray<NSArray<NSNumber *> *> *)bigramScores
+- (instancetype)initWithGlyphData:(GlyphData *)glyphData andTupleScores:(NSArray<NSArray<NSNumber *> *> *)tupleScores
 {
     self = [super init];
 
     if (self != nil) {        
         NSMutableArray<NSArray<NSNumber *> *> *result = [NSMutableArray array];
-        [result addObject:[self frequencyOrderWithGlyphData:glyphData andBigramScores:bigramScores]];
-        [result addObject:[self mostRecentBuddyOrderWithGlyphData:glyphData andBigramScores:bigramScores]];
-        [result addObject:[self allPlacedBuddyOrderWithGlyphData:glyphData andBigramScores:bigramScores]];
-        [result addObject:[self allBuddyOrderWithGlyphData:glyphData andBigramScores:bigramScores]];
+        [result addObject:[self frequencyOrderWithGlyphData:glyphData andTupleScores:tupleScores]];
+        [result addObject:[self mostRecentBuddyOrderWithGlyphData:glyphData andTupleScores:tupleScores]];
+        [result addObject:[self allPlacedBuddyOrderWithGlyphData:glyphData andTupleScores:tupleScores]];
+        [result addObject:[self allBuddyOrderWithGlyphData:glyphData andTupleScores:tupleScores]];
         // FIXME: Consider a sliding window approach, to interpolate between the two above approaches.
         _seeds = result;
     }
@@ -43,7 +43,7 @@
     return self;
 }
 
-- (NSArray<NSNumber *> *)frequencyOrderWithGlyphData:(GlyphData *)glyphData andBigramScores:(NSArray<NSArray<NSNumber *> *> *)bigramScores
+- (NSArray<NSNumber *> *)frequencyOrderWithGlyphData:(GlyphData *)glyphData andTupleScores:(NSArray<NSArray<NSNumber *> *> *)tupleScores
 {
     // Pick the most frequent glyph.
     uint32_t frequency[glyphData.glyphCount];
@@ -77,14 +77,14 @@
     return order;
 }
 
-- (uint32_t)seedGlyphFromBigramScores:(NSArray<NSArray<NSNumber *> *> *)bigramScores andGlyphCount:(NSUInteger)glyphCount
+- (uint32_t)seedGlyphFromTupleScores:(NSArray<NSArray<NSNumber *> *> *)tupleScores andGlyphCount:(NSUInteger)glyphCount
 {
     // There are probably a lot of 1.0 scores which tie for best.
     // We could be more sophisticated here and pick the glyph which is in the most number of documents, or something.
     float bestScore = 0;
     uint32_t bestGlyph = 0;
     for (uint32_t i = 0; i < glyphCount; ++i) {
-        NSArray<NSNumber *> *row = bigramScores[i];
+        NSArray<NSNumber *> *row = tupleScores[i];
         for (uint32_t j = 0; j < glyphCount; ++j) {
             if (i == j)
                 continue;
@@ -98,14 +98,14 @@
     return bestGlyph;
 }
 
-- (NSArray<NSNumber *> *)mostRecentBuddyOrderWithGlyphData:(GlyphData *)glyphData andBigramScores:(NSArray<NSArray<NSNumber *> *> *)bigramScores
+- (NSArray<NSNumber *> *)mostRecentBuddyOrderWithGlyphData:(GlyphData *)glyphData andTupleScores:(NSArray<NSArray<NSNumber *> *> *)tupleScores
 {
     // Pick the best buddy of the most-recently-placed glyph.
     NSMutableArray<NSNumber *> *order = [NSMutableArray arrayWithCapacity:glyphData.glyphCount];
     BOOL spent[glyphData.glyphCount];
     for (uint32_t i = 0; i < glyphData.glyphCount; ++i)
         spent[i] = NO;
-    uint32_t currentGlyph = [self seedGlyphFromBigramScores:bigramScores andGlyphCount:glyphData.glyphCount];
+    uint32_t currentGlyph = [self seedGlyphFromTupleScores:tupleScores andGlyphCount:glyphData.glyphCount];
     for (uint32_t i = 0; i < glyphData.glyphCount; ++i) {
         [order addObject:[NSNumber numberWithUnsignedInt:currentGlyph]];
         spent[currentGlyph] = YES;
@@ -114,7 +114,7 @@
         for (uint32_t j = 0; j < glyphData.glyphCount; ++j) {
             if (spent[j])
                 continue;
-            float score = bigramScores[currentGlyph][j].floatValue;
+            float score = tupleScores[currentGlyph][j].floatValue;
             if (score >= bestScore) {
                 bestScore = score;
                 bestGlyph = j;
@@ -125,14 +125,14 @@
     return order;
 }
 
-- (NSArray<NSNumber *> *)allPlacedBuddyOrderWithGlyphData:(GlyphData *)glyphData andBigramScores:(NSArray<NSArray<NSNumber *> *> *)bigramScores
+- (NSArray<NSNumber *> *)allPlacedBuddyOrderWithGlyphData:(GlyphData *)glyphData andTupleScores:(NSArray<NSArray<NSNumber *> *> *)tupleScores
 {
     // Pick the best buddy of any of the placed glyphs.
     uint32_t orderData[glyphData.glyphCount];
     uint32_t candidates[glyphData.glyphCount];
     for (uint32_t i = 0; i < glyphData.glyphCount; ++i)
         candidates[i] = i;
-    uint32_t currentGlyph = [self seedGlyphFromBigramScores:bigramScores andGlyphCount:glyphData.glyphCount];
+    uint32_t currentGlyph = [self seedGlyphFromTupleScores:tupleScores andGlyphCount:glyphData.glyphCount];
     uint32_t candidateIndex = currentGlyph;
     for (uint32_t i = 0; i < glyphData.glyphCount; ++i) {
         orderData[i] = currentGlyph;
@@ -146,7 +146,7 @@
         for (uint32_t j = 0; j < i + 1; ++j) {
             uint32_t placedGlyph = orderData[j];
             for (uint32_t j = 0; j < glyphData.glyphCount - i - 1; ++j) {
-                float score = bigramScores[placedGlyph][candidates[j]].floatValue;
+                float score = tupleScores[placedGlyph][candidates[j]].floatValue;
                 if (score >= bestScore) {
                     bestScore = score;
                     bestGlyph = candidates[j];
@@ -163,13 +163,13 @@
     return order;
 }
 
-- (NSArray<NSNumber *> *)allBuddyOrderWithGlyphData:(GlyphData *)glyphData andBigramScores:(NSArray<NSArray<NSNumber *> *> *)bigramScores
+- (NSArray<NSNumber *> *)allBuddyOrderWithGlyphData:(GlyphData *)glyphData andTupleScores:(NSArray<NSArray<NSNumber *> *> *)tupleScores
 {
     // Best bigram score, regardless of what's already been placed
     float bestScores[glyphData.glyphCount];
     for (uint32_t i = 0; i < glyphData.glyphCount; ++i) {
         bestScores[i] = 0;
-        NSArray<NSNumber *> *row = bigramScores[i];
+        NSArray<NSNumber *> *row = tupleScores[i];
         for (uint32_t j = 0; j < glyphData.glyphCount; ++j) {
             if (i == j)
                 continue;
