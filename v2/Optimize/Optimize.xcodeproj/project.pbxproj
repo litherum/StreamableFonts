@@ -12,6 +12,8 @@
 		1C6E83CC23A9861E00EAF706 /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
 		1C6E83CD23A9861E00EAF706 /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1C6E83D123A9866000EAF706 /* SharedShaders.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198E4239C48A400FE8F2E /* SharedShaders.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1C6E83D423A9A25D00EAF706 /* SingleFitness.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C6E83D323A9A25D00EAF706 /* SingleFitness.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1C6E83D623A9A26A00EAF706 /* SingleFitness.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E83D523A9A26A00EAF706 /* SingleFitness.m */; };
 		C22198A3239A294400FE8F2E /* PickAndPlace.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198A2239A294400FE8F2E /* PickAndPlace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A4239A296B00FE8F2E /* PickAndPlace.m */; };
 		C22198A8239A2BB600FE8F2E /* GeneticAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A7239A2BB600FE8F2E /* GeneticAlgorithm.m */; };
@@ -206,6 +208,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C6E83D323A9A25D00EAF706 /* SingleFitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SingleFitness.h; sourceTree = "<group>"; };
+		1C6E83D523A9A26A00EAF706 /* SingleFitness.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SingleFitness.m; sourceTree = "<group>"; };
 		C2219897239A28E500FE8F2E /* Optimize.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Optimize.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C221989B239A28E500FE8F2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C22198A2239A294400FE8F2E /* PickAndPlace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PickAndPlace.h; sourceTree = "<group>"; };
@@ -323,6 +327,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C6E83D223A9A22F00EAF706 /* SingleFitness */ = {
+			isa = PBXGroup;
+			children = (
+				1C6E83D323A9A25D00EAF706 /* SingleFitness.h */,
+				1C6E83D523A9A26A00EAF706 /* SingleFitness.m */,
+			);
+			name = SingleFitness;
+			sourceTree = "<group>";
+		};
 		C221988D239A28E500FE8F2E = {
 			isa = PBXGroup;
 			children = (
@@ -359,6 +372,7 @@
 		C2219899239A28E500FE8F2E /* Optimize */ = {
 			isa = PBXGroup;
 			children = (
+				1C6E83D223A9A22F00EAF706 /* SingleFitness */,
 				C22198E5239C4A7100FE8F2E /* PickAndPlace */,
 				C2219913239C839000FE8F2E /* GeneticAlgorithm */,
 				C2219927239CAFAF00FE8F2E /* ParticleSimulation */,
@@ -493,6 +507,7 @@
 				1C6E83D123A9866000EAF706 /* SharedShaders.h in Headers */,
 				C22198FA239C526900FE8F2E /* TupleScores.h in Headers */,
 				C22198A3239A294400FE8F2E /* PickAndPlace.h in Headers */,
+				1C6E83D423A9A25D00EAF706 /* SingleFitness.h in Headers */,
 				C22198AC239A2C8300FE8F2E /* ParticleSimulation.h in Headers */,
 				C22198C8239B8D6000FE8F2E /* GeneticAlgorithm.h in Headers */,
 				C22198B2239B745700FE8F2E /* GlyphData.h in Headers */,
@@ -749,6 +764,7 @@
 				C22198CB239B99BC00FE8F2E /* Seeds.m in Sources */,
 				C22198B1239B744F00FE8F2E /* GlyphData.m in Sources */,
 				C22198AB239A2C8100FE8F2E /* ParticleSimulation.m in Sources */,
+				1C6E83D623A9A26A00EAF706 /* SingleFitness.m in Sources */,
 				C2219929239CAFE200FE8F2E /* ParticleSimulation.metal in Sources */,
 				C2219915239C846F00FE8F2E /* GeneticAlgorithm.metal in Sources */,
 				C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */,

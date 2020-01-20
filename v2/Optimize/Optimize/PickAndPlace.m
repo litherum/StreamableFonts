@@ -74,7 +74,6 @@
     [constantValues setConstantValue:&glyphCount type:MTLDataTypeUInt withName:@"glyphCount"];
     [constantValues setConstantValue:&glyphBitfieldSize type:MTLDataTypeUInt withName:@"glyphBitfieldSize"];
     [constantValues setConstantValue:&urlCount type:MTLDataTypeUInt withName:@"urlCount"];
-    [constantValues setConstantValue:&generationSize type:MTLDataTypeUInt withName:@"generationSize"];
     possibleFitnessesFunction = [library newFunctionWithName:@"possibleFitnesses" constantValues:constantValues error:&error];
     assert(error == nil);
     sumPossibleFitnessesFunction = [library newFunctionWithName:@"sumPossibleFitnesses" constantValues:constantValues error:&error];

@@ -57,6 +57,7 @@
         glyphBitfieldSize = (uint32_t)glyphData.glyphBitfieldSize;
         urlCount = (uint32_t)glyphData.urlCount;
         generationSize = (uint32_t)seeds.count;
+        maxMutationInstructions = glyphCount / 10;
 
         device = MTLCreateSystemDefaultDevice();
         queue = [device newCommandQueue];
@@ -79,7 +80,6 @@
     [constantValues setConstantValue:&glyphCount type:MTLDataTypeUInt withName:@"glyphCount"];
     [constantValues setConstantValue:&glyphBitfieldSize type:MTLDataTypeUInt withName:@"glyphBitfieldSize"];
     [constantValues setConstantValue:&urlCount type:MTLDataTypeUInt withName:@"urlCount"];
-    [constantValues setConstantValue:&generationSize type:MTLDataTypeUInt withName:@"generationSize"];
     [constantValues setConstantValue:&maxMutationInstructions type:MTLDataTypeUInt withName:@"maxMutationInstructions"];
     fitnessFunction = [library newFunctionWithName:@"fitness" constantValues:constantValues error:&error];
     assert(error == nil);

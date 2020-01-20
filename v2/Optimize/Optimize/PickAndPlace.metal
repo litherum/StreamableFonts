@@ -14,7 +14,6 @@ using namespace metal;
 
 constant uint32_t glyphCount [[function_constant(1)]];
 constant uint32_t urlCount [[function_constant(2)]];
-constant uint32_t generationSize [[function_constant(3)]];
 
 constant constexpr uint32_t threshold = 8 * 170;
 constant constexpr uint32_t unconditionalDownloadSize = 282828;
