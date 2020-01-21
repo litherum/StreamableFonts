@@ -16,8 +16,10 @@ int main(int argc, const char * argv[]) {
     @autoreleasepool {
         GlyphData *glyphData = [GlyphData new];
         Seeds *seeds = [Seeds new];
-        PickAndPlace *pickAndPlace = [[PickAndPlace alloc] initWithGlyphData:glyphData andSeeds:seeds.seeds];
-        NSUInteger indexCount = 1;
+        NSMutableArray<NSArray<NSNumber *> *> *seedData = [seeds.seeds mutableCopy];
+        [Seeds fillWithRandomSeeds:seedData withGlyphCount:glyphData.glyphCount untilCount:6];
+        PickAndPlace *pickAndPlace = [[PickAndPlace alloc] initWithGlyphData:glyphData andSeeds:seedData];
+        NSUInteger indexCount = 2;
         NSMutableArray<NSNumber *> *indices = [NSMutableArray arrayWithCapacity:indexCount];
         for (NSUInteger i = 0; i < indexCount; ++i)
             [indices addObject:[NSNumber numberWithUnsignedInt:arc4random_uniform((uint32_t)glyphData.glyphCount)]];

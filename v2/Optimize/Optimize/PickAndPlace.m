@@ -199,11 +199,19 @@
         [blitEncoder synchronizeResource:bestBuffer];
     }
     [blitEncoder endEncoding];
+    NSDate *start = [NSDate date];
     [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
         assert(commandBuffer.error == nil);
+        float best = -1;
         struct Best* bests = self->bestBuffer.contents;
-        for (uint32_t i = 0; i < self->generationSize; ++i)
+        for (uint32_t i = 0; i < self->generationSize; ++i) {
+            if (best < 0 || bests[i].bestValue > best)
+                best = bests[i].bestValue;
             NSLog(@"Best score for index %" PRIu32 ": %f", i, bests[i].bestValue);
+        }
+        NSLog(@"Overall best: %f", best);
+        NSDate *end = [NSDate date];
+        NSLog(@"Iteration complete. %f ms", [end timeIntervalSinceDate:start] * 1000);
         dispatch_async(dispatch_get_main_queue(), ^{
             callback();
         });

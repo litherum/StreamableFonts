@@ -15,7 +15,7 @@
     self = [super init];
     
     if (self != nil) {
-        NSData *seedsContents = [NSData dataWithContentsOfFile:@"/Users/litherum/Library/Mobile Documents/com~apple~CloudDocs/Documents/seeds.json"];
+        NSData *seedsContents = [NSData dataWithContentsOfFile:@"/Users/mmaxfield/Library/Mobile Documents/com~apple~CloudDocs/Documents/seeds.json"];
         assert(seedsContents != nil);
         NSError *error = nil;
         _seeds = [NSJSONSerialization JSONObjectWithData:seedsContents options:0 error:&error];
