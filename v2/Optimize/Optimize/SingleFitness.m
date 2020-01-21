@@ -181,14 +181,18 @@
 - (float)computeFitness:(NSArray<NSNumber *> *)transformationMatrix
 {
     assert(transformationMatrix.count == self.dimension);
+    NSMutableData *transformationMatrixData = [NSMutableData dataWithLength:sizeof(float) * self.dimension];
+    float* transformationMatrixDataPointer = transformationMatrixData.mutableBytes;
+    for (NSUInteger i = 0; i < self.dimension; ++i)
+        transformationMatrixDataPointer[i] = transformationMatrix[i].floatValue;
 
     NSMutableArray<GlyphWithWeight *> *order = [NSMutableArray arrayWithCapacity:glyphCount];
     const float* matrixData = matrix.bytes;
     for (uint32_t i = 0; i < glyphCount; ++i) {
         const float* row = matrixData + i * self.dimension;
         float weight = 0;
-        for (NSUInteger j = 0; j < transformationMatrix.count; ++j)
-            weight += transformationMatrix[j].floatValue * row[j];
+        for (NSUInteger j = 0; j < self.dimension; ++j)
+            weight += transformationMatrixDataPointer[j] * row[j];
         [order addObject:[[GlyphWithWeight alloc] initWithGlyph:i andWeight:weight]];
     }
     [order sortUsingComparator:^NSComparisonResult (GlyphWithWeight *obj1, GlyphWithWeight *obj2) {
