@@ -14,6 +14,9 @@
 		1C6E83D123A9866000EAF706 /* SharedShaders.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198E4239C48A400FE8F2E /* SharedShaders.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1C6E83D423A9A25D00EAF706 /* SingleFitness.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C6E83D323A9A25D00EAF706 /* SingleFitness.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1C6E83D623A9A26A00EAF706 /* SingleFitness.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E83D523A9A26A00EAF706 /* SingleFitness.m */; };
+		1C8249DB23D7AD6800E711E0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8249DA23D7AD6800E711E0 /* main.m */; };
+		1C8249DF23D7AD9700E711E0 /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
+		1C8249E023D7AD9700E711E0 /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C22198A3239A294400FE8F2E /* PickAndPlace.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198A2239A294400FE8F2E /* PickAndPlace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A4239A296B00FE8F2E /* PickAndPlace.m */; };
 		C22198A8239A2BB600FE8F2E /* GeneticAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A7239A2BB600FE8F2E /* GeneticAlgorithm.m */; };
@@ -50,6 +53,13 @@
 
 /* Begin PBXContainerItemProxy section */
 		1C6E83CE23A9861E00EAF706 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C2219896239A28E500FE8F2E;
+			remoteInfo = Optimize;
+		};
+		1C8249E123D7AD9700E711E0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
 			proxyType = 1;
@@ -94,6 +104,26 @@
 			dstSubfolderSpec = 10;
 			files = (
 				1C6E83CD23A9861E00EAF706 /* Optimize.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1C8249D623D7AD6800E711E0 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		1C8249E323D7AD9700E711E0 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1C8249E023D7AD9700E711E0 /* Optimize.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -210,6 +240,8 @@
 /* Begin PBXFileReference section */
 		1C6E83D323A9A25D00EAF706 /* SingleFitness.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SingleFitness.h; sourceTree = "<group>"; };
 		1C6E83D523A9A26A00EAF706 /* SingleFitness.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SingleFitness.m; sourceTree = "<group>"; };
+		1C8249D823D7AD6800E711E0 /* ComputeRandomFitness */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ComputeRandomFitness; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C8249DA23D7AD6800E711E0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C2219897239A28E500FE8F2E /* Optimize.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Optimize.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C221989B239A28E500FE8F2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C22198A2239A294400FE8F2E /* PickAndPlace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PickAndPlace.h; sourceTree = "<group>"; };
@@ -255,6 +287,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1C8249D523D7AD6800E711E0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C8249DF23D7AD9700E711E0 /* Optimize.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C2219894239A28E500FE8F2E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -336,6 +376,14 @@
 			name = SingleFitness;
 			sourceTree = "<group>";
 		};
+		1C8249D923D7AD6800E711E0 /* ComputeRandomFitness */ = {
+			isa = PBXGroup;
+			children = (
+				1C8249DA23D7AD6800E711E0 /* main.m */,
+			);
+			path = ComputeRandomFitness;
+			sourceTree = "<group>";
+		};
 		C221988D239A28E500FE8F2E = {
 			isa = PBXGroup;
 			children = (
@@ -348,6 +396,7 @@
 				C2219902239C60AD00FE8F2E /* CodepointsToGlyphs */,
 				C221990D239C610300FE8F2E /* Prune */,
 				C2403406239E0F0700332E45 /* SemanticDistances */,
+				1C8249D923D7AD6800E711E0 /* ComputeRandomFitness */,
 				C2219898239A28E500FE8F2E /* Products */,
 				C22198C0239B788500FE8F2E /* Frameworks */,
 			);
@@ -365,6 +414,7 @@
 				C221991B239C93AA00FE8F2E /* GeneticAlgorithm */,
 				C221992F239CBA9500FE8F2E /* ParticleSystem */,
 				C2403405239E0F0700332E45 /* SemanticDistances */,
+				1C8249D823D7AD6800E711E0 /* ComputeRandomFitness */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -518,6 +568,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		1C8249D723D7AD6800E711E0 /* ComputeRandomFitness */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C8249DC23D7AD6800E711E0 /* Build configuration list for PBXNativeTarget "ComputeRandomFitness" */;
+			buildPhases = (
+				1C8249D423D7AD6800E711E0 /* Sources */,
+				1C8249D523D7AD6800E711E0 /* Frameworks */,
+				1C8249D623D7AD6800E711E0 /* CopyFiles */,
+				1C8249E323D7AD9700E711E0 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1C8249E223D7AD9700E711E0 /* PBXTargetDependency */,
+			);
+			name = ComputeRandomFitness;
+			productName = ComputeRandomFitness;
+			productReference = 1C8249D823D7AD6800E711E0 /* ComputeRandomFitness */;
+			productType = "com.apple.product-type.tool";
+		};
 		C2219896239A28E500FE8F2E /* Optimize */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C221989F239A28E500FE8F2E /* Build configuration list for PBXNativeTarget "Optimize" */;
@@ -690,6 +759,9 @@
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = Litherum;
 				TargetAttributes = {
+					1C8249D723D7AD6800E711E0 = {
+						CreatedOnToolsVersion = 11.4;
+					};
 					C2219896239A28E500FE8F2E = {
 						CreatedOnToolsVersion = 11.0;
 					};
@@ -741,6 +813,7 @@
 				C221991A239C93AA00FE8F2E /* GeneticAlgorithm */,
 				C221992E239CBA9500FE8F2E /* ParticleSystem */,
 				C2403404239E0F0700332E45 /* SemanticDistances */,
+				1C8249D723D7AD6800E711E0 /* ComputeRandomFitness */,
 			);
 		};
 /* End PBXProject section */
@@ -756,6 +829,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1C8249D423D7AD6800E711E0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C8249DB23D7AD6800E711E0 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C2219893239A28E500FE8F2E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -847,6 +928,11 @@
 			target = C2219896239A28E500FE8F2E /* Optimize */;
 			targetProxy = 1C6E83CE23A9861E00EAF706 /* PBXContainerItemProxy */;
 		};
+		1C8249E223D7AD9700E711E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C2219896239A28E500FE8F2E /* Optimize */;
+			targetProxy = 1C8249E123D7AD9700E711E0 /* PBXContainerItemProxy */;
+		};
 		C22198C4239B788500FE8F2E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C2219896239A28E500FE8F2E /* Optimize */;
@@ -870,6 +956,24 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1C8249DD23D7AD6800E711E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1C8249DE23D7AD6800E711E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		C221989D239A28E500FE8F2E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1160,6 +1264,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1C8249DC23D7AD6800E711E0 /* Build configuration list for PBXNativeTarget "ComputeRandomFitness" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C8249DD23D7AD6800E711E0 /* Debug */,
+				1C8249DE23D7AD6800E711E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C2219891239A28E500FE8F2E /* Build configuration list for PBXProject "Optimize" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

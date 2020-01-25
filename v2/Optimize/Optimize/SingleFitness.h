@@ -15,7 +15,8 @@
 @interface SingleFitness : NSObject
 
 - (instancetype)initWithGlyphData:(GlyphData *)glyphData;
-- (float)computeFitness:(NSArray<NSNumber *> *)transformationMatrix;
+- (float)computeFitnessWithTransformationMatrix:(NSArray<NSNumber *> *)transformationMatrix;
+- (void)computeFitness:(NSArray<NSNumber *> *)order withCallback:(void (^)(float))callback;
 @property NSUInteger dimension;
 
 @end

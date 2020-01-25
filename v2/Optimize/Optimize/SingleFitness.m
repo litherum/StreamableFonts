@@ -178,7 +178,30 @@
     [commandBuffer commit];
 }
 
-- (float)computeFitness:(NSArray<NSNumber *> *)transformationMatrix
+- (float)readResults
+{
+    float fitness = 0;
+    const uint32_t fontSize = 1758483;
+    uint32_t* fitnessesPerURL = self->fitnessesPerURLBuffer.contents;
+    for (uint32_t i = 0; i < self->urlCount; ++i)
+        fitness += (float)fitnessesPerURL[i] / (float)fontSize;
+    fitness = fitness / (float)self->urlCount;
+    return fitness;
+}
+
+- (void)computeFitness:(NSArray<NSNumber *> *)order withCallback:(void (^)(float))callback
+{
+    assert(order.count == glyphCount);
+    uint32_t* bufferContents = generationBuffer.contents;
+    for (uint32_t i = 0; i < glyphCount; ++i)
+        bufferContents[i] = order[i].unsignedIntValue;
+    [generationBuffer didModifyRange:NSMakeRange(0, sizeof(uint32_t) * glyphCount)];
+    [self computeFitnessesWithCallback:^() {
+        callback([self readResults]);
+    }];
+}
+
+- (float)computeFitnessWithTransformationMatrix:(NSArray<NSNumber *> *)transformationMatrix
 {
     assert(transformationMatrix.count == self.dimension);
     NSMutableData *transformationMatrixData = [NSMutableData dataWithLength:sizeof(float) * self.dimension];
@@ -212,12 +235,7 @@
 
     __block float fitness = 0;
     [self computeFitnessesWithCallback:^{
-        const uint32_t fontSize = 1758483;
-        uint32_t* fitnessesPerURL = self->fitnessesPerURLBuffer.contents;
-        for (uint32_t i = 0; i < self->urlCount; ++i)
-            fitness += (float)fitnessesPerURL[i] / (float)fontSize;
-
-        fitness = fitness / (float)self->urlCount;
+        fitness = [self readResults];
         CFRunLoopStop(CFRunLoopGetMain());
     }];
     CFRunLoopRun();
