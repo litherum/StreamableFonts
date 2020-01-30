@@ -18,6 +18,7 @@ constant uint32_t urlCount [[function_constant(2)]];
 constant constexpr uint32_t threshold = 8 * 170;
 constant constexpr uint32_t unconditionalDownloadSize = 282828;
 
+// FIXME: This code can be way simpler (and hopefully faster)
 class Rotater {
 public:
     Rotater(uint32_t glyphIndex, uint32_t rotationIndex) : glyphIndex(glyphIndex), rotationIndex(rotationIndex) {

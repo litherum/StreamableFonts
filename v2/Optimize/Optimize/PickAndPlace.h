@@ -12,6 +12,7 @@
 
 #import "GlyphData.h"
 
+// This is gradient descent.
 @interface PickAndPlace : NSObject
 - (instancetype)initWithGlyphData:(GlyphData *)glyphData andSeeds:(NSArray<NSArray<NSNumber *> *> *)seeds;
 - (void)runWithGlyphIndices:(NSArray<NSNumber *> *)indices andCallback:(void (^)(void))callback;

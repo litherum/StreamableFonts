@@ -17,6 +17,9 @@
 		1C8249DB23D7AD6800E711E0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8249DA23D7AD6800E711E0 /* main.m */; };
 		1C8249DF23D7AD9700E711E0 /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
 		1C8249E023D7AD9700E711E0 /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1C8F7EF323E3441300D1DC1A /* SimulatedAnnealing.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C8F7EF223E3441300D1DC1A /* SimulatedAnnealing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1C8F7EF523E3444300D1DC1A /* SimulatedAnnealing.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8F7EF423E3444300D1DC1A /* SimulatedAnnealing.m */; };
+		1C8F7EF723E34BAB00D1DC1A /* SimulatedAnnealing.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1C8F7EF623E34BAB00D1DC1A /* SimulatedAnnealing.metal */; };
 		C22198A3239A294400FE8F2E /* PickAndPlace.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198A2239A294400FE8F2E /* PickAndPlace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A4239A296B00FE8F2E /* PickAndPlace.m */; };
 		C22198A8239A2BB600FE8F2E /* GeneticAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A7239A2BB600FE8F2E /* GeneticAlgorithm.m */; };
@@ -242,6 +245,9 @@
 		1C6E83D523A9A26A00EAF706 /* SingleFitness.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SingleFitness.m; sourceTree = "<group>"; };
 		1C8249D823D7AD6800E711E0 /* ComputeRandomFitness */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ComputeRandomFitness; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C8249DA23D7AD6800E711E0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		1C8F7EF223E3441300D1DC1A /* SimulatedAnnealing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimulatedAnnealing.h; sourceTree = "<group>"; };
+		1C8F7EF423E3444300D1DC1A /* SimulatedAnnealing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimulatedAnnealing.m; sourceTree = "<group>"; };
+		1C8F7EF623E34BAB00D1DC1A /* SimulatedAnnealing.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SimulatedAnnealing.metal; sourceTree = "<group>"; };
 		C2219897239A28E500FE8F2E /* Optimize.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Optimize.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C221989B239A28E500FE8F2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C22198A2239A294400FE8F2E /* PickAndPlace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PickAndPlace.h; sourceTree = "<group>"; };
@@ -384,6 +390,16 @@
 			path = ComputeRandomFitness;
 			sourceTree = "<group>";
 		};
+		1C8F7EF823E34C9100D1DC1A /* SimulatedAnnealing */ = {
+			isa = PBXGroup;
+			children = (
+				1C8F7EF223E3441300D1DC1A /* SimulatedAnnealing.h */,
+				1C8F7EF423E3444300D1DC1A /* SimulatedAnnealing.m */,
+				1C8F7EF623E34BAB00D1DC1A /* SimulatedAnnealing.metal */,
+			);
+			name = SimulatedAnnealing;
+			sourceTree = "<group>";
+		};
 		C221988D239A28E500FE8F2E = {
 			isa = PBXGroup;
 			children = (
@@ -422,6 +438,7 @@
 		C2219899239A28E500FE8F2E /* Optimize */ = {
 			isa = PBXGroup;
 			children = (
+				1C8F7EF823E34C9100D1DC1A /* SimulatedAnnealing */,
 				1C6E83D223A9A22F00EAF706 /* SingleFitness */,
 				C22198E5239C4A7100FE8F2E /* PickAndPlace */,
 				C2219913239C839000FE8F2E /* GeneticAlgorithm */,
@@ -555,6 +572,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C6E83D123A9866000EAF706 /* SharedShaders.h in Headers */,
+				1C8F7EF323E3441300D1DC1A /* SimulatedAnnealing.h in Headers */,
 				C22198FA239C526900FE8F2E /* TupleScores.h in Headers */,
 				C22198A3239A294400FE8F2E /* PickAndPlace.h in Headers */,
 				1C6E83D423A9A25D00EAF706 /* SingleFitness.h in Headers */,
@@ -842,6 +860,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C22198FC239C52A000FE8F2E /* TupleScores.m in Sources */,
+				1C8F7EF523E3444300D1DC1A /* SimulatedAnnealing.m in Sources */,
 				C22198CB239B99BC00FE8F2E /* Seeds.m in Sources */,
 				C22198B1239B744F00FE8F2E /* GlyphData.m in Sources */,
 				C22198AB239A2C8100FE8F2E /* ParticleSimulation.m in Sources */,
@@ -850,6 +869,7 @@
 				C2219915239C846F00FE8F2E /* GeneticAlgorithm.metal in Sources */,
 				C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */,
 				C22198A8239A2BB600FE8F2E /* GeneticAlgorithm.m in Sources */,
+				1C8F7EF723E34BAB00D1DC1A /* SimulatedAnnealing.metal in Sources */,
 				C22198B4239B77E400FE8F2E /* PickAndPlace.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
