@@ -20,6 +20,9 @@
 		1C8F7EF323E3441300D1DC1A /* SimulatedAnnealing.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C8F7EF223E3441300D1DC1A /* SimulatedAnnealing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1C8F7EF523E3444300D1DC1A /* SimulatedAnnealing.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8F7EF423E3444300D1DC1A /* SimulatedAnnealing.m */; };
 		1C8F7EF723E34BAB00D1DC1A /* SimulatedAnnealing.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1C8F7EF623E34BAB00D1DC1A /* SimulatedAnnealing.metal */; };
+		1C8F7F0023E366F200D1DC1A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C8F7EFF23E366F200D1DC1A /* main.m */; };
+		1C8F7F0423E366FF00D1DC1A /* Optimize.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; };
+		1C8F7F0523E366FF00D1DC1A /* Optimize.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C2219897239A28E500FE8F2E /* Optimize.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C22198A3239A294400FE8F2E /* PickAndPlace.h in Headers */ = {isa = PBXBuildFile; fileRef = C22198A2239A294400FE8F2E /* PickAndPlace.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C22198A5239A296B00FE8F2E /* PickAndPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A4239A296B00FE8F2E /* PickAndPlace.m */; };
 		C22198A8239A2BB600FE8F2E /* GeneticAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = C22198A7239A2BB600FE8F2E /* GeneticAlgorithm.m */; };
@@ -63,6 +66,13 @@
 			remoteInfo = Optimize;
 		};
 		1C8249E123D7AD9700E711E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C2219896239A28E500FE8F2E;
+			remoteInfo = Optimize;
+		};
+		1C8F7F0623E366FF00D1DC1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C221988E239A28E500FE8F2E /* Project object */;
 			proxyType = 1;
@@ -127,6 +137,26 @@
 			dstSubfolderSpec = 10;
 			files = (
 				1C8249E023D7AD9700E711E0 /* Optimize.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1C8F7EFB23E366F200D1DC1A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		1C8F7F0823E366FF00D1DC1A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1C8F7F0523E366FF00D1DC1A /* Optimize.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -248,6 +278,8 @@
 		1C8F7EF223E3441300D1DC1A /* SimulatedAnnealing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimulatedAnnealing.h; sourceTree = "<group>"; };
 		1C8F7EF423E3444300D1DC1A /* SimulatedAnnealing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimulatedAnnealing.m; sourceTree = "<group>"; };
 		1C8F7EF623E34BAB00D1DC1A /* SimulatedAnnealing.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SimulatedAnnealing.metal; sourceTree = "<group>"; };
+		1C8F7EFD23E366F200D1DC1A /* CheckSimulatedAnnealing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CheckSimulatedAnnealing; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C8F7EFF23E366F200D1DC1A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C2219897239A28E500FE8F2E /* Optimize.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Optimize.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C221989B239A28E500FE8F2E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C22198A2239A294400FE8F2E /* PickAndPlace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PickAndPlace.h; sourceTree = "<group>"; };
@@ -298,6 +330,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C8249DF23D7AD9700E711E0 /* Optimize.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1C8F7EFA23E366F200D1DC1A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C8F7F0423E366FF00D1DC1A /* Optimize.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +440,14 @@
 			name = SimulatedAnnealing;
 			sourceTree = "<group>";
 		};
+		1C8F7EFE23E366F200D1DC1A /* CheckSimulatedAnnealing */ = {
+			isa = PBXGroup;
+			children = (
+				1C8F7EFF23E366F200D1DC1A /* main.m */,
+			);
+			path = CheckSimulatedAnnealing;
+			sourceTree = "<group>";
+		};
 		C221988D239A28E500FE8F2E = {
 			isa = PBXGroup;
 			children = (
@@ -413,6 +461,7 @@
 				C221990D239C610300FE8F2E /* Prune */,
 				C2403406239E0F0700332E45 /* SemanticDistances */,
 				1C8249D923D7AD6800E711E0 /* ComputeRandomFitness */,
+				1C8F7EFE23E366F200D1DC1A /* CheckSimulatedAnnealing */,
 				C2219898239A28E500FE8F2E /* Products */,
 				C22198C0239B788500FE8F2E /* Frameworks */,
 			);
@@ -431,6 +480,7 @@
 				C221992F239CBA9500FE8F2E /* ParticleSystem */,
 				C2403405239E0F0700332E45 /* SemanticDistances */,
 				1C8249D823D7AD6800E711E0 /* ComputeRandomFitness */,
+				1C8F7EFD23E366F200D1DC1A /* CheckSimulatedAnnealing */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -603,6 +653,25 @@
 			name = ComputeRandomFitness;
 			productName = ComputeRandomFitness;
 			productReference = 1C8249D823D7AD6800E711E0 /* ComputeRandomFitness */;
+			productType = "com.apple.product-type.tool";
+		};
+		1C8F7EFC23E366F200D1DC1A /* CheckSimulatedAnnealing */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C8F7F0123E366F200D1DC1A /* Build configuration list for PBXNativeTarget "CheckSimulatedAnnealing" */;
+			buildPhases = (
+				1C8F7EF923E366F200D1DC1A /* Sources */,
+				1C8F7EFA23E366F200D1DC1A /* Frameworks */,
+				1C8F7EFB23E366F200D1DC1A /* CopyFiles */,
+				1C8F7F0823E366FF00D1DC1A /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1C8F7F0723E366FF00D1DC1A /* PBXTargetDependency */,
+			);
+			name = CheckSimulatedAnnealing;
+			productName = CheckSimulatedAnnealing;
+			productReference = 1C8F7EFD23E366F200D1DC1A /* CheckSimulatedAnnealing */;
 			productType = "com.apple.product-type.tool";
 		};
 		C2219896239A28E500FE8F2E /* Optimize */ = {
@@ -780,6 +849,9 @@
 					1C8249D723D7AD6800E711E0 = {
 						CreatedOnToolsVersion = 11.4;
 					};
+					1C8F7EFC23E366F200D1DC1A = {
+						CreatedOnToolsVersion = 11.4;
+					};
 					C2219896239A28E500FE8F2E = {
 						CreatedOnToolsVersion = 11.0;
 					};
@@ -832,6 +904,7 @@
 				C221992E239CBA9500FE8F2E /* ParticleSystem */,
 				C2403404239E0F0700332E45 /* SemanticDistances */,
 				1C8249D723D7AD6800E711E0 /* ComputeRandomFitness */,
+				1C8F7EFC23E366F200D1DC1A /* CheckSimulatedAnnealing */,
 			);
 		};
 /* End PBXProject section */
@@ -852,6 +925,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C8249DB23D7AD6800E711E0 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1C8F7EF923E366F200D1DC1A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C8F7F0023E366F200D1DC1A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -953,6 +1034,11 @@
 			target = C2219896239A28E500FE8F2E /* Optimize */;
 			targetProxy = 1C8249E123D7AD9700E711E0 /* PBXContainerItemProxy */;
 		};
+		1C8F7F0723E366FF00D1DC1A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C2219896239A28E500FE8F2E /* Optimize */;
+			targetProxy = 1C8F7F0623E366FF00D1DC1A /* PBXContainerItemProxy */;
+		};
 		C22198C4239B788500FE8F2E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C2219896239A28E500FE8F2E /* Optimize */;
@@ -986,6 +1072,24 @@
 			name = Debug;
 		};
 		1C8249DE23D7AD6800E711E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		1C8F7F0223E366F200D1DC1A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1C8F7F0323E366F200D1DC1A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -1289,6 +1393,15 @@
 			buildConfigurations = (
 				1C8249DD23D7AD6800E711E0 /* Debug */,
 				1C8249DE23D7AD6800E711E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1C8F7F0123E366F200D1DC1A /* Build configuration list for PBXNativeTarget "CheckSimulatedAnnealing" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C8F7F0223E366F200D1DC1A /* Debug */,
+				1C8F7F0323E366F200D1DC1A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

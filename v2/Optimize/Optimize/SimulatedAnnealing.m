@@ -82,7 +82,7 @@
     assert(error == nil);
     swapGlyphsFunction = [library newFunctionWithName:@"swapGlyphs" constantValues:constantValues error:&error];
     assert(error == nil);
-    swapGlyphsFunction = [library newFunctionWithName:@"anneal" constantValues:constantValues error:&error];
+    annealFunction = [library newFunctionWithName:@"anneal" constantValues:constantValues error:&error];
     assert(error == nil);
 }
 
@@ -183,7 +183,7 @@
 
 - (void)annealWithComputeCommandEncoder:(id<MTLComputeCommandEncoder>)computeCommandEncoder indices:(NSData *)indices beforeFitnesses:(id<MTLBuffer>)beforeFitnesses afterFitnesses:(id<MTLBuffer>)afterFitnesses
 {
-    [computeCommandEncoder setComputePipelineState:swapGlyphsState];
+    [computeCommandEncoder setComputePipelineState:annealState];
     [computeCommandEncoder setBuffer:generationBuffer offset:0 atIndex:0];
     [computeCommandEncoder setBytes:indices.bytes length:indices.length atIndex:1];
     id<MTLBuffer> buffers[] = {beforeFitnesses, afterFitnesses};
@@ -211,8 +211,8 @@
         state = YES;
     }
 
-    const int iterations = 1;
-    for (int i = 0; i < 1; ++i) {
+    const int iterations = 200;
+    for (int i = 0; i < iterations; ++i) {
         NSMutableData *indices = [NSMutableData dataWithLength:sizeof(uint32_t) * generationSize * 2];
         uint32_t* ptr = [indices mutableBytes];
         for (uint32_t i = 0; i < generationSize * 2; ++i)
@@ -245,8 +245,10 @@
                 float* fitnesses = afterFitnesses.contents;
                 assert(self->urlCount > 0);
                 float best = fitnesses[0];
-                for (uint32_t i = 0; i < self->urlCount; ++i)
+                for (uint32_t i = 0; i < self->generationSize; ++i) {
+                    NSLog(@"%" PRIu32 "\t%f", i, fitnesses[i]);
                     best = MAX(best, fitnesses[i]);
+                }
                 dispatch_async(dispatch_get_main_queue(), ^{
                     callback(best);
                 });

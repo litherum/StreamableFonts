@@ -14,4 +14,5 @@
 
 @interface SimulatedAnnealing : NSObject
 - (instancetype)initWithGlyphData:(GlyphData *)glyphData andSeeds:(NSArray<NSArray<NSNumber *> *> *)seeds;
+- (float)simulate;
 @end

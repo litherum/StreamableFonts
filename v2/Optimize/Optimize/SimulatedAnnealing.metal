@@ -20,7 +20,7 @@ void swap(device uint32_t* order, uint32_t index0, uint32_t index1) {
     order[index1] = store;
 }
 
-kernel void swapGlyphs(device uint32_t* generation [[buffer(0)]], device uint32_t* indices [[buffer(1)]], uint tid [[thread_position_in_grid]]) {
+kernel void swapGlyphs(device uint32_t* generation [[buffer(0)]], const device uint32_t* indices [[buffer(1)]], uint tid [[thread_position_in_grid]]) {
     uint generationIndex = tid;
     device uint32_t* order = generation + glyphCount * generationIndex;
     uint32_t index0 = indices[2 * generationIndex + 0];
@@ -28,7 +28,7 @@ kernel void swapGlyphs(device uint32_t* generation [[buffer(0)]], device uint32_
     swap(order, index0, index1);
 }
 
-kernel void anneal(device uint32_t* generation [[buffer(0)]], device uint32_t* indices [[buffer(1)]], device float* beforeFitnesses [[buffer(2)]], device float* afterFitnesses [[buffer(3)]], device float* randoms [[buffer(4)]], uint tid [[thread_position_in_grid]]) {
+kernel void anneal(device uint32_t* generation [[buffer(0)]], const device uint32_t* indices [[buffer(1)]], device float* beforeFitnesses [[buffer(2)]], device float* afterFitnesses [[buffer(3)]], device float* randoms [[buffer(4)]], uint tid [[thread_position_in_grid]]) {
     uint generationIndex = tid;
     device uint32_t* order = generation + glyphCount * generationIndex;
     uint32_t index0 = indices[2 * generationIndex + 0];
