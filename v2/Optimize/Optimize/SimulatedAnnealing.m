@@ -21,6 +21,8 @@
     uint32_t urlCount;
     uint32_t generationSize;
     BOOL state;
+    BOOL inFlight;
+    NSUInteger iterations;
 
     id<MTLDevice> device;
     id<MTLCommandQueue> queue;
@@ -39,6 +41,7 @@
     id<MTLBuffer> fitnessesPerURLBuffer;
     id<MTLBuffer> fitnessABuffer;
     id<MTLBuffer> fitnessBBuffer;
+    id<MTLBuffer> fitnessMonitorBuffer;
 }
 
 - (instancetype)initWithGlyphData:(GlyphData *)glyphData andSeeds:(NSArray<NSArray<NSNumber *> *> *)seeds
@@ -54,9 +57,11 @@
         urlCount = (uint32_t)glyphData.urlCount;
         generationSize = (uint32_t)seeds.count;
         state = NO;
+        inFlight = NO;
+        iterations = 100000;
 
         device = MTLCreateSystemDefaultDevice();
-        queue = [device newCommandQueue];
+        queue = [device newCommandQueueWithMaxCommandBufferCount:iterations];
 
         [self loadShaders];
         [self createMetalStates];
@@ -153,6 +158,7 @@
     fitnessesPerURLBuffer = [device newBufferWithLength:generationSize * urlCount * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
     fitnessABuffer = [device newBufferWithLength:generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
     fitnessBBuffer = [device newBufferWithLength:generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
+    fitnessMonitorBuffer = [device newBufferWithLength:generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
 }
 
 - (void)computeFitnessesWithComputeCommandEncoder:(id<MTLComputeCommandEncoder>)computeCommandEncoder andFitnessBuffer:(id<MTLBuffer>)fitnessBuffer
@@ -210,52 +216,76 @@
         assert(state == NO);
         state = YES;
     }
+    
+    void (^checkError)(id<MTLCommandBuffer>) = ^(id<MTLCommandBuffer> commandBuffer) {
+        assert(commandBuffer.error == nil);
+    };
 
-    const int iterations = 200;
     for (int i = 0; i < iterations; ++i) {
-        NSMutableData *indices = [NSMutableData dataWithLength:sizeof(uint32_t) * generationSize * 2];
-        uint32_t* ptr = [indices mutableBytes];
-        for (uint32_t i = 0; i < generationSize * 2; ++i)
-            ptr[i] = arc4random_uniform(glyphCount);
+        @autoreleasepool {
+            NSMutableData *indices = [NSMutableData dataWithLength:sizeof(uint32_t) * generationSize * 2];
+            uint32_t* ptr = [indices mutableBytes];
+            for (uint32_t i = 0; i < generationSize * 2; ++i)
+                ptr[i] = arc4random_uniform(glyphCount);
 
-        id<MTLBuffer> beforeFitnesses;
-        id<MTLBuffer> afterFitnesses;
-        if (state) {
-            beforeFitnesses = fitnessABuffer;
-            afterFitnesses = fitnessBBuffer;
-        } else {
-            beforeFitnesses = fitnessBBuffer;
-            afterFitnesses = fitnessABuffer;
-        }
-
-        id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
-        id<MTLComputeCommandEncoder> computeCommandEncoder = [commandBuffer computeCommandEncoder];
-        [self swapGlyphsWithComputeCommandEncoder:computeCommandEncoder andIndices:indices];
-        [self computeFitnessesWithComputeCommandEncoder:computeCommandEncoder andFitnessBuffer:afterFitnesses];
-        [self annealWithComputeCommandEncoder:computeCommandEncoder indices:indices beforeFitnesses:beforeFitnesses afterFitnesses:afterFitnesses];
-        [computeCommandEncoder endEncoding];
-        if (i == iterations - 1) {
-            id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
-            [blitEncoder synchronizeResource:afterFitnesses];
-            [blitEncoder endEncoding];
-        }
-        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
-            assert(commandBuffer.error == nil);
-            if (i == iterations - 1) {
-                float* fitnesses = afterFitnesses.contents;
-                assert(self->urlCount > 0);
-                float best = fitnesses[0];
-                for (uint32_t i = 0; i < self->generationSize; ++i) {
-                    NSLog(@"%" PRIu32 "\t%f", i, fitnesses[i]);
-                    best = MAX(best, fitnesses[i]);
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    callback(best);
-                });
+            id<MTLBuffer> beforeFitnesses;
+            id<MTLBuffer> afterFitnesses;
+            if (state) {
+                beforeFitnesses = fitnessABuffer;
+                afterFitnesses = fitnessBBuffer;
+            } else {
+                beforeFitnesses = fitnessBBuffer;
+                afterFitnesses = fitnessABuffer;
             }
-        }];
-        [commandBuffer commit];
-        state = !state;
+
+            id<MTLCommandBuffer> commandBuffer = [queue commandBuffer];
+            id<MTLComputeCommandEncoder> computeCommandEncoder = [commandBuffer computeCommandEncoder];
+            [self swapGlyphsWithComputeCommandEncoder:computeCommandEncoder andIndices:indices];
+            [self computeFitnessesWithComputeCommandEncoder:computeCommandEncoder andFitnessBuffer:afterFitnesses];
+            [self annealWithComputeCommandEncoder:computeCommandEncoder indices:indices beforeFitnesses:beforeFitnesses afterFitnesses:afterFitnesses];
+            [computeCommandEncoder endEncoding];
+            BOOL monitor = NO;
+            if (!inFlight) {
+                id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+                [blitEncoder copyFromBuffer:afterFitnesses sourceOffset:0 toBuffer:fitnessMonitorBuffer destinationOffset:0 size:generationSize * sizeof(uint32_t)];
+                [blitEncoder synchronizeResource:fitnessMonitorBuffer];
+                [blitEncoder endEncoding];
+                monitor = YES;
+                inFlight = true;
+            }
+            if (i == iterations - 1) {
+                id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
+                [blitEncoder synchronizeResource:afterFitnesses];
+                [blitEncoder endEncoding];
+            }
+            
+            [commandBuffer addCompletedHandler:checkError];
+            if (monitor) {
+                [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+                    assert(self->inFlight);
+                    float* fitnesses = self->fitnessMonitorBuffer.contents;
+                    for (uint32_t i = 0; i < self->generationSize; ++i)
+                        NSLog(@"%" PRIu32 "\t%f", i, fitnesses[i]);
+                    self->inFlight = NO;
+                }];
+            }
+            if (i == iterations - 1) {
+                [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
+                    float* fitnesses = afterFitnesses.contents;
+                    assert(self->urlCount > 0);
+                    float best = fitnesses[0];
+                    for (uint32_t i = 0; i < self->generationSize; ++i) {
+                        NSLog(@"%" PRIu32 "\t%f", i, fitnesses[i]);
+                        best = MAX(best, fitnesses[i]);
+                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        callback(best);
+                    });
+                }];
+            }
+            [commandBuffer commit];
+            state = !state;
+        }
     }
 }
 
