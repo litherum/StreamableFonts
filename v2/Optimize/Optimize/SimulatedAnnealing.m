@@ -21,7 +21,7 @@
     uint32_t urlCount;
     uint32_t generationSize;
     BOOL state;
-    BOOL inFlight;
+    //BOOL inFlight;
     NSUInteger iterations;
     float exponent;
     float maximumSlope;
@@ -43,7 +43,7 @@
     id<MTLBuffer> fitnessesPerURLBuffer;
     id<MTLBuffer> fitnessABuffer;
     id<MTLBuffer> fitnessBBuffer;
-    id<MTLBuffer> fitnessMonitorBuffer;
+    //id<MTLBuffer> fitnessMonitorBuffer;
 }
 
 - (instancetype)initWithGlyphData:(GlyphData *)glyphData seeds:(NSArray<NSArray<NSNumber *> *> *)seeds exponent:(float)exponent maximumSlope:(float)maximumSlope
@@ -61,8 +61,8 @@
         urlCount = (uint32_t)glyphData.urlCount;
         generationSize = (uint32_t)seeds.count;
         state = NO;
-        inFlight = NO;
-        iterations = 10000;
+        //inFlight = NO;
+        iterations = 30000;
 
         device = MTLCreateSystemDefaultDevice();
         queue = [device newCommandQueueWithMaxCommandBufferCount:iterations];
@@ -165,7 +165,7 @@
     fitnessesPerURLBuffer = [device newBufferWithLength:generationSize * urlCount * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
     fitnessABuffer = [device newBufferWithLength:generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
     fitnessBBuffer = [device newBufferWithLength:generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
-    fitnessMonitorBuffer = [device newBufferWithLength:generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
+    //fitnessMonitorBuffer = [device newBufferWithLength:generationSize * sizeof(uint32_t) options:MTLResourceStorageModeManaged];
 }
 
 - (void)computeFitnessesWithComputeCommandEncoder:(id<MTLComputeCommandEncoder>)computeCommandEncoder andFitnessBuffer:(id<MTLBuffer>)fitnessBuffer
@@ -253,7 +253,7 @@
             [self computeFitnessesWithComputeCommandEncoder:computeCommandEncoder andFitnessBuffer:afterFitnesses];
             [self annealWithComputeCommandEncoder:computeCommandEncoder indices:indices beforeFitnesses:beforeFitnesses afterFitnesses:afterFitnesses iteration:i];
             [computeCommandEncoder endEncoding];
-            BOOL monitor = NO;
+            /*BOOL monitor = NO;
             if (!inFlight) {
                 id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
                 [blitEncoder copyFromBuffer:afterFitnesses sourceOffset:0 toBuffer:fitnessMonitorBuffer destinationOffset:0 size:generationSize * sizeof(uint32_t)];
@@ -261,7 +261,7 @@
                 [blitEncoder endEncoding];
                 monitor = YES;
                 inFlight = true;
-            }
+            }*/
             if (i == iterations - 1) {
                 id<MTLBlitCommandEncoder> blitEncoder = [commandBuffer blitCommandEncoder];
                 [blitEncoder synchronizeResource:afterFitnesses];
@@ -269,7 +269,7 @@
             }
             
             [commandBuffer addCompletedHandler:checkError];
-            if (monitor) {
+            /*if (monitor) {
                 [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
                     assert(self->inFlight);
                     float* fitnesses = self->fitnessMonitorBuffer.contents;
@@ -277,7 +277,7 @@
                         NSLog(@"%" PRIu32 "\t%f", i, fitnesses[i]);
                     self->inFlight = NO;
                 }];
-            }
+            }*/
             if (i == iterations - 1) {
                 [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> commandBuffer) {
                     float* fitnesses = afterFitnesses.contents;
