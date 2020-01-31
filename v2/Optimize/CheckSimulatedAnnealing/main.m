@@ -16,7 +16,7 @@ int main(int argc, const char * argv[]) {
         GlyphData *glyphData = [GlyphData new];
         NSMutableArray<NSArray<NSNumber *> *> *seeds = [[Seeds new].seeds mutableCopy];
         [Seeds fillWithRandomSeeds:seeds withGlyphCount:glyphData.glyphCount untilCount:6];
-        SimulatedAnnealing *simulatedAnnealing = [[SimulatedAnnealing alloc] initWithGlyphData:glyphData andSeeds:seeds];
+        SimulatedAnnealing *simulatedAnnealing = [[SimulatedAnnealing alloc] initWithGlyphData:glyphData seeds:seeds exponent:0.25 maximumSlope:100000.0];
         float result = [simulatedAnnealing simulate];
         NSLog(@"Result: %f", result);
     }

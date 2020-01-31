@@ -13,6 +13,6 @@
 #import "GlyphData.h"
 
 @interface SimulatedAnnealing : NSObject
-- (instancetype)initWithGlyphData:(GlyphData *)glyphData andSeeds:(NSArray<NSArray<NSNumber *> *> *)seeds;
+- (instancetype)initWithGlyphData:(GlyphData *)glyphData seeds:(NSArray<NSArray<NSNumber *> *> *)seeds exponent:(float)exponent maximumSlope:(float)maximumSlope;
 - (float)simulate;
 @end

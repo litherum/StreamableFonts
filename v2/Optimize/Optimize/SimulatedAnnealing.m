@@ -23,6 +23,8 @@
     BOOL state;
     BOOL inFlight;
     NSUInteger iterations;
+    float exponent;
+    float maximumSlope;
 
     id<MTLDevice> device;
     id<MTLCommandQueue> queue;
@@ -44,13 +46,15 @@
     id<MTLBuffer> fitnessMonitorBuffer;
 }
 
-- (instancetype)initWithGlyphData:(GlyphData *)glyphData andSeeds:(NSArray<NSArray<NSNumber *> *> *)seeds
+- (instancetype)initWithGlyphData:(GlyphData *)glyphData seeds:(NSArray<NSArray<NSNumber *> *> *)seeds exponent:(float)exponent maximumSlope:(float)maximumSlope
 {
     self = [super init];
 
     if (self) {
         self->glyphData = glyphData;
         self->seeds = seeds;
+        self->exponent = exponent;
+        self->maximumSlope = maximumSlope;
         
         glyphCount = (uint32_t)glyphData.glyphCount;
         glyphBitfieldSize = (uint32_t)glyphData.glyphBitfieldSize;
@@ -81,6 +85,8 @@
     [constantValues setConstantValue:&glyphCount type:MTLDataTypeUInt withName:@"glyphCount"];
     [constantValues setConstantValue:&glyphBitfieldSize type:MTLDataTypeUInt withName:@"glyphBitfieldSize"];
     [constantValues setConstantValue:&urlCount type:MTLDataTypeUInt withName:@"urlCount"];
+    [constantValues setConstantValue:&exponent type:MTLDataTypeFloat withName:@"exponent"];
+    [constantValues setConstantValue:&maximumSlope type:MTLDataTypeFloat withName:@"maximumSlope"];
     fitnessFunction = [library newFunctionWithName:@"fitness" constantValues:constantValues error:&error];
     assert(error == nil);
     sumFitnessesFunction = [library newFunctionWithName:@"sumFitnesses" constantValues:constantValues error:&error];

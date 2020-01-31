@@ -7,12 +7,13 @@
 //
 
 #include <metal_stdlib>
-#include "SharedShaders.h"
 
 using namespace metal;
 
 constant uint32_t glyphCount [[function_constant(1)]];
 constant uint32_t urlCount [[function_constant(2)]];
+constant float exponent [[function_constant(3)]];
+constant float maximumSlope [[function_constant(4)]];
 
 void swap(device uint32_t* order, uint32_t index0, uint32_t index1) {
     uint32_t store = order[index0];
@@ -38,7 +39,7 @@ kernel void anneal(device uint32_t* generation [[buffer(0)]], const device uint3
     float randomNumber = randoms[generationIndex];
 
     // Higher values decrease the probability of moving to a new state which is worse than the current state.
-    const float scalar = pow(temperature, 0.25) * 100000.0f;
+    const float scalar = pow(temperature, exponent) * maximumSlope;
     if ((afterFitness - beforeFitness) * scalar + 1 < randomNumber) {
         // The neighbor is worse than the current state.
         // Go back to the current state.
