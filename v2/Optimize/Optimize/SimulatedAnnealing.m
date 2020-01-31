@@ -58,7 +58,7 @@
         generationSize = (uint32_t)seeds.count;
         state = NO;
         inFlight = NO;
-        iterations = 100000;
+        iterations = 10000;
 
         device = MTLCreateSystemDefaultDevice();
         queue = [device newCommandQueueWithMaxCommandBufferCount:iterations];
@@ -131,6 +131,7 @@
         annealPiplineDescriptor.buffers[2].mutability = MTLMutabilityImmutable;
         annealPiplineDescriptor.buffers[3].mutability = MTLMutabilityMutable;
         annealPiplineDescriptor.buffers[4].mutability = MTLMutabilityImmutable;
+        annealPiplineDescriptor.buffers[5].mutability = MTLMutabilityImmutable;
         annealState = [device newComputePipelineStateWithDescriptor:annealPiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
         assert(error == nil);
     }
@@ -187,7 +188,7 @@
     [computeCommandEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
 }
 
-- (void)annealWithComputeCommandEncoder:(id<MTLComputeCommandEncoder>)computeCommandEncoder indices:(NSData *)indices beforeFitnesses:(id<MTLBuffer>)beforeFitnesses afterFitnesses:(id<MTLBuffer>)afterFitnesses
+- (void)annealWithComputeCommandEncoder:(id<MTLComputeCommandEncoder>)computeCommandEncoder indices:(NSData *)indices beforeFitnesses:(id<MTLBuffer>)beforeFitnesses afterFitnesses:(id<MTLBuffer>)afterFitnesses iteration:(NSUInteger)iteration
 {
     [computeCommandEncoder setComputePipelineState:annealState];
     [computeCommandEncoder setBuffer:generationBuffer offset:0 atIndex:0];
@@ -199,6 +200,8 @@
     for (uint32_t i = 0; i < generationSize; ++i)
         randoms[i] = (float)arc4random() / UINT32_MAX;
     [computeCommandEncoder setBytes:randoms length:sizeof(randoms) atIndex:4];
+    float temperature = (float)iteration / (float)iterations;
+    [computeCommandEncoder setBytes:&temperature length:sizeof(float) atIndex:5];
     [computeCommandEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
 }
 
@@ -221,7 +224,7 @@
         assert(commandBuffer.error == nil);
     };
 
-    for (int i = 0; i < iterations; ++i) {
+    for (NSUInteger i = 0; i < iterations; ++i) {
         @autoreleasepool {
             NSMutableData *indices = [NSMutableData dataWithLength:sizeof(uint32_t) * generationSize * 2];
             uint32_t* ptr = [indices mutableBytes];
@@ -242,7 +245,7 @@
             id<MTLComputeCommandEncoder> computeCommandEncoder = [commandBuffer computeCommandEncoder];
             [self swapGlyphsWithComputeCommandEncoder:computeCommandEncoder andIndices:indices];
             [self computeFitnessesWithComputeCommandEncoder:computeCommandEncoder andFitnessBuffer:afterFitnesses];
-            [self annealWithComputeCommandEncoder:computeCommandEncoder indices:indices beforeFitnesses:beforeFitnesses afterFitnesses:afterFitnesses];
+            [self annealWithComputeCommandEncoder:computeCommandEncoder indices:indices beforeFitnesses:beforeFitnesses afterFitnesses:afterFitnesses iteration:i];
             [computeCommandEncoder endEncoding];
             BOOL monitor = NO;
             if (!inFlight) {
