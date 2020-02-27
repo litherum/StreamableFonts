@@ -23,8 +23,6 @@
     BOOL state;
     //BOOL inFlight;
     NSUInteger iterations;
-    float exponent;
-    float maximumSlope;
 
     id<MTLDevice> device;
     id<MTLCommandQueue> queue;
@@ -46,15 +44,13 @@
     //id<MTLBuffer> fitnessMonitorBuffer;
 }
 
-- (instancetype)initWithGlyphData:(GlyphData *)glyphData seeds:(NSArray<NSArray<NSNumber *> *> *)seeds exponent:(float)exponent maximumSlope:(float)maximumSlope
+- (instancetype)initWithGlyphData:(GlyphData *)glyphData seeds:(NSArray<NSArray<NSNumber *> *> *)seeds
 {
     self = [super init];
 
     if (self) {
         self->glyphData = glyphData;
         self->seeds = seeds;
-        self->exponent = exponent;
-        self->maximumSlope = maximumSlope;
         
         glyphCount = (uint32_t)glyphData.glyphCount;
         glyphBitfieldSize = (uint32_t)glyphData.glyphBitfieldSize;
@@ -62,9 +58,10 @@
         generationSize = (uint32_t)seeds.count;
         state = NO;
         //inFlight = NO;
-        iterations = 30000;
+        iterations = 30;
 
-        device = MTLCreateSystemDefaultDevice();
+        //device = MTLCreateSystemDefaultDevice();
+        device = MTLCopyAllDevices()[1];
         queue = [device newCommandQueueWithMaxCommandBufferCount:iterations];
 
         [self loadShaders];
@@ -85,8 +82,6 @@
     [constantValues setConstantValue:&glyphCount type:MTLDataTypeUInt withName:@"glyphCount"];
     [constantValues setConstantValue:&glyphBitfieldSize type:MTLDataTypeUInt withName:@"glyphBitfieldSize"];
     [constantValues setConstantValue:&urlCount type:MTLDataTypeUInt withName:@"urlCount"];
-    [constantValues setConstantValue:&exponent type:MTLDataTypeFloat withName:@"exponent"];
-    [constantValues setConstantValue:&maximumSlope type:MTLDataTypeFloat withName:@"maximumSlope"];
     fitnessFunction = [library newFunctionWithName:@"fitness" constantValues:constantValues error:&error];
     assert(error == nil);
     sumFitnessesFunction = [library newFunctionWithName:@"sumFitnesses" constantValues:constantValues error:&error];
@@ -136,8 +131,6 @@
         annealPiplineDescriptor.buffers[1].mutability = MTLMutabilityImmutable;
         annealPiplineDescriptor.buffers[2].mutability = MTLMutabilityImmutable;
         annealPiplineDescriptor.buffers[3].mutability = MTLMutabilityMutable;
-        annealPiplineDescriptor.buffers[4].mutability = MTLMutabilityImmutable;
-        annealPiplineDescriptor.buffers[5].mutability = MTLMutabilityImmutable;
         annealState = [device newComputePipelineStateWithDescriptor:annealPiplineDescriptor options:MTLPipelineOptionNone reflection:nil error:&error];
         assert(error == nil);
     }
@@ -202,12 +195,6 @@
     id<MTLBuffer> buffers[] = {beforeFitnesses, afterFitnesses};
     NSUInteger offsets[] = {0, 0};
     [computeCommandEncoder setBuffers:buffers offsets:offsets withRange:NSMakeRange(2, 2)];
-    float randoms[generationSize];
-    for (uint32_t i = 0; i < generationSize; ++i)
-        randoms[i] = (float)arc4random() / UINT32_MAX;
-    [computeCommandEncoder setBytes:randoms length:sizeof(randoms) atIndex:4];
-    float temperature = (float)iteration / (float)iterations;
-    [computeCommandEncoder setBytes:&temperature length:sizeof(float) atIndex:5];
     [computeCommandEncoder dispatchThreads:MTLSizeMake(generationSize, 1, 1) threadsPerThreadgroup:MTLSizeMake(512, 1, 1)];
 }
 
