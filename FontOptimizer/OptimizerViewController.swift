@@ -11,7 +11,8 @@ import Optimizer
 
 protocol OptimizerViewControllerDelegate : class {
     var glyphSizes: GlyphSizes? { get }
-    var requiredGlyphs: [Set<CGGlyph>]? { get }
+    var prunedGlyphSizes: GlyphSizes? { get }
+    var prunedRequiredGlyphs: [Set<CGGlyph>]? { get }
     var roundTripInBytes: Double { get }
 }
 
@@ -43,7 +44,10 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
         guard let glyphSizes = delegate?.glyphSizes else {
             return
         }
-        guard let requiredGlyphs = delegate?.requiredGlyphs else {
+        guard let prunedGlyphSizes = delegate?.prunedGlyphSizes else {
+            return
+        }
+        guard let prunedRequiredGlyphs = delegate?.prunedRequiredGlyphs else {
             return
         }
         guard let roundTripInBytes = delegate?.roundTripInBytes else {
@@ -53,13 +57,17 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
         isOptimizing = true
         // FIXME: Seeds
         var seed = [Int]()
-        var totalGlyphSize = 0
-        for i in 0 ..< glyphSizes.glyphSizes.count {
+        for i in 0 ..< prunedGlyphSizes.glyphSizes.count {
             seed.append(i)
-            totalGlyphSize += glyphSizes.glyphSizes[i]
         }
 
-        guard let fontOptimizer = FontOptimizer(glyphSizes: glyphSizes.glyphSizes, requiredGlyphs: requiredGlyphs, seeds: [seed], threshold: Int(roundTripInBytes), unconditionalDownloadSize: glyphSizes.fontSize - totalGlyphSize, fontSize: glyphSizes.fontSize, device: device, delegate: self) else {
+        var totalGlyphSize = 0
+        for i in 0 ..< glyphSizes.glyphSizes.count {
+            totalGlyphSize += glyphSizes.glyphSizes[i]
+        }
+        let unconditionalDownloadSize = glyphSizes.fontSize - totalGlyphSize
+
+        guard let fontOptimizer = FontOptimizer(glyphSizes: prunedGlyphSizes.glyphSizes, requiredGlyphs: prunedRequiredGlyphs, seeds: [seed], threshold: Int(roundTripInBytes), unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, delegate: self) else {
             return
         }
         self.fontOptimizer = fontOptimizer

@@ -211,7 +211,7 @@ public class GlyphSizes: NSObject {
     public let fontSize: Int
     public let glyphSizes: [Int]
 
-    init(fontSize: Int, glyphSizes: [Int]) {
+    public init(fontSize: Int, glyphSizes: [Int]) {
         self.fontSize = fontSize
         self.glyphSizes = glyphSizes
     }

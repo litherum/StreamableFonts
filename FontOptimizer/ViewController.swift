@@ -17,14 +17,19 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     var currentFont: CTFont!
     var glyphSizes: GlyphSizes? {
         didSet {
+            prune()
             checkIfReady()
         }
     }
+    var prunedGlyphSizes: GlyphSizes?
     var requiredGlyphs: [Set<CGGlyph>]? {
         didSet {
+            prune()
             checkIfReady()
         }
     }
+    var prunedRequiredGlyphs: [Set<CGGlyph>]?
+    var glyphMapping: [CGGlyph]? // glyphMapping[nonPrunedGlyph] = prunedGlyph
     @objc dynamic var roundTripInBytes = Double(0) {
         didSet {
             checkIfReady()
@@ -52,8 +57,45 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
         roundTripInBytes = result
     }
 
+    private func prune() {
+        guard let glyphSizes = self.glyphSizes else {
+            return
+        }
+        guard let requiredGlyphs = self.requiredGlyphs else {
+            return
+        }
+        var set = Set<CGGlyph>()
+        for glyphs in requiredGlyphs {
+            set = set.union(glyphs)
+        }
+
+        glyphMapping = Array(repeating: CGGlyph(0), count: glyphSizes.glyphSizes.count)
+        var newIndex = CGGlyph(1)
+        for i in 1 ..< glyphSizes.glyphSizes.count {
+            if set.contains(CGGlyph(i)) {
+                glyphMapping![i] = newIndex
+                newIndex += 1
+            }
+        }
+
+        var newGlyphSizes = Array(repeating: 0, count: Int(newIndex))
+        newGlyphSizes[0] = glyphSizes.glyphSizes[0]
+        for i in 1 ..< glyphSizes.glyphSizes.count {
+            if glyphMapping![i] != 0 {
+                newGlyphSizes[Int(glyphMapping![i])] = glyphSizes.glyphSizes[i]
+            }
+        }
+        prunedGlyphSizes = GlyphSizes(fontSize: glyphSizes.fontSize, glyphSizes: newGlyphSizes)
+
+        prunedRequiredGlyphs = [Set<CGGlyph>]()
+        for glyphs in requiredGlyphs {
+            let newSet = Set<CGGlyph>(glyphs.map { glyphMapping![Int($0)] })
+            prunedRequiredGlyphs!.append(newSet)
+        }
+    }
+
     func checkIfReady() {
-        guard !optimizerViewController.isOptimizing && glyphSizes != nil && requiredGlyphs?.count != 0 else {
+        guard !optimizerViewController.isOptimizing && glyphSizes != nil && requiredGlyphs != nil && requiredGlyphs?.count != 0 else {
             return
         }
         optimizerViewController.isReady = true
