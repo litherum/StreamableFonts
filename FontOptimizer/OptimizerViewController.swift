@@ -38,7 +38,21 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
     }
 
     @IBAction func startButtonAction(_ sender: NSButton) {
-        guard let device = MTLCreateSystemDefaultDevice() else {
+        var testDevice: MTLDevice?
+        if let activeDisplayID = view.window?.screen?.deviceDescription[NSDeviceDescriptionKey(rawValue: "NSScreenNumber")] as? CGDirectDisplayID {
+            if let activeDevice = CGDirectDisplayCopyCurrentMetalDevice(activeDisplayID) {
+                for device in MTLCopyAllDevices() {
+                    if activeDevice.name != device.name { // This isn't perfect, but I can't seem to get withUnsafePointer(to:) to work with these MTLDevices
+                        testDevice = device
+                        break
+                    }
+                }
+            }
+        }
+        if testDevice == nil {
+            testDevice = MTLCreateSystemDefaultDevice()
+        }
+        guard let device = testDevice else {
             return
         }
         guard let glyphSizes = delegate?.glyphSizes else {

@@ -75,6 +75,7 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
         operationQueue.addOperation {
             let glyphSizes = Optimizer.computeGlyphSizes(font: font)
             OperationQueue.main.addOperation {
+                self.delegate?.requiredGlyphs = nil
                 self.delegate?.glyphSizes = glyphSizes
                 self.glyphSizesStatus.isHidden = false
                 if let sizes = glyphSizes {
