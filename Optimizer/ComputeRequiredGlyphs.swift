@@ -10,6 +10,7 @@ import Foundation
 import CoreText
 
 public func computeRequiredGlyphs(font: CTFont, urlContents: [String], callback: @escaping (Int, Set<CGGlyph>?) -> Void) -> OperationQueue {
+    let glyphCount = CTFontGetGlyphCount(font)
     let operationQueue = OperationQueue()
     for i in 0 ..< urlContents.count {
         operationQueue.addOperation {
@@ -33,7 +34,7 @@ public func computeRequiredGlyphs(font: CTFont, urlContents: [String], callback:
                 }
                 var glyphs = [CGGlyph](repeating: CGGlyph(), count: CTRunGetGlyphCount(run))
                 CTRunGetGlyphs(run, CFRangeMake(0, CTRunGetGlyphCount(run)), &glyphs)
-                set = set.union(glyphs.filter {$0 != 0xFFFF})
+                set = set.union(glyphs.filter {$0 < glyphCount && $0 != 0xFFFF})
             }
             callback(i, set)
         }

@@ -114,8 +114,16 @@ fileprivate func charStringsOffsetFromTopDict(dictData: Data) -> Int32? {
             value = (Int32(dictData[index + 1]) << 24) | (Int32(dictData[index + 2]) << 16) | (Int32(dictData[index + 3]) << 8) | (Int32(dictData[index + 4]) << 0)
             index += 5
         } else if (b0 == 30) {
-            // Real number operands are not implemented.
-            return nil
+            while true {
+                guard index < dictData.count else {
+                    return nil
+                }
+                let b = dictData[index]
+                index += 1
+                guard (b & 0xF0) != 0xF0 && (b & 0x0F) != 0x0F else {
+                    break
+                }
+            }
         } else if ((b0 >= 22 && b0 <= 27) || b0 == 31 || b0 == 255) {
             // Reserved.
             return nil
@@ -152,7 +160,7 @@ fileprivate func charStringsOffsetFromTopDictIndex(indexData: Data) -> Int32? {
         return nil
     }
     let dictSize = offset - 1
-    let endIndex = Int(dictSize)
+    let endIndex = 2 + 1 + Int(offsetSize) * 2 + Int(dictSize)
     guard indexData.count >= beginIndex && endIndex >= 0 && indexData.count >= beginIndex + endIndex else {
         return nil
     }
@@ -339,13 +347,13 @@ public func computeGlyphSizes(font: CTFont) -> GlyphSizes? {
         /*let a = Character(Unicode.Scalar((tag & 0xFF000000) >> 24)!)
         let b = Character(Unicode.Scalar((tag & 0x00FF0000) >> 16)!)
         let c = Character(Unicode.Scalar((tag & 0x0000FF00) >>  8)!)
-        let d = Character(Unicode.Scalar((tag & 0x000000FF) >>  0)!)
-        print("\(a)\(b)\(c)\(d)")*/
+        let d = Character(Unicode.Scalar((tag & 0x000000FF) >>  0)!)*/
         guard let cfTable = CTFontCopyTable(font, CTFontTableTag(tag), []) else {
-            return nil
+            //print("\(a)\(b)\(c)\(d) (empty)")
+            continue
         }
         let table = cfTable as Data
-        fontSize += table.count
+        //print("\(a)\(b)\(c)\(d) \(table.count)")
         if tag == kCTFontTableCFF {
             if foundGlyphTable {
                 return nil
@@ -355,6 +363,7 @@ public func computeGlyphSizes(font: CTFont) -> GlyphSizes? {
             }
             glyphSizes = result
             foundGlyphTable = true
+            fontSize += table.count
         } else if tag == kCTFontTableGlyf {
             if foundGlyphTable {
                 return nil
@@ -370,6 +379,9 @@ public func computeGlyphSizes(font: CTFont) -> GlyphSizes? {
             }
             glyphSizes = result
             foundGlyphTable = true
+            fontSize += result.reduce(0, +)
+        } else {
+            fontSize += table.count
         }
     }
     guard foundGlyphTable else {
