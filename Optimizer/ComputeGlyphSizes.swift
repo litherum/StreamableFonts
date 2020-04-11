@@ -16,6 +16,13 @@ fileprivate func read16BigEndian(data: Data) -> UInt16? {
     return (UInt16(data[0]) << 8) | (UInt16(data[1]) << 0)
 }
 
+fileprivate func read32BigEndian(data: Data) -> UInt32? {
+    guard data.count >= 4 else {
+        return nil
+    }
+    return (UInt32(data[0]) << 24) | (UInt32(data[1]) << 16) | (UInt32(data[2]) << 8) | (UInt32(data[3]) << 0)
+}
+
 fileprivate func readOffset(data: Data, index: Int, offsetSize: UInt8)-> UInt32? {
     var result = UInt32(0)
     var count = 0
@@ -207,6 +214,108 @@ fileprivate func glyphSizesCFF(cffTable: Data) -> [Int]? {
     return glyphSizes
 }
 
+fileprivate func resolve(index: Int, rawData: [Data], glyphSizes: inout [Int]) -> Bool {
+    guard index < rawData.count else {
+        return false
+    }
+    guard glyphSizes[index] == 0 else {
+        return true
+    }
+    guard rawData[index].count > 0 else {
+        glyphSizes[index] = 0
+        return true
+    }
+    guard let numberOfContours = read16BigEndian(data: rawData[index]) else {
+        return false
+    }
+    let signedNumberOfContours = Int16(bitPattern: numberOfContours)
+    guard signedNumberOfContours < 0 else {
+        // Single glyph
+        glyphSizes[index] = rawData[index].count
+        return true
+    }
+    // Compound glyph
+    var i = 10
+    var total = 0
+    while true {
+        guard let flags = read16BigEndian(data: rawData[index].advanced(by: i)) else {
+            return false
+        }
+        guard let glyphIndex = read16BigEndian(data: rawData[index].advanced(by: i + 2)) else {
+            return false
+        }
+        guard resolve(index: Int(glyphIndex), rawData: rawData, glyphSizes: &glyphSizes) else {
+            return false
+        }
+        total += rawData[Int(glyphIndex)].count
+        let words = flags & (1 << 0) != 0
+        if words {
+            i += 8
+        } else {
+            i += 6
+        }
+        if flags & (1 << 3) != 0 {
+            i += 2
+        }
+        if flags & (1 << 6) != 0 {
+            i += 4
+        }
+        if flags & (1 << 7) != 0 {
+            i += 8
+        }
+        let more = flags & (0x1 << 5) != 0
+        guard more else {
+            break
+        }
+    }
+    glyphSizes[index] = total
+    return true
+}
+
+fileprivate func glyphSizesGlyf(glyfTable: Data, locaTable: Data, headTable: Data, glyphCount: Int) -> [Int]? {
+    let indexToLocFormat = read16BigEndian(data: headTable.advanced(by: 50))
+    guard indexToLocFormat == 0 || indexToLocFormat == 1 else {
+        return nil
+    }
+    var rawData = [Data]()
+    for i in 0 ..< glyphCount {
+        var begin = 0
+        var end = 0
+        if indexToLocFormat == 0 {
+            // Short offsets
+            guard let beginOffset = read16BigEndian(data: locaTable.advanced(by: i * 2)) else {
+                return nil
+            }
+            guard let endOffset = read16BigEndian(data: locaTable.advanced(by: (i + 1) * 2)) else {
+                return nil
+            }
+            begin = Int(beginOffset) * 2
+            end = Int(endOffset) * 2
+        } else {
+            guard let beginOffset = read32BigEndian(data: locaTable.advanced(by: i * 4)) else {
+                return nil
+            }
+            guard let endOffset = read32BigEndian(data: locaTable.advanced(by: (i + 1) * 4)) else {
+                return nil
+            }
+            begin = Int(beginOffset)
+            end = Int(endOffset)
+            guard begin <= end else {
+                return nil
+            }
+        }
+        rawData.append(glyfTable.subdata(in: begin ..< end))
+    }
+
+    var glyphSizes = Array(repeating: 0, count: glyphCount)
+    for i in 0 ..< glyphCount {
+        guard resolve(index: i, rawData: rawData, glyphSizes: &glyphSizes) else {
+            return nil
+        }
+    }
+    return glyphSizes
+}
+
 public class GlyphSizes: NSObject {
     public let fontSize: Int
     public let glyphSizes: [Int]
@@ -218,6 +327,7 @@ public class GlyphSizes: NSObject {
 }
 
 public func computeGlyphSizes(font: CTFont) -> GlyphSizes? {
+    let glyphCount = CTFontGetGlyphCount(font)
     guard let tables = CTFontCopyAvailableTables(font, []) else {
         return nil
     }
@@ -226,6 +336,11 @@ public func computeGlyphSizes(font: CTFont) -> GlyphSizes? {
     var foundGlyphTable = false
     for i in 0 ..< CFArrayGetCount(tables) {
         let tag = CFArrayGetValueAtIndex(tables, i) - UnsafeRawPointer(bitPattern: 1)! + 1
+        /*let a = Character(Unicode.Scalar((tag & 0xFF000000) >> 24)!)
+        let b = Character(Unicode.Scalar((tag & 0x00FF0000) >> 16)!)
+        let c = Character(Unicode.Scalar((tag & 0x0000FF00) >>  8)!)
+        let d = Character(Unicode.Scalar((tag & 0x000000FF) >>  0)!)
+        print("\(a)\(b)\(c)\(d)")*/
         guard let cfTable = CTFontCopyTable(font, CTFontTableTag(tag), []) else {
             return nil
         }
@@ -236,6 +351,21 @@ public func computeGlyphSizes(font: CTFont) -> GlyphSizes? {
                 return nil
             }
             guard let result = glyphSizesCFF(cffTable: table) else {
+                return nil
+            }
+            glyphSizes = result
+            foundGlyphTable = true
+        } else if tag == kCTFontTableGlyf {
+            if foundGlyphTable {
+                return nil
+            }
+            guard let loca = CTFontCopyTable(font, CTFontTableTag(kCTFontTableLoca), []) else {
+                return nil
+            }
+            guard let head = CTFontCopyTable(font, CTFontTableTag(kCTFontTableHead), []) else {
+                return nil
+            }
+            guard let result = glyphSizesGlyf(glyfTable: table, locaTable: loca as Data, headTable: head as Data, glyphCount: glyphCount) else {
                 return nil
             }
             glyphSizes = result

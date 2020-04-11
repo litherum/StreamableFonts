@@ -78,13 +78,21 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
                 self.delegate?.glyphSizes = glyphSizes
                 self.glyphSizesStatus.isHidden = false
                 if let sizes = glyphSizes {
-                    let average = Double(sizes.glyphSizes.reduce(0, +)) / Double(sizes.glyphSizes.count)
+                    let total = sizes.glyphSizes.reduce(0, +)
+                    let average = Double(total) / Double(sizes.glyphSizes.count)
                     let sorted = sizes.glyphSizes.sorted()
                     let median = sorted[sorted.count / 2]
                     let byteCountFormatter = ByteCountFormatter()
+                    let numberFormatter = NumberFormatter()
+                    numberFormatter.minimumFractionDigits = 1
+                    numberFormatter.maximumFractionDigits = 1
+                    guard let percentage = numberFormatter.string(from: 100 * Double(total) / Double(sizes.fontSize) as NSNumber) else {
+                        return
+                    }
                     self.glyphSizesStatus.stringValue = """
 Size: \(byteCountFormatter.string(fromByteCount: Int64(sizes.fontSize)))
 \(sizes.glyphSizes.count) glyphs
+\(percentage)% of the file is glyphs
 Average glyph is \(byteCountFormatter.string(fromByteCount: Int64(average)))
 Median glyph is \(byteCountFormatter.string(fromByteCount: Int64(median)))
 """
