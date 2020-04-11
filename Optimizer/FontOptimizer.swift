@@ -330,7 +330,7 @@ public class FontOptimizer {
         computeCommandEncoder.setBuffers([generationBuffer, glyphSizesBuffer, urlBitmapsBuffer, fitnessesPerURLBuffer], offsets: [0, 0, 0, 0], range: 0 ..< 4)
         computeCommandEncoder.dispatchThreads(MTLSize(width: generationSize, height: urlCount, depth: 1), threadsPerThreadgroup: MTLSize(width: 32, height: 32, depth: 1))
 
-        computeCommandEncoder.setComputePipelineState(fitnessState)
+        computeCommandEncoder.setComputePipelineState(sumFitnessesState)
         computeCommandEncoder.setBuffers([fitnessesPerURLBuffer, fitnessBuffer], offsets: [0, 0], range: 0 ..< 2)
         computeCommandEncoder.dispatchThreads(MTLSize(width: generationSize, height: 1, depth: 1), threadsPerThreadgroup: MTLSize(width: 512, height: 1, depth: 1))
     }
@@ -343,7 +343,7 @@ public class FontOptimizer {
     }
 
     private func anneal(computeCommandEncoder: MTLComputeCommandEncoder, indices: [UInt32], beforeFitnesses: MTLBuffer, afterFitnesses: MTLBuffer) {
-        computeCommandEncoder.setComputePipelineState(swapGlyphsState)
+        computeCommandEncoder.setComputePipelineState(annealState)
         computeCommandEncoder.setBuffer(generationBuffer, offset: 0, index: 0)
         computeCommandEncoder.setBytes(indices, length: MemoryLayout<UInt32>.stride * indices.count, index: 1)
         computeCommandEncoder.setBuffers([beforeFitnesses, afterFitnesses], offsets: [0, 0], range: 2 ..< 4)

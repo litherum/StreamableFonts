@@ -23,7 +23,7 @@ static inline bool glyphIsNecessary(device uint8_t* urlBitmaps, uint urlIndex, u
 kernel void fitness(device uint32_t* generation [[buffer(0)]], device uint32_t* glyphSizes [[buffer(1)]], device uint8_t* urlBitmaps [[buffer(2)]], device uint32_t* output [[buffer(3)]], uint2 tid [[thread_position_in_grid]]) {
     uint generationIndex = tid.x;
     uint urlIndex = tid.y;
-    uint32_t result = unconditionalDownloadSize + threshold;
+    uint32_t result = unconditionalDownloadSize;
     uint32_t unnecessarySize = 0;
     bool state = false;
     for (uint32_t i = 0; i < glyphCount; ++i) {

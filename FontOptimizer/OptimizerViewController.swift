@@ -102,7 +102,7 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
 
     func report(fitness: Float) {
         OperationQueue.main.addOperation {
-            guard let s = self.numberFormatter.string(from: fitness as NSNumber) else {
+            guard let s = self.numberFormatter.string(from: fitness * 100 as NSNumber) else {
                 return
             }
             self.percentageTextField.stringValue = "\(s)%"
@@ -118,8 +118,8 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        numberFormatter.minimumFractionDigits = 1
-        numberFormatter.maximumFractionDigits = 1
+        numberFormatter.minimumFractionDigits = 5
+        numberFormatter.maximumFractionDigits = 5
         
         if let fontDescriptor = NSFont.systemFont(ofSize: 70).fontDescriptor.withDesign(.monospaced) {
             let font = NSFont(descriptor: fontDescriptor, size: 70)
