@@ -99,6 +99,24 @@ class FontListViewController: NSViewController {
         }
     }
 
+    @IBAction func addFont(_ sender: NSButton) {
+        let openPanel = NSOpenPanel()
+        openPanel.allowsMultipleSelection = true
+        openPanel.begin {(response) in
+            guard response == .OK else {
+                return
+            }
+            for url in openPanel.urls {
+                guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(url as NSURL) as? [CTFontDescriptor] else {
+                    continue
+                }
+                for fontDescriptor in fontDescriptors {
+                    self.fontListArrayController.addObject(FontObject(fontDescriptor: fontDescriptor))
+                }
+            }
+        }
+    }
+
     func updateFont() {
         delegate?.currentFont = CTFontCreateWithFontDescriptor((fontListArrayController.selectedObjects[0] as! FontObject).fontDescriptor, 0, nil)
     }

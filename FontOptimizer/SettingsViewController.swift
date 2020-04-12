@@ -17,7 +17,6 @@ import Optimizer
 }
 
 class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControllerDelegate, MeasureRoundTripTimeViewControllerDelegate {
-    @IBOutlet var computeGlyphSizesButton: NSButton!
     @IBOutlet var glyphSizesStatus: NSTextField!
     @IBOutlet var glyphSizesStatusWidthConstraint: NSLayoutConstraint!
     @IBOutlet var corpusExample: NSTextField!
@@ -64,9 +63,7 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
         corpusExamleWidthConstraint.constant = corpusExample.intrinsicContentSize.width
     }
 
-    @IBAction func computeGlyphSizes(_ sender: NSButton) {
-        computeGlyphSizesButton.isEnabled = false
-
+    func computeGlyphSizes() {
         guard let font = delegate?.currentFont else {
             return
         }
@@ -101,7 +98,6 @@ Median glyph is \(byteCountFormatter.string(fromByteCount: Int64(median)))
                     self.glyphSizesStatus.stringValue = "Error parsing!"
                 }
                 self.glyphSizesStatusWidthConstraint.constant = self.glyphSizesStatus.intrinsicContentSize.width
-                self.computeGlyphSizesButton.isEnabled = true
             }
         }
     }

@@ -14,7 +14,11 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     var fontListViewController: FontListViewController!
     var settingsViewController: SettingsViewController!
     var optimizerViewController: OptimizerViewController!
-    var currentFont: CTFont!
+    var currentFont: CTFont! {
+        didSet {
+            settingsViewController.computeGlyphSizes()
+        }
+    }
     var glyphSizes: GlyphSizes? {
         didSet {
             prune()
