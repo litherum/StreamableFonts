@@ -9,18 +9,18 @@
 import Foundation
 import CoreText
 
-fileprivate func read16BigEndian(data: Data) -> UInt16? {
-    guard data.count >= 2 else {
+fileprivate func read16BigEndian(data: Data, offset: Int) -> UInt16? {
+    guard data.count >= 2 + offset else {
         return nil
     }
-    return (UInt16(data[0]) << 8) | (UInt16(data[1]) << 0)
+    return (UInt16(data[offset + 0]) << 8) | (UInt16(data[offset + 1]) << 0)
 }
 
-fileprivate func read32BigEndian(data: Data) -> UInt32? {
-    guard data.count >= 4 else {
+fileprivate func read32BigEndian(data: Data, offset: Int) -> UInt32? {
+    guard data.count >= 4 + offset else {
         return nil
     }
-    return (UInt32(data[0]) << 24) | (UInt32(data[1]) << 16) | (UInt32(data[2]) << 8) | (UInt32(data[3]) << 0)
+    return (UInt32(data[offset + 0]) << 24) | (UInt32(data[offset + 1]) << 16) | (UInt32(data[offset + 2]) << 8) | (UInt32(data[offset + 3]) << 0)
 }
 
 fileprivate func readOffset(data: Data, index: Int, offsetSize: UInt8)-> UInt32? {
@@ -60,7 +60,7 @@ fileprivate func readOffset(data: Data, index: Int, offsetSize: UInt8)-> UInt32?
 }
 
 fileprivate func indexSize(indexData: Data) -> Int? {
-    guard let count = read16BigEndian(data: indexData) else {
+    guard let count = read16BigEndian(data: indexData, offset: 0) else {
         return nil
     }
     guard count != 0 else {
@@ -142,7 +142,7 @@ fileprivate func charStringsOffsetFromTopDict(dictData: Data) -> Int32? {
 }
 
 fileprivate func charStringsOffsetFromTopDictIndex(indexData: Data) -> Int32? {
-    guard let count = read16BigEndian(data: indexData) else {
+    guard let count = read16BigEndian(data: indexData, offset: 0) else {
         return nil
     }
     guard count == 1 else {
@@ -199,7 +199,7 @@ fileprivate func glyphSizesCFF(cffTable: Data) -> [Int]? {
     guard cffTable.count >= Int(charStringsOffset) + 2 + 1 else {
         return nil
     }
-    guard let glyphCount = read16BigEndian(data: cffTable.advanced(by: Int(charStringsOffset))) else {
+    guard let glyphCount = read16BigEndian(data: cffTable, offset: Int(charStringsOffset)) else {
         return nil
     }
     let offsetSize = cffTable[Int(charStringsOffset) + 2]
@@ -233,7 +233,7 @@ fileprivate func resolve(index: Int, rawData: [Data], glyphSizes: inout [Int]) -
         glyphSizes[index] = 0
         return true
     }
-    guard let numberOfContours = read16BigEndian(data: rawData[index]) else {
+    guard let numberOfContours = read16BigEndian(data: rawData[index], offset: 0) else {
         return false
     }
     let signedNumberOfContours = Int16(bitPattern: numberOfContours)
@@ -246,10 +246,10 @@ fileprivate func resolve(index: Int, rawData: [Data], glyphSizes: inout [Int]) -
     var i = 10
     var total = 0
     while true {
-        guard let flags = read16BigEndian(data: rawData[index].advanced(by: i)) else {
+        guard let flags = read16BigEndian(data: rawData[index], offset: i) else {
             return false
         }
-        guard let glyphIndex = read16BigEndian(data: rawData[index].advanced(by: i + 2)) else {
+        guard let glyphIndex = read16BigEndian(data: rawData[index], offset: i + 2) else {
             return false
         }
         guard resolve(index: Int(glyphIndex), rawData: rawData, glyphSizes: &glyphSizes) else {
@@ -281,7 +281,9 @@ fileprivate func resolve(index: Int, rawData: [Data], glyphSizes: inout [Int]) -
 }
 
 fileprivate func glyphSizesGlyf(glyfTable: Data, locaTable: Data, headTable: Data, glyphCount: Int) -> [Int]? {
-    let indexToLocFormat = read16BigEndian(data: headTable.advanced(by: 50))
+    guard let indexToLocFormat = read16BigEndian(data: headTable, offset: 50) else {
+        return nil
+    }
     guard indexToLocFormat == 0 || indexToLocFormat == 1 else {
         return nil
     }
@@ -291,19 +293,19 @@ fileprivate func glyphSizesGlyf(glyfTable: Data, locaTable: Data, headTable: Dat
         var end = 0
         if indexToLocFormat == 0 {
             // Short offsets
-            guard let beginOffset = read16BigEndian(data: locaTable.advanced(by: i * 2)) else {
+            guard let beginOffset = read16BigEndian(data: locaTable, offset: i * 2) else {
                 return nil
             }
-            guard let endOffset = read16BigEndian(data: locaTable.advanced(by: (i + 1) * 2)) else {
+            guard let endOffset = read16BigEndian(data: locaTable, offset: (i + 1) * 2) else {
                 return nil
             }
             begin = Int(beginOffset) * 2
             end = Int(endOffset) * 2
         } else {
-            guard let beginOffset = read32BigEndian(data: locaTable.advanced(by: i * 4)) else {
+            guard let beginOffset = read32BigEndian(data: locaTable, offset: i * 4) else {
                 return nil
             }
-            guard let endOffset = read32BigEndian(data: locaTable.advanced(by: (i + 1) * 4)) else {
+            guard let endOffset = read32BigEndian(data: locaTable, offset: (i + 1) * 4) else {
                 return nil
             }
             begin = Int(beginOffset)

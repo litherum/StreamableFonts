@@ -14,13 +14,12 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     var fontListViewController: FontListViewController!
     var settingsViewController: SettingsViewController!
     var optimizerViewController: OptimizerViewController!
-    var currentFont: CTFont! {
-        didSet {
-            settingsViewController.computeGlyphSizes()
-        }
-    }
+    var currentFont: CTFont?
     var glyphSizes: GlyphSizes? {
         didSet {
+            if let sizes = glyphSizes {
+                settingsViewController.update(glyphSizes: sizes)
+            }
             prune()
             checkIfReady()
         }
@@ -51,10 +50,6 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
         optimizerViewController.delegate = self
 
         fontListViewController.updateFont()
-    }
-
-    func setFont(font: CTFont) {
-        self.currentFont = font
     }
 
     func setRoundTripTime(result: Double) {

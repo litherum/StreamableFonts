@@ -10,7 +10,6 @@ import Cocoa
 import Optimizer
 
 @objc protocol SettingsViewControllerDelegate : class {
-    var glyphSizes: GlyphSizes? { get set }
     var currentFont: CTFont! { get }
     var requiredGlyphs: [Set<CGGlyph>]? { get set }
     var roundTripInBytes: Double { get set }
@@ -63,43 +62,28 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
         corpusExamleWidthConstraint.constant = corpusExample.intrinsicContentSize.width
     }
 
-    func computeGlyphSizes() {
-        guard let font = delegate?.currentFont else {
+    func update(glyphSizes: GlyphSizes) {
+        self.delegate?.requiredGlyphs = nil
+        self.glyphSizesStatus.isHidden = false
+        let total = glyphSizes.glyphSizes.reduce(0, +)
+        let average = Double(total) / Double(glyphSizes.glyphSizes.count)
+        let sorted = glyphSizes.glyphSizes.sorted()
+        let median = sorted[sorted.count / 2]
+        let byteCountFormatter = ByteCountFormatter()
+        let numberFormatter = NumberFormatter()
+        numberFormatter.minimumFractionDigits = 1
+        numberFormatter.maximumFractionDigits = 1
+        guard let percentage = numberFormatter.string(from: 100 * Double(total) / Double(glyphSizes.fontSize) as NSNumber) else {
             return
         }
-
-        let operationQueue = OperationQueue()
-        operationQueue.addOperation {
-            let glyphSizes = Optimizer.computeGlyphSizes(font: font)
-            OperationQueue.main.addOperation {
-                self.delegate?.requiredGlyphs = nil
-                self.delegate?.glyphSizes = glyphSizes
-                self.glyphSizesStatus.isHidden = false
-                if let sizes = glyphSizes {
-                    let total = sizes.glyphSizes.reduce(0, +)
-                    let average = Double(total) / Double(sizes.glyphSizes.count)
-                    let sorted = sizes.glyphSizes.sorted()
-                    let median = sorted[sorted.count / 2]
-                    let byteCountFormatter = ByteCountFormatter()
-                    let numberFormatter = NumberFormatter()
-                    numberFormatter.minimumFractionDigits = 1
-                    numberFormatter.maximumFractionDigits = 1
-                    guard let percentage = numberFormatter.string(from: 100 * Double(total) / Double(sizes.fontSize) as NSNumber) else {
-                        return
-                    }
-                    self.glyphSizesStatus.stringValue = """
-Size: \(byteCountFormatter.string(fromByteCount: Int64(sizes.fontSize)))
-\(sizes.glyphSizes.count) glyphs
+        self.glyphSizesStatus.stringValue = """
+Size: \(byteCountFormatter.string(fromByteCount: Int64(glyphSizes.fontSize)))
+\(glyphSizes.glyphSizes.count) glyphs
 \(percentage)% of the file is glyphs
 Average glyph is \(byteCountFormatter.string(fromByteCount: Int64(average)))
 Median glyph is \(byteCountFormatter.string(fromByteCount: Int64(median)))
 """
-                } else {
-                    self.glyphSizesStatus.stringValue = "Error parsing!"
-                }
-                self.glyphSizesStatusWidthConstraint.constant = self.glyphSizesStatus.intrinsicContentSize.width
-            }
-        }
+        self.glyphSizesStatusWidthConstraint.constant = self.glyphSizesStatus.intrinsicContentSize.width
     }
 
     @IBAction func selectCorpusFile(_ sender: NSButton) {
