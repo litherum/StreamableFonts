@@ -1219,16 +1219,19 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cYQ-uy-3eb">
-                                                    <rect key="frame" x="20" y="20" width="209" height="74"/>
+                                                    <rect key="frame" x="20" y="20" width="96" height="74"/>
                                                     <subviews>
                                                         <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jo3-Fj-V8S">
                                                             <rect key="frame" x="0.0" y="53" width="96" height="21"/>
-                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="1" drawsBackground="YES" id="1NK-8d-dlh">
+                                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="0" drawsBackground="YES" id="1NK-8d-dlh">
                                                                 <numberFormatter key="formatter" formatterBehavior="default10_4" usesGroupingSeparator="NO" formatWidth="-1" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="42" id="YfB-CX-bck"/>
                                                                 <font key="font" metaFont="system"/>
                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
+                                                            <connections>
+                                                                <action selector="setSeedCount:" target="hcP-kM-kXj" id="c5M-R7-brs"/>
+                                                            </connections>
                                                         </textField>
                                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kEr-3R-MhB">
                                                             <rect key="frame" x="-6" y="17" width="87" height="32"/>
@@ -1241,8 +1244,8 @@
                                                             </connections>
                                                         </button>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ahf-Ze-RuO">
-                                                            <rect key="frame" x="-2" y="0.0" width="213" height="16"/>
-                                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Using 1 randomly-generated seed." id="Bd9-BI-B5w">
+                                                            <rect key="frame" x="-2" y="0.0" width="87" height="16"/>
+                                                            <textFieldCell key="cell" lineBreakMode="clipping" title="No seeds yet." id="Bd9-BI-B5w">
                                                                 <font key="font" metaFont="system"/>
                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1664,41 +1667,44 @@ Gw
         <scene sceneID="ait-3B-8vl">
             <objects>
                 <viewController id="UQ5-DO-Y8a" customClass="ChooseSeedsViewController" customModule="FontOptimizer" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" misplaced="YES" id="9Qn-oj-uh3">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="54"/>
+                    <view key="view" id="9Qn-oj-uh3">
+                        <rect key="frame" x="0.0" y="0.0" width="464" height="194"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <stackView orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ygP-6j-xbD">
-                                <rect key="frame" x="20" y="20" width="410" height="109"/>
+                                <rect key="frame" x="20" y="20" width="424" height="154"/>
                                 <beginningViews>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fW0-p5-dce">
-                                        <rect key="frame" x="-2" y="93" width="125" height="18"/>
+                                        <rect key="frame" x="-2" y="138" width="125" height="18"/>
                                         <buttonCell key="cell" type="check" title="Frequency Order" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lHy-yH-RkH">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="86N-0d-YcR">
-                                        <rect key="frame" x="-2" y="71" width="79" height="18"/>
+                                        <rect key="frame" x="-2" y="116" width="79" height="18"/>
                                         <buttonCell key="cell" type="check" title="Last Best" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="sZe-6o-0Bz">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gTr-NE-lre">
-                                        <rect key="frame" x="-2" y="49" width="94" height="18"/>
-                                        <buttonCell key="cell" type="check" title="Placed Best" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="GwY-Dz-yn7">
+                                        <rect key="frame" x="-2" y="94" width="94" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Placed Best" bezelStyle="regularSquare" imagePosition="left" inset="2" id="GwY-Dz-yn7">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qyl-ka-boV">
-                                        <rect key="frame" x="-2" y="27" width="68" height="18"/>
-                                        <buttonCell key="cell" type="check" title="All Best" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="kby-UQ-wgZ">
+                                        <rect key="frame" x="-2" y="72" width="68" height="18"/>
+                                        <buttonCell key="cell" type="check" title="All Best" bezelStyle="regularSquare" imagePosition="left" inset="2" id="kby-UQ-wgZ">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
+                                    <progressIndicator hidden="YES" wantsLayer="YES" maxValue="100" doubleValue="50" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="uie-1K-VV3">
+                                        <rect key="frame" x="0.0" y="135" width="424" height="20"/>
+                                    </progressIndicator>
                                 </beginningViews>
                                 <endViews>
                                     <stackView orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vXy-FJ-kYa">
@@ -1722,9 +1728,6 @@ Gw
                                             <real value="3.4028234663852886e+38"/>
                                         </customSpacing>
                                     </stackView>
-                                    <progressIndicator hidden="YES" wantsLayer="YES" maxValue="100" doubleValue="50" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="uie-1K-VV3">
-                                        <rect key="frame" x="0.0" y="90" width="410" height="20"/>
-                                    </progressIndicator>
                                 </endViews>
                                 <visibilityPriorities>
                                     <integer value="1000"/>
@@ -1762,7 +1765,7 @@ Gw
                 </viewController>
                 <customObject id="mCB-sP-bUw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="975" y="2000"/>
+            <point key="canvasLocation" x="972" y="1955"/>
         </scene>
     </scenes>
     <resources>

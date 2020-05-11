@@ -7,8 +7,8 @@
 //
 
 import Cocoa
-import Optimizer
 import Metal
+import Optimizer
 
 class ViewController: NSSplitViewController, FontListViewControllerDelegate, SettingsViewControllerDelegate, OptimizerViewControllerDelegate {
     var fontListViewController: FontListViewController!
@@ -38,6 +38,8 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     }
     var prunedRequiredGlyphs: [Set<CGGlyph>]?
     var glyphMapping: [CGGlyph]? // glyphMapping[nonPrunedGlyph] = prunedGlyph
+    var chosenSeeds: [[Int]]!
+    var randomSeeds: [[Int]]!
     @objc dynamic var roundTripInBytes = Double(0) {
         didSet {
             checkIfReady()
@@ -51,8 +53,25 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
         }
     }
 
+    var device: MTLDevice?
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if let activeDisplayID = view.window?.screen?.deviceDescription[NSDeviceDescriptionKey(rawValue: "NSScreenNumber")] as? CGDirectDisplayID {
+            if let activeDevice = CGDirectDisplayCopyCurrentMetalDevice(activeDisplayID) {
+                for device in MTLCopyAllDevices() {
+                    if activeDevice.name != device.name { // This isn't perfect, but I can't seem to get withUnsafePointer(to:) to work with these MTLDevices
+                        self.device = device
+                        break
+                    }
+                }
+            }
+        }
+        if device == nil {
+            device = MTLCreateSystemDefaultDevice()
+        }
+
         fontListViewController = (children[0] as! FontListViewController)
         settingsViewController = (children[1] as! SettingsViewController)
         optimizerViewController = (children[2] as! OptimizerViewController)
@@ -69,10 +88,7 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     }
 
     private func prune() {
-        guard let glyphSizes = self.glyphSizes else {
-            return
-        }
-        guard let requiredGlyphs = self.requiredGlyphs else {
+        guard let glyphSizes = self.glyphSizes, let requiredGlyphs = self.requiredGlyphs else {
             return
         }
         var set = Set<CGGlyph>()
@@ -106,7 +122,8 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     }
 
     func checkIfReady() {
-        optimizerViewController.isReady = !optimizerViewController.isOptimizing && glyphSizes != nil && requiredGlyphs != nil && requiredGlyphs?.count != 0 && roundTripInBytes > 0
+        let seedCount = (chosenSeeds?.count ?? 0) + (randomSeeds?.count ?? 0)
+        optimizerViewController.isReady = !optimizerViewController.isOptimizing && glyphSizes != nil && requiredGlyphs != nil && requiredGlyphs?.count != 0 && chosenSeeds != nil && seedCount > 0 && roundTripInBytes > 0
     }
 }
 

@@ -91,13 +91,7 @@ class ComputeRequiredGlyphsViewController: NSViewController {
                     return
                 }
                 for i in jsonData {
-                    guard let item = i as? NSDictionary else {
-                        return
-                    }
-                    guard let c = item.value(forKey: "Contents") else {
-                        return
-                    }
-                    guard let contents = c as? String else {
+                    guard let item = i as? NSDictionary, let c = item.value(forKey: "Contents"), let contents = c as? String else {
                         return
                     }
                     self.urlContents.append(contents)

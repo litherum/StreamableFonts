@@ -62,10 +62,7 @@ class FontListViewController: NSViewController {
         }
         let attributedString = NSAttributedString(string: "國", attributes: [kCTFontAttributeName as NSAttributedString.Key : font])
         let line = CTLineCreateWithAttributedString(attributedString)
-        guard let runs = CTLineGetGlyphRuns(line) as? [CTRun] else {
-            return nil
-        }
-        guard runs.count == 1 else {
+        guard let runs = CTLineGetGlyphRuns(line) as? [CTRun], runs.count == 1 else {
             return nil
         }
         let run = runs[0]

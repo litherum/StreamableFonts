@@ -45,11 +45,7 @@ public class FontOptimizer {
             return glyphSizes.count
         }
     }
-    var glyphBitfieldSize: Int {
-        get {
-            return (glyphCount + 7) / 8
-        }
-    }
+    var glyphBitfieldSize = 0
     var urlCount: Int {
         get {
             return requiredGlyphs.count
@@ -93,20 +89,6 @@ public class FontOptimizer {
             return nil
         }
         self.queue = queue
-    }
-
-    private func createBitmaps() -> [Data] {
-        var result = [Data]()
-        for resource in requiredGlyphs {
-            var data = Data(count: glyphBitfieldSize)
-            for glyph in resource {
-                let byteIndex = Int(glyph / 8)
-                let bitIndex = Int(glyph % 8)
-                data[byteIndex] = data[byteIndex] | (1 << bitIndex)
-            }
-            result.append(data)
-        }
-        return result
     }
 
     private func loadShaders(callback: @escaping (Bool) -> Void) {
@@ -244,20 +226,11 @@ public class FontOptimizer {
         }
         self.glyphSizesBuffer = glyphSizesBuffer
 
-        var urlBitmapsData = Data()
-        for bitmap in createBitmaps() {
-            urlBitmapsData.append(bitmap)
-        }
-        let success = urlBitmapsData.withUnsafeBytes {(unsafeRawBufferPointer: UnsafeRawBufferPointer) -> Bool in
-            guard let urlBitmapsBuffer = device.makeBuffer(bytes: unsafeRawBufferPointer.baseAddress!, length: unsafeRawBufferPointer.count, options: .storageModeManaged) else {
-                return false
-            }
-            self.urlBitmapsBuffer = urlBitmapsBuffer
-            return true
-        }
-        guard success else {
+        guard let urlBitmapsBuffer = createURLBitmapsBuffer(glyphCount: glyphCount, requiredGlyphs: requiredGlyphs, device: device) else {
             return false
         }
+        self.urlBitmapsBuffer = urlBitmapsBuffer.buffer
+        self.glyphBitfieldSize = urlBitmapsBuffer.glyphBitfieldSize
 
         guard let fitnessesPerURLBuffer = device.makeBuffer(length: MemoryLayout<UInt32>.stride * generationSize * urlCount, options: .storageModePrivate) else {
             return false
@@ -364,11 +337,7 @@ public class FontOptimizer {
         let beforeFitnesses = state ? fitnessABuffer! : fitnessBBuffer!
         let afterFitnesses = state ? fitnessBBuffer! : fitnessABuffer!
 
-        guard let commandBuffer = queue.makeCommandBuffer() else {
-            callback(false)
-            return
-        }
-        guard let computeCommandEncoder = commandBuffer.makeComputeCommandEncoder() else {
+        guard let commandBuffer = queue.makeCommandBuffer(), let computeCommandEncoder = commandBuffer.makeComputeCommandEncoder() else {
             callback(false)
             return
         }

@@ -13,8 +13,11 @@ protocol OptimizerViewControllerDelegate : class {
     var glyphSizes: GlyphSizes? { get }
     var prunedGlyphSizes: GlyphSizes? { get }
     var prunedRequiredGlyphs: [Set<CGGlyph>]? { get }
+    var chosenSeeds: [[Int]]! { get }
+    var randomSeeds: [[Int]]! { get }
     var roundTripInBytes: Double { get }
     var isOptimizing: Bool { get set }
+    var device: MTLDevice? { get }
 }
 
 class OptimizerViewController: NSViewController, FontOptimizerDelegate {
@@ -46,33 +49,13 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
     }
 
     @IBAction func startButtonAction(_ sender: NSButton) {
-        var testDevice: MTLDevice?
-        if let activeDisplayID = view.window?.screen?.deviceDescription[NSDeviceDescriptionKey(rawValue: "NSScreenNumber")] as? CGDirectDisplayID {
-            if let activeDevice = CGDirectDisplayCopyCurrentMetalDevice(activeDisplayID) {
-                for device in MTLCopyAllDevices() {
-                    if activeDevice.name != device.name { // This isn't perfect, but I can't seem to get withUnsafePointer(to:) to work with these MTLDevices
-                        testDevice = device
-                        break
-                    }
-                }
-            }
-        }
-        if testDevice == nil {
-            testDevice = MTLCreateSystemDefaultDevice()
-        }
-        guard let device = testDevice else {
-            return
-        }
-        guard let glyphSizes = delegate?.glyphSizes else {
-            return
-        }
-        guard let prunedGlyphSizes = delegate?.prunedGlyphSizes else {
-            return
-        }
-        guard let prunedRequiredGlyphs = delegate?.prunedRequiredGlyphs else {
-            return
-        }
-        guard let roundTripInBytes = delegate?.roundTripInBytes else {
+        guard let device = delegate?.device,
+            let glyphSizes = delegate?.glyphSizes,
+            let prunedGlyphSizes = delegate?.prunedGlyphSizes,
+            let prunedRequiredGlyphs = delegate?.prunedRequiredGlyphs,
+            let chosenSeeds = delegate?.chosenSeeds,
+            let randomSeeds = delegate?.randomSeeds,
+            let roundTripInBytes = delegate?.roundTripInBytes else {
             return
         }
 
@@ -89,7 +72,8 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
         }
         let unconditionalDownloadSize = glyphSizes.fontSize - totalGlyphSize
 
-        guard let fontOptimizer = FontOptimizer(glyphSizes: prunedGlyphSizes.glyphSizes, requiredGlyphs: prunedRequiredGlyphs, seeds: [seed], threshold: Int(roundTripInBytes), unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, delegate: self) else {
+        
+        guard let fontOptimizer = FontOptimizer(glyphSizes: prunedGlyphSizes.glyphSizes, requiredGlyphs: prunedRequiredGlyphs, seeds: chosenSeeds + randomSeeds, threshold: Int(roundTripInBytes), unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, delegate: self) else {
             return
         }
         self.fontOptimizer = fontOptimizer

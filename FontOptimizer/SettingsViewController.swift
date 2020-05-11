@@ -12,7 +12,12 @@ import Optimizer
 @objc protocol SettingsViewControllerDelegate : class {
     var currentFont: CTFont! { get }
     var requiredGlyphs: [Set<CGGlyph>]? { get set }
+    var prunedGlyphSizes: GlyphSizes? { get }
+    var prunedRequiredGlyphs: [Set<CGGlyph>]? { get }
+    var chosenSeeds: [[Int]]! { get set }
+    var randomSeeds: [[Int]]! { get set }
     var roundTripInBytes: Double { get set }
+    var device: MTLDevice? { get }
 }
 
 class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControllerDelegate, ChooseSeedsViewControllerDelegate, MeasureRoundTripTimeViewControllerDelegate {
@@ -24,8 +29,8 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
     @IBOutlet var corpusStatus: NSTextField!
     @IBOutlet var seedCountTextField: NSTextField!
     @IBOutlet var chooseSeedsButton: NSButton!
-    @IBOutlet var roundTripTimeTextField: NSTextField!
     @IBOutlet var seedsStatus: NSTextField!
+    @IBOutlet var roundTripTimeTextField: NSTextField!
     @IBOutlet var measureRoundTripTimeButton: NSButton!
     var currentFont: CTFont! {
         get {
@@ -48,8 +53,33 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
             delegate?.requiredGlyphs = newValue
         }
     }
-    var chosenSeeds: [[Int]]!
-    var randomSeeds: [[Int]]!
+    var prunedGlyphSizes: GlyphSizes? {
+        get {
+            return delegate?.prunedGlyphSizes
+        }
+    }
+    var prunedRequiredGlyphs: [Set<CGGlyph>]? {
+        get {
+            return delegate?.prunedRequiredGlyphs
+        }
+    }
+    var device: MTLDevice? {
+        get {
+            return delegate?.device
+        }
+    }
+    var chosenSeeds: [[Int]]! {
+        didSet {
+            updateRandomSeeds()
+            updateSeedStatus()
+            delegate?.chosenSeeds = chosenSeeds
+        }
+    }
+    var randomSeeds: [[Int]]! {
+        didSet {
+            delegate?.randomSeeds = randomSeeds
+        }
+    }
     var roundTripInBytes: Double {
         get {
             guard delegate != nil else {
@@ -123,6 +153,26 @@ Median glyph is \(byteCountFormatter.string(fromByteCount: Int64(median)))
         }
     }
 
+    func updateRandomSeeds() {
+        randomSeeds = []
+        if let sizes = prunedGlyphSizes, chosenSeeds != nil, seedCountTextField.integerValue > chosenSeeds.count {
+            randomSeeds = generateRandomSeeds(glyphCount: sizes.glyphSizes.count, seedCount: seedCountTextField.integerValue - chosenSeeds.count)
+        }
+    }
+
+    func updateSeedStatus() {
+        if chosenSeeds != nil && chosenSeeds.count > 0 {
+            seedsStatus.stringValue = "Using \(chosenSeeds.count) chosen seeds and \(randomSeeds.count) random seeds."
+        } else {
+            seedsStatus.stringValue = "Using \(randomSeeds.count) random seeds."
+        }
+    }
+
+    @IBAction func setSeedCount(_ sender: NSTextField) {
+        updateRandomSeeds()
+        updateSeedStatus()
+    }
+    
     func setThreshold(threshold: Double) {
         roundTripTimeTextField.doubleValue = threshold
     }
