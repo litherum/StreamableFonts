@@ -1088,7 +1088,9 @@
                     <connections>
                         <outlet property="container" destination="oqW-FA-k0a" id="Edx-ws-aMG"/>
                         <outlet property="fontListArrayController" destination="4j9-pV-7gE" id="CmL-em-mX7"/>
+                        <outlet property="plusButton" destination="5am-0T-dVc" id="JYJ-yf-bbc"/>
                         <outlet property="spinner" destination="Ne2-c3-Tve" id="RhU-5x-1Lg"/>
+                        <outlet property="tableView" destination="7Sy-i9-t9B" id="mP6-WU-yOa"/>
                     </connections>
                 </viewController>
                 <customObject id="Qd7-4Z-tO3" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1255,10 +1257,10 @@
                                                 </stackView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="bottom" secondItem="IgT-1S-HNB" secondAttribute="bottom" constant="11" symbolic="YES" id="0xW-08-zAe"/>
-                                                <constraint firstAttribute="trailing" secondItem="IgT-1S-HNB" secondAttribute="trailing" constant="16" symbolic="YES" id="1uT-Rt-hWK"/>
-                                                <constraint firstItem="IgT-1S-HNB" firstAttribute="top" secondItem="PKN-re-50N" secondAttribute="top" constant="11" symbolic="YES" id="4Qa-ya-p8e"/>
-                                                <constraint firstItem="IgT-1S-HNB" firstAttribute="leading" secondItem="PKN-re-50N" secondAttribute="leading" constant="16" symbolic="YES" id="a0h-14-M80"/>
+                                                <constraint firstAttribute="bottom" secondItem="IgT-1S-HNB" secondAttribute="bottom" constant="20" symbolic="YES" id="0xW-08-zAe"/>
+                                                <constraint firstAttribute="trailing" secondItem="IgT-1S-HNB" secondAttribute="trailing" constant="20" symbolic="YES" id="1uT-Rt-hWK"/>
+                                                <constraint firstItem="IgT-1S-HNB" firstAttribute="top" secondItem="PKN-re-50N" secondAttribute="top" constant="20" symbolic="YES" id="4Qa-ya-p8e"/>
+                                                <constraint firstItem="IgT-1S-HNB" firstAttribute="leading" secondItem="PKN-re-50N" secondAttribute="leading" constant="20" symbolic="YES" id="a0h-14-M80"/>
                                             </constraints>
                                         </view>
                                     </box>
@@ -1288,7 +1290,9 @@
                         <outlet property="corpusStatus" destination="bJh-eH-UxI" id="cd8-Vr-MQR"/>
                         <outlet property="glyphSizesStatus" destination="yqa-Gd-ADa" id="4dN-KL-LPA"/>
                         <outlet property="glyphSizesStatusWidthConstraint" destination="gIJ-Ha-xcz" id="5Jb-8o-cHy"/>
+                        <outlet property="measureRoundTripTimeButton" destination="RxV-qc-NdS" id="lV9-93-9gA"/>
                         <outlet property="roundTripTimeTextField" destination="wnq-Xf-y1w" id="wdX-7V-rMN"/>
+                        <outlet property="selectCorpusButton" destination="GH9-dC-pNJ" id="lAz-GC-ueg"/>
                     </connections>
                 </viewController>
                 <customObject id="wJf-3s-bV9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -1365,10 +1369,10 @@
                                 </beginningViews>
                                 <endViews>
                                     <stackView orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" misplaced="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WTN-DZ-jrb">
-                                        <rect key="frame" x="0.0" y="0.0" width="162" height="21"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="410" height="21"/>
                                         <endViews>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CA4-uo-cH4">
-                                                <rect key="frame" x="-6" y="-7" width="82" height="32"/>
+                                                <rect key="frame" x="242" y="-7" width="82" height="32"/>
                                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vAV-6e-pFk">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -1381,7 +1385,7 @@ Gw
                                                 </connections>
                                             </button>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EcI-4M-Fun">
-                                                <rect key="frame" x="72" y="-7" width="96" height="32"/>
+                                                <rect key="frame" x="320" y="-7" width="96" height="32"/>
                                                 <buttonCell key="cell" type="push" title="Compute" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="t6Q-7N-fOu">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -1519,10 +1523,10 @@ Gw
                                 </beginningViews>
                                 <endViews>
                                     <stackView orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" misplaced="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rxy-kB-DTK">
-                                        <rect key="frame" x="0.0" y="0.0" width="159" height="21"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="500" height="21"/>
                                         <endViews>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bak-Pc-MXc">
-                                                <rect key="frame" x="-6" y="-7" width="82" height="32"/>
+                                                <rect key="frame" x="335" y="-7" width="82" height="32"/>
                                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jse-Ly-TOP">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -1535,7 +1539,7 @@ Gw
                                                 </connections>
                                             </button>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TnA-SW-TG6">
-                                                <rect key="frame" x="72" y="-7" width="93" height="32"/>
+                                                <rect key="frame" x="413" y="-7" width="93" height="32"/>
                                                 <buttonCell key="cell" type="push" title="Measure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0Rc-WY-CUg">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>

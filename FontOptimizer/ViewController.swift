@@ -14,7 +14,12 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     var fontListViewController: FontListViewController!
     var settingsViewController: SettingsViewController!
     var optimizerViewController: OptimizerViewController!
-    var currentFont: CTFont?
+    var currentFont: CTFont? {
+        didSet {
+            settingsViewController.requiredGlyphs = nil
+            checkIfReady()
+        }
+    }
     var glyphSizes: GlyphSizes? {
         didSet {
             if let sizes = glyphSizes {
@@ -36,6 +41,13 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     @objc dynamic var roundTripInBytes = Double(0) {
         didSet {
             checkIfReady()
+        }
+    }
+
+    var isOptimizing = false {
+        didSet {
+            fontListViewController.disabled = isOptimizing
+            settingsViewController.disabled = isOptimizing
         }
     }
 
@@ -94,10 +106,7 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     }
 
     func checkIfReady() {
-        guard !optimizerViewController.isOptimizing && glyphSizes != nil && requiredGlyphs != nil && requiredGlyphs?.count != 0 else {
-            return
-        }
-        optimizerViewController.isReady = true
+        optimizerViewController.isReady = !optimizerViewController.isOptimizing && glyphSizes != nil && requiredGlyphs != nil && requiredGlyphs?.count != 0 && roundTripInBytes > 0
     }
 }
 

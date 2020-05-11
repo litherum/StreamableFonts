@@ -45,8 +45,16 @@ class FontListViewController: NSViewController {
     @IBOutlet @objc dynamic var fontListArrayController: NSArrayController!
     @IBOutlet var spinner: NSProgressIndicator!
     @IBOutlet var container: NSView!
+    @IBOutlet var tableView: NSTableView!
+    @IBOutlet var plusButton: NSButton!
     weak var delegate: FontListViewControllerDelegate!
     var observation: NSKeyValueObservation?
+    var disabled = false {
+        didSet {
+            tableView.isEnabled = !disabled
+            plusButton.isEnabled = !disabled
+        }
+    }
 
     private func chineseSystemFont() -> CTFont? {
         guard let font = CTFontCreateUIFontForLanguage(.system, 0, "zh-Hans" as NSString) else {

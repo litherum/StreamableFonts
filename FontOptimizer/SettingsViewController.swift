@@ -18,10 +18,12 @@ import Optimizer
 class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControllerDelegate, MeasureRoundTripTimeViewControllerDelegate {
     @IBOutlet var glyphSizesStatus: NSTextField!
     @IBOutlet var glyphSizesStatusWidthConstraint: NSLayoutConstraint!
+    @IBOutlet var selectCorpusButton: NSButton!
     @IBOutlet var corpusExample: NSTextField!
     @IBOutlet var corpusExamleWidthConstraint: NSLayoutConstraint!
     @IBOutlet var corpusStatus: NSTextField!
     @IBOutlet var roundTripTimeTextField: NSTextField!
+    @IBOutlet var measureRoundTripTimeButton: NSButton!
     var currentFont: CTFont! {
         get {
             return delegate?.currentFont
@@ -32,6 +34,11 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
             return delegate?.requiredGlyphs
         }
         set {
+            guard newValue != nil else {
+                corpusStatus.isHidden = true
+                delegate?.requiredGlyphs = nil
+                return
+            }
             corpusStatus.isHidden = false
             corpusStatus.stringValue = "\(newValue.count) URLs"
             delegate?.requiredGlyphs = newValue
@@ -47,6 +54,14 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
         set {
             roundTripTimeTextField.doubleValue = newValue
             delegate?.roundTripInBytes = newValue
+        }
+    }
+    var disabled = false {
+        didSet {
+            selectCorpusButton.isEnabled = !disabled
+            roundTripTimeTextField.isEnabled = !disabled
+            roundTripTimeTextField.isEnabled = !disabled
+            measureRoundTripTimeButton.isEnabled = !disabled
         }
     }
     @objc weak var delegate: SettingsViewControllerDelegate!

@@ -14,6 +14,7 @@ protocol OptimizerViewControllerDelegate : class {
     var prunedGlyphSizes: GlyphSizes? { get }
     var prunedRequiredGlyphs: [Set<CGGlyph>]? { get }
     var roundTripInBytes: Double { get }
+    var isOptimizing: Bool { get set }
 }
 
 class OptimizerViewController: NSViewController, FontOptimizerDelegate {
@@ -22,7 +23,14 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
     @IBOutlet var statusLabel: NSTextField!
     @IBOutlet var stopButton: NSButton!
     @IBOutlet var startButton: NSButton!
-    var isOptimizing = false
+    var isOptimizing: Bool {
+        get {
+            return delegate?.isOptimizing ?? false
+        }
+        set {
+            delegate?.isOptimizing = newValue
+        }
+    }
     var isReady = false {
         didSet {
             startButton.isEnabled = isReady
@@ -113,6 +121,7 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
         statusLabel.stringValue = "Stopped."
         stopButton.isEnabled = false
         startButton.isEnabled = isReady
+        isOptimizing = false
     }
 
     func prepared(success: Bool) {
