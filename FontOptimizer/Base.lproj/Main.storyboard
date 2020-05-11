@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="16085" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16096"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -836,23 +836,23 @@
             <objects>
                 <viewController id="tur-z6-nNP" customClass="FontListViewController" customModule="FontOptimizer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" misplaced="YES" id="2zy-Cf-qje">
-                        <rect key="frame" x="0.0" y="0.0" width="558" height="395"/>
+                        <rect key="frame" x="0.0" y="0.0" width="558" height="295"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <progressIndicator wantsLayer="YES" maxValue="100" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Ne2-c3-Tve">
-                                <rect key="frame" x="263" y="42" width="32" height="32"/>
+                                <rect key="frame" x="263" y="107" width="32" height="32"/>
                             </progressIndicator>
                             <customView hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oqW-FA-k0a">
-                                <rect key="frame" x="0.0" y="0.0" width="558" height="116"/>
+                                <rect key="frame" x="0.0" y="0.0" width="558" height="245"/>
                                 <subviews>
                                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="L8U-gm-oJ6">
-                                        <rect key="frame" x="20" y="46" width="518" height="50"/>
+                                        <rect key="frame" x="20" y="46" width="518" height="179"/>
                                         <clipView key="contentView" id="x8B-pE-8mo">
-                                            <rect key="frame" x="1" y="0.0" width="516" height="49"/>
+                                            <rect key="frame" x="1" y="0.0" width="516" height="178"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" typeSelect="NO" rowSizeStyle="automatic" headerView="7gd-YE-Iab" viewBased="YES" id="7Sy-i9-t9B">
-                                                    <rect key="frame" x="0.0" y="0.0" width="516" height="24"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="516" height="153"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <size key="intercellSpacing" width="3" height="2"/>
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1364,11 +1364,11 @@
                                     </progressIndicator>
                                 </beginningViews>
                                 <endViews>
-                                    <stackView orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WTN-DZ-jrb">
-                                        <rect key="frame" x="0.0" y="0.0" width="410" height="21"/>
+                                    <stackView orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" misplaced="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WTN-DZ-jrb">
+                                        <rect key="frame" x="0.0" y="0.0" width="162" height="21"/>
                                         <endViews>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CA4-uo-cH4">
-                                                <rect key="frame" x="242" y="-7" width="82" height="32"/>
+                                                <rect key="frame" x="-6" y="-7" width="82" height="32"/>
                                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vAV-6e-pFk">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -1381,7 +1381,7 @@ Gw
                                                 </connections>
                                             </button>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EcI-4M-Fun">
-                                                <rect key="frame" x="320" y="-7" width="96" height="32"/>
+                                                <rect key="frame" x="72" y="-7" width="96" height="32"/>
                                                 <buttonCell key="cell" type="push" title="Compute" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="t6Q-7N-fOu">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -1497,7 +1497,7 @@ Gw
                                             </textField>
                                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="eFG-cb-ICC">
                                                 <rect key="frame" x="65" y="0.0" width="96" height="21"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" title="https://fonts.gstatic.com/s/notosanssc/v11/k3kXo84MPvpLmixcA63oeALhLIiP-Q-87KaAaH7rzeAODp22mF0qmF4CSjmPC6A0Rg5g1igg1w.4.woff2" drawsBackground="YES" id="tXn-PM-05A">
+                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" title="https://github.com/google/fonts/blob/master/ofl/nanumbrushscript/NanumBrushScript-Regular.ttf?raw=true" drawsBackground="YES" id="tXn-PM-05A">
                                                     <font key="font" metaFont="system"/>
                                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1518,11 +1518,11 @@ Gw
                                     </progressIndicator>
                                 </beginningViews>
                                 <endViews>
-                                    <stackView orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rxy-kB-DTK">
-                                        <rect key="frame" x="0.0" y="0.0" width="500" height="21"/>
+                                    <stackView orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" misplaced="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rxy-kB-DTK">
+                                        <rect key="frame" x="0.0" y="0.0" width="159" height="21"/>
                                         <endViews>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bak-Pc-MXc">
-                                                <rect key="frame" x="335" y="-7" width="82" height="32"/>
+                                                <rect key="frame" x="-6" y="-7" width="82" height="32"/>
                                                 <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jse-Ly-TOP">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -1535,7 +1535,7 @@ Gw
                                                 </connections>
                                             </button>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TnA-SW-TG6">
-                                                <rect key="frame" x="413" y="-7" width="93" height="32"/>
+                                                <rect key="frame" x="72" y="-7" width="93" height="32"/>
                                                 <buttonCell key="cell" type="push" title="Measure" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0Rc-WY-CUg">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
