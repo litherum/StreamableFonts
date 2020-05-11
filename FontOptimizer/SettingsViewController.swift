@@ -15,14 +15,17 @@ import Optimizer
     var roundTripInBytes: Double { get set }
 }
 
-class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControllerDelegate, MeasureRoundTripTimeViewControllerDelegate {
+class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControllerDelegate, ChooseSeedsViewControllerDelegate, MeasureRoundTripTimeViewControllerDelegate {
     @IBOutlet var glyphSizesStatus: NSTextField!
     @IBOutlet var glyphSizesStatusWidthConstraint: NSLayoutConstraint!
     @IBOutlet var selectCorpusButton: NSButton!
     @IBOutlet var corpusExample: NSTextField!
     @IBOutlet var corpusExamleWidthConstraint: NSLayoutConstraint!
     @IBOutlet var corpusStatus: NSTextField!
+    @IBOutlet var seedCountTextField: NSTextField!
+    @IBOutlet var chooseSeedsButton: NSButton!
     @IBOutlet var roundTripTimeTextField: NSTextField!
+    @IBOutlet var seedsStatus: NSTextField!
     @IBOutlet var measureRoundTripTimeButton: NSButton!
     var currentFont: CTFont! {
         get {
@@ -44,6 +47,8 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
             delegate?.requiredGlyphs = newValue
         }
     }
+    var chosenSeeds: [[Int]]!
+    var randomSeeds: [[Int]]!
     var roundTripInBytes: Double {
         get {
             guard delegate != nil else {
@@ -61,6 +66,8 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
             selectCorpusButton.isEnabled = !disabled
             roundTripTimeTextField.isEnabled = !disabled
             roundTripTimeTextField.isEnabled = !disabled
+            seedCountTextField.isEnabled = !disabled
+            chooseSeedsButton.isEnabled = !disabled
             measureRoundTripTimeButton.isEnabled = !disabled
         }
     }
