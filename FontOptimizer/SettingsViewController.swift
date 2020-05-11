@@ -32,6 +32,7 @@ class SettingsViewController: NSViewController, ComputeRequiredGlyphsViewControl
             return delegate?.currentFont
         }
     }
+    var corpusURL: URL!
     var requiredGlyphs: [Set<CGGlyph>]! {
         get {
             return delegate?.requiredGlyphs
@@ -117,11 +118,8 @@ Median glyph is \(byteCountFormatter.string(fromByteCount: Int64(median)))
             guard let url = openPanel.url else {
                 return
             }
-            let storyboard = NSStoryboard(name: "Main", bundle: Bundle(for: SettingsViewController.self))
-            let creator: ((NSCoder) -> ComputeRequiredGlyphsViewController?)? = nil
-            let viewController = storyboard.instantiateController(identifier: "ComputeRequiredGlyphsViewControllerScene", creator: creator)
-            viewController.url = url
-            self.presentAsSheet(viewController)
+            self.corpusURL = url
+            self.performSegue(withIdentifier: "computeRequiredGlyphs", sender: self)
         }
     }
 

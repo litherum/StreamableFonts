@@ -11,11 +11,16 @@ import Optimizer
 
 protocol ComputeRequiredGlyphsViewControllerDelegate : class {
     var currentFont: CTFont! { get }
+    var corpusURL: URL! { get }
     var requiredGlyphs: [Set<CGGlyph>]! { get set }
 }
 
 class ComputeRequiredGlyphsViewController: NSViewController {
-    var url: URL!
+    var url: URL! {
+        get {
+            return delegate?.corpusURL
+        }
+    }
     var urlContents = [String]()
     @IBOutlet var spinner: NSProgressIndicator!
     @IBOutlet var topStackView: NSStackView!

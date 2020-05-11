@@ -1356,6 +1356,7 @@
                         <outlet property="seedCountTextField" destination="jo3-Fj-V8S" id="nUU-aA-gaZ"/>
                         <outlet property="seedsStatus" destination="ahf-Ze-RuO" id="n0b-E2-Ua8"/>
                         <outlet property="selectCorpusButton" destination="GH9-dC-pNJ" id="lAz-GC-ueg"/>
+                        <segue destination="bWE-Cs-rpj" kind="sheet" identifier="computeRequiredGlyphs" id="dBc-FM-dkH"/>
                     </connections>
                 </viewController>
                 <customObject id="wJf-3s-bV9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
