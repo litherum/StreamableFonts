@@ -25,10 +25,15 @@ public class RoundTripTimeMeasurer {
     private let session: URLSession
     private weak var delegate: RoundTripTimeMeasurerDelegate?
 
-    public init(url: URL, trials: Int, delegate: RoundTripTimeMeasurerDelegate) {
+    public init?(url: URL, trials: Int, delegate: RoundTripTimeMeasurerDelegate) {
         self.url = url
         self.trials = trials
         self.delegate = delegate
+
+        if trials < 2 {
+            self.delegate?.prepared(length: nil)
+            return nil
+        }
 
         let configuration = URLSessionConfiguration.ephemeral
         configuration.httpCookieStorage = nil

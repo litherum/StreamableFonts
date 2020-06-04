@@ -7,118 +7,351 @@
 //
 
 import Foundation
+import CoreText
 import Metal
 import Optimizer
 
-/*fileprivate func chineseSystemFont() -> CTFont? {
-    guard let font = CTFontCreateUIFontForLanguage(.system, 0, "zh-Hans" as NSString) else {
-        return nil
-    }
-    let attributedString = NSAttributedString(string: "國", attributes: [kCTFontAttributeName as NSAttributedString.Key : font])
-    let line = CTLineCreateWithAttributedString(attributedString)
-    guard let runs = CTLineGetGlyphRuns(line) as? [CTRun] else {
-        return nil
-    }
-    guard runs.count == 1 else {
-        return nil
-    }
-    let run = runs[0]
-    let attributes = CTRunGetAttributes(run) as NSDictionary
-    guard let usedFontObject = attributes[kCTFontAttributeName] else {
-        return nil
-    }
-    let usedFont = usedFontObject as! CTFont
-    return usedFont
+fileprivate func printUsage() {
+    print("Usage: \(CommandLine.arguments[0]) [--iterations <count>] [--fontIndex <index>] [--sampleSize <size>] [--roundTripURL <url>] [--roundTripTrials <trials>] [--roundTripStartupCostInBytes <byteCount>] [--seedCount <count>] corpusfile inputfile outputfile")
 }
 
-guard let font = chineseSystemFont() else {
-    fatalError("Cannot create font")
-}
-guard let glyphSizes = computeGlyphSizes(font: font) else {
-    fatalError("Cannot compute glyph sizes")
-}
-let totalGlyphSize = glyphSizes.glyphSizes.reduce(0, +)
+class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOptimizerDelegate {
+    public var corpusFile: String!
+    public var inputFile: String!
+    public var outputFile: String!
+    public var fontIndex = 0
+    public var iterations = 10
+    public var sampleSize: Int?
+    public var roundTripURL: URL?
+    public var roundTripTrials = 50
+    public var roundTripStartupCostInBytes = 0
+    public var seedCount = 5
 
-var seed = [Int]()
-for i in 0 ..< glyphSizes.glyphSizes.count {
-    seed.append(i)
-}
+    public var callback: ((Bool) -> Void)!
 
-let data = try! Data(contentsOf: URL.init(fileURLWithPath: "/Users/mmaxfield/Library/Mobile Documents/com~apple~CloudDocs/Documents/apache-nutch-1.16/output.json"))
-let jsonData = try! JSONSerialization.jsonObject(with: data) as! [Any]
-let urlContents = jsonData.map { ($0 as! NSDictionary)["Contents"] as! String }
-var requiredGlyphs = Array(repeating: Set<CGGlyph>(), count: urlContents.count)
-var count = 0
-let operationQueue = computeRequiredGlyphs(font: font, urlContents: urlContents) {(index, s) in
-    guard let set = s else {
-        fatalError("Could not compute required glyphs")
-    }
-    requiredGlyphs[index] = set
-}
-operationQueue.waitUntilAllOperationsAreFinished()
+    private var font: CTFont!
+    private var glyphSizes: Optimizer.GlyphSizes!
+    private var urlContents = [String]()
+    private var requiredGlyphs = [Set<CGGlyph>]()
+    private var roundTripTimeMeasurer: Optimizer.RoundTripTimeMeasurer!
+    private var roundTripSamples = [Optimizer.Sample]()
+    private var roundTripSampleCount = 0
+    private var roundTripTimeMeasurerDelegate: Optimizer.RoundTripTimeMeasurerDelegate!
+    private var device: MTLDevice!
+    private var prunedGlyphs: Optimizer.PrunedGlyphs!
+    private var seeds = [[Int]]()
+    private var fontOptimizer: Optimizer.FontOptimizer!
 
-class MyOptimizerDelegate : OptimizerDelegate {
-    func prepared(success: Bool) {
-    
-    }
-
-    func report(fitness: Float) {
-    
-    }
-}
-let myOptimizerDelegate = MyOptimizerDelegate()
-
-func performOptimization(roundTripCost: Double, glyphSizes: GlyphSizes) {
-    guard let device = MTLCreateSystemDefaultDevice() else {
-        fatalError("Could not create Metal device")
-    }
-    /*guard let optimizer = Optimizer(glyphSizes: glyphSizes.glyphSizes, requiredGlyphs: requiredGlyphs, seeds: [seed], threshold: Int(roundTripCost), unconditionalDownloadSize: glyphSizes.fontSize - totalGlyphSize, fontSize: glyphSizes.fontSize, device: device, delegate: myOptimizerDelegate) else {
-        fatalError("Could not create optimizer")
-    }
-    optimizer.prepare()*/
-}
-
-class MeasurerDelegate : RoundTripTimeMeasurerDelegate {
-    let trials = 100
-    var count = 0
-    var samples = [Sample]()
-
-    func prepared(length: Int?) {
-        print("Prepared.")
-    }
-
-    func producedSample(sample s: Sample?) {
-        if let sample = s {
-            samples.append(sample)
-            print("Received sample \(count) of \(trials).")
-        } else {
-            print("Sample \(count) of \(trials) failure.")
+    public var isConfigured: Bool {
+        get {
+            return corpusFile != nil && inputFile != nil && outputFile != nil && callback != nil
         }
-        count += 1
-        if count == trials {
-            if let roundTripCost = RoundTripTimeMeasurer.calculateRoundTripOverheadInBytes(samples: samples) {
-                print("Round trip cost: \(roundTripCost) bytes")
-                performOptimization(roundTripCost: roundTripCost, glyphSizes: glyphSizes)
-            } else {
-                print("Error calculating round trip cost")
+    }
+
+    public func optimize() {
+        optimizeStep1()
+    }
+
+    private func optimizeStep1() {
+        guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(URL(fileURLWithPath: inputFile) as NSURL) as? [CTFontDescriptor] else {
+            callback(false)
+            return
+        }
+        if fontIndex >= fontDescriptors.count {
+            callback(false)
+            return
+        }
+        font = CTFontCreateWithFontDescriptor(fontDescriptors[fontIndex], 0, nil)
+        guard let glyphSizes = Optimizer.computeGlyphSizes(font: font) else {
+            callback(false)
+            return
+        }
+        self.glyphSizes = glyphSizes
+
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: corpusFile))
+            guard let jsonData = try JSONSerialization.jsonObject(with: data) as? [Any] else {
+                callback(false)
+                return
+            }
+            for i in jsonData {
+                guard let item = i as? NSDictionary, let c = item.value(forKey: "Contents"), let contents = c as? String else {
+                    callback(false)
+                    return
+                }
+                urlContents.append(contents)
+            }
+            if sampleSize != nil {
+                guard let randomSample = Optimizer.randomSample(urlContents: urlContents, sampleCount: sampleSize!) else {
+                    callback(false)
+                    return
+                }
+                urlContents = randomSample
+            }
+            requiredGlyphs = Array(repeating: Set<CGGlyph>(), count: urlContents.count)
+            var count = 0
+            let _ = computeRequiredGlyphs(font: font, urlContents: urlContents) {(index: Int, set: Set<CGGlyph>?) in
+                OperationQueue.main.addOperation {
+                    count += 1
+                    if let glyphs = set {
+                        self.requiredGlyphs[index] = glyphs
+                    }
+                    if count == self.urlContents.count {
+                        self.optimizeStep2()
+                    }
+                }
+            }
+            
+        } catch {
+            callback(false)
+            return
+        }
+    }
+
+    private func optimizeStep2() {
+        guard let roundTripURL = self.roundTripURL else {
+            optimizeStep3()
+            return
+        }
+
+        guard let roundTripTimeMeasurer = Optimizer.RoundTripTimeMeasurer(url: roundTripURL, trials: roundTripTrials, delegate: self) else {
+            callback(false)
+            return
+        }
+        self.roundTripTimeMeasurer = roundTripTimeMeasurer
+        roundTripTimeMeasurer.measure()
+    }
+    
+    
+    func prepared(length: Int?) {
+        guard length != nil else {
+            callback(false)
+            return
+        }
+    }
+    
+    func producedSample(sample: Sample?) {
+        roundTripSampleCount += 1
+        if let producedSample = sample {
+            roundTripSamples.append(producedSample)
+        }
+        if roundTripSampleCount == roundTripTrials {
+            OperationQueue.main.addOperation {
+                guard let roundTripOverhead = RoundTripTimeMeasurer.calculateRoundTripOverheadInBytes(samples: self.roundTripSamples) else {
+                    self.callback(false)
+                    return
+                }
+                self.roundTripStartupCostInBytes = Int(roundTripOverhead)
+                self.optimizeStep3()
             }
         }
     }
+
+    private func optimizeStep3() {
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            callback(false)
+            return
+        }
+        self.device = device
+
+        prunedGlyphs = Optimizer.pruneGlyphs(glyphSizes: glyphSizes, requiredGlyphs: requiredGlyphs)
+        seeds = [[Int]]()
+
+        guard seedCount > 0 else {
+            callback(false)
+            return
+        }
+
+        if seeds.count < seedCount {
+            let order = Optimizer.frequencyOrder(glyphCount: prunedGlyphs.glyphSizes.glyphSizes.count, requiredGlyphs: prunedGlyphs.requiredGlyphs)
+            seeds.append(order)
+        }
+
+        if seeds.count < seedCount {
+            Optimizer.computeBigramScores(glyphCount: prunedGlyphs.glyphSizes.glyphSizes.count, requiredGlyphs: prunedGlyphs.requiredGlyphs, device: device) {(bigramScores: [[Float]]?) in
+                OperationQueue.main.addOperation {
+                    guard let scores = bigramScores else {
+                        self.callback(false)
+                        return
+                    }
+                    if let order = Optimizer.lastBest(glyphCount: self.prunedGlyphs.glyphSizes.glyphSizes.count, bigramScores: scores, progressCallback: {}) {
+                        self.seeds.append(order)
+                    }
+
+                    if self.seeds.count < self.seedCount {
+                        if let order = Optimizer.placedBest(glyphCount: self.prunedGlyphs.glyphSizes.glyphSizes.count, bigramScores: scores, progressCallback: {}) {
+                            self.seeds.append(order)
+                        }
+                    }
+
+                    if self.seedCount - self.seeds.count > 0 {
+                        let randomSeeds = Optimizer.generateRandomSeeds(glyphCount: self.prunedGlyphs.glyphSizes.glyphSizes.count, seedCount: self.seedCount - self.seeds.count)
+                        self.seeds.append(contentsOf: randomSeeds)
+                    }
+
+                    self.optimizeStep4()
+                }
+            }
+        } else {
+            optimizeStep4()
+        }
+    }
+
+    private func optimizeStep4() {
+        var totalGlyphSize = 0
+        for i in 0 ..< glyphSizes.glyphSizes.count {
+            totalGlyphSize += glyphSizes.glyphSizes[i]
+        }
+        let unconditionalDownloadSize = glyphSizes.fontSize - totalGlyphSize
+
+        guard let fontOptimizer = Optimizer.FontOptimizer(glyphSizes: prunedGlyphs.glyphSizes.glyphSizes, requiredGlyphs: prunedGlyphs.requiredGlyphs, seeds: seeds, threshold: roundTripStartupCostInBytes, unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, delegate: self) else {
+            callback(false)
+            return
+        }
+        self.fontOptimizer = fontOptimizer
+        fontOptimizer.prepare()
+    }
+
+
+    func prepared(success: Bool) {
+        OperationQueue.main.addOperation {
+            guard success else {
+                self.callback(false)
+                return
+            }
+            self.fontOptimizer.optimize()
+        }
+    }
+    
+    func report(fitness: Float) {
+        OperationQueue.main.addOperation {
+            print("Fitness: \(fitness)")
+        }
+    }
+    
+    func stopped() {
+        OperationQueue.main.addOperation {
+            self.callback(true)
+        }
+    }
 }
 
-/*let measurerDelegate = MeasurerDelegate()
-let measurer = RoundTripTimeMeasurer(url: URL(string: "https://fonts.gstatic.com/s/notosanssc/v11/k3kXo84MPvpLmixcA63oeALhLIiP-Q-87KaAaH7rzeAODp22mF0qmF4CSjmPC6A0Rg5g1igg1w.4.woff2")!, trials: 100, delegate: measurerDelegate)
-measurer.measure()
+let fontOptimizer = FontOptimizer()
 
-RunLoop.main.run()*/
-*/
-
-// public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphOrder: [Int], outputFilename: String) -> Bool {
-
-var order = Array(repeating: 0, count: 223)
-for i in 0 ..< 223 {
-    order[i] = 223 - i - 1
+if CommandLine.arguments.count < 4 {
+    printUsage()
+    exit(EXIT_FAILURE)
 }
 
-let result = Optimizer.reorderFont(inputFilename: "/Users/mmaxfield/tmp/archerssm-400-normal.otf", fontNumber: nil, glyphOrder: order, outputFilename: "/Users/mmaxfield/tmp/reordered.otf")
-print("\(result)")
+var i = 1
+while i < CommandLine.arguments.count {
+    if CommandLine.arguments[i] == "--iterations" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        guard let iterations = Int(CommandLine.arguments[i]) else {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        fontOptimizer.iterations = iterations
+    } else if CommandLine.arguments[i] == "--fontIndex" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        guard let fontIndex = Int(CommandLine.arguments[i]) else {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        fontOptimizer.fontIndex = fontIndex
+    } else if CommandLine.arguments[i] == "--sampleSize" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        guard let sampleSize = Int(CommandLine.arguments[i]) else {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        fontOptimizer.sampleSize = sampleSize
+    } else if CommandLine.arguments[i] == "--roundTripURL" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        guard let roundTripURL = URL(string: CommandLine.arguments[i]) else {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        fontOptimizer.roundTripURL = roundTripURL
+    } else if CommandLine.arguments[i] == "--roundTripTrials" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        guard let roundTripTrials = Int(CommandLine.arguments[i]) else {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        fontOptimizer.roundTripTrials = roundTripTrials
+    } else if CommandLine.arguments[i] == "--roundTripStartupCostInBytes" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        guard let roundTripStartupCostInBytes = Int(CommandLine.arguments[i]) else {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        fontOptimizer.roundTripStartupCostInBytes = roundTripStartupCostInBytes
+    } else if CommandLine.arguments[i] == "--seedCount" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        guard let seedCount = Int(CommandLine.arguments[i]) else {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        fontOptimizer.seedCount = seedCount
+    } else if fontOptimizer.corpusFile == nil {
+        fontOptimizer.corpusFile = CommandLine.arguments[i]
+    } else if fontOptimizer.inputFile == nil {
+        fontOptimizer.inputFile = CommandLine.arguments[i]
+    } else if fontOptimizer.outputFile == nil {
+        fontOptimizer.outputFile = CommandLine.arguments[i]
+    } else {
+        printUsage()
+        exit(EXIT_FAILURE)
+    }
+    i += 1
+}
+
+var done = false
+fontOptimizer.callback = {(success: Bool) in
+    if !success {
+        print("Failed!")
+    }
+    if !done {
+        CFRunLoopStop(CFRunLoopGetMain())
+    }
+    done = true
+}
+
+guard fontOptimizer.isConfigured else {
+    printUsage()
+    exit(EXIT_FAILURE)
+}
+fontOptimizer.optimize()
+
+if !done {
+    CFRunLoopRun()
+}

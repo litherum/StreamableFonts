@@ -267,7 +267,7 @@ public class FontOptimizer {
         computeFitnesses(computeCommandEncoder: computeCommandEncoder, fitnessBuffer: fitnessABuffer)
         computeCommandEncoder.endEncoding()
         commandBuffer.addCompletedHandler {(commandBuffer) in
-            callback(commandBuffer.error != nil)
+            callback(commandBuffer.error == nil)
         }
         commandBuffer.commit()
     }

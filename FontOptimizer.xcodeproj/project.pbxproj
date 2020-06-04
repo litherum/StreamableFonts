@@ -29,6 +29,7 @@
 		1CD121D52488487E0084EEA2 /* ReorderFont.py in Resources */ = {isa = PBXBuildFile; fileRef = 1CD121D42488487E0084EEA2 /* ReorderFont.py */; };
 		1CD121D824884DB70084EEA2 /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CD121D624884DB70084EEA2 /* Utils.h */; };
 		1CD121D924884DB70084EEA2 /* Utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1CD121D724884DB70084EEA2 /* Utils.c */; };
+		1CD121DC2488B60D0084EEA2 /* PruneGlyphs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD121DB2488B60D0084EEA2 /* PruneGlyphs.swift */; };
 		1CFC4262243EDCD900769232 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFC4261243EDCD900769232 /* AppDelegate.swift */; };
 		1CFC4264243EDCD900769232 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFC4263243EDCD900769232 /* ViewController.swift */; };
 		1CFC4266243EDCDA00769232 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CFC4265243EDCDA00769232 /* Assets.xcassets */; };
@@ -109,6 +110,7 @@
 		1CD121D624884DB70084EEA2 /* Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		1CD121D724884DB70084EEA2 /* Utils.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Utils.c; sourceTree = "<group>"; };
 		1CD121DA248857B00084EEA2 /* Optimizer-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Optimizer-Bridging-Header.h"; sourceTree = "<group>"; };
+		1CD121DB2488B60D0084EEA2 /* PruneGlyphs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PruneGlyphs.swift; sourceTree = "<group>"; };
 		1CFC425E243EDCD900769232 /* FontOptimizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FontOptimizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CFC4261243EDCD900769232 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1CFC4263243EDCD900769232 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				1CB017B1246924D300150FB0 /* URLBitmaps.swift */,
 				1C8AA611243FF8BE0078686F /* Optimize.metal */,
 				1CB017AF2469162300150FB0 /* Seeds.swift */,
+				1CD121DB2488B60D0084EEA2 /* PruneGlyphs.swift */,
 				1CD121D2248847DF0084EEA2 /* ReorderFont.swift */,
 				1CD121D42488487E0084EEA2 /* ReorderFont.py */,
 				1CD121D624884DB70084EEA2 /* Utils.h */,
@@ -366,6 +369,7 @@
 				1CD121D924884DB70084EEA2 /* Utils.c in Sources */,
 				1CD121D3248847DF0084EEA2 /* ReorderFont.swift in Sources */,
 				1C8AA612243FF8BE0078686F /* Optimize.metal in Sources */,
+				1CD121DC2488B60D0084EEA2 /* PruneGlyphs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

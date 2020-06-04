@@ -25,6 +25,10 @@ class MeasureRoundTripTimeViewController: NSViewController, RoundTripTimeMeasure
     weak var delegate: MeasureRoundTripTimeViewControllerDelegate!
 
     func prepared(length: Int?) {
+        guard length != nil else {
+            self.dismiss(nil)
+            return
+        }
     }
 
     func producedSample(sample s: Sample?) {
@@ -59,7 +63,9 @@ class MeasureRoundTripTimeViewController: NSViewController, RoundTripTimeMeasure
         measureButton.isEnabled = false
         if let url = URL(string: urlTextField.stringValue) {
             trials = iterationsTextField.integerValue
-            let measurer = RoundTripTimeMeasurer(url: url, trials: trials, delegate: self)
+            guard let measurer = RoundTripTimeMeasurer(url: url, trials: trials, delegate: self) else {
+                return
+            }
             measurer.measure()
         }
     }

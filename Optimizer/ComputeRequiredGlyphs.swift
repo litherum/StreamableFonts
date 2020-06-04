@@ -9,6 +9,20 @@
 import Foundation
 import CoreText
 
+public func randomSample(urlContents: [String], sampleCount: Int) -> [String]? {
+    guard sampleCount <= urlContents.count else {
+        return nil
+    }
+    var urlContentsCopy = urlContents
+    var randomSample = [String]()
+    for _ in 0 ..< sampleCount {
+        let index = Int(arc4random_uniform(UInt32(urlContentsCopy.count)))
+        randomSample.append(urlContentsCopy[index])
+        urlContentsCopy.remove(at: index)
+    }
+    return randomSample
+}
+
 public func computeRequiredGlyphs(font: CTFont, urlContents: [String], callback: @escaping (Int, Set<CGGlyph>?) -> Void) -> OperationQueue {
     let glyphCount = CTFontGetGlyphCount(font)
     let operationQueue = OperationQueue()

@@ -71,7 +71,6 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
             totalGlyphSize += glyphSizes.glyphSizes[i]
         }
         let unconditionalDownloadSize = glyphSizes.fontSize - totalGlyphSize
-
         
         guard let fontOptimizer = FontOptimizer(glyphSizes: prunedGlyphSizes.glyphSizes, requiredGlyphs: prunedRequiredGlyphs, seeds: chosenSeeds + randomSeeds, threshold: Int(roundTripInBytes), unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, delegate: self) else {
             return

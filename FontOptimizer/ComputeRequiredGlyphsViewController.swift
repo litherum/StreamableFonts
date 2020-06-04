@@ -44,12 +44,8 @@ class ComputeRequiredGlyphsViewController: NSViewController {
     }
 
     @IBAction func computeAction(_ sender: NSButton) {
-        var urlContentsCopy = urlContents
-        var randomSample = [String]()
-        for _ in 0 ..< sampleCount {
-            let index = Int(arc4random_uniform(UInt32(urlContentsCopy.count)))
-            randomSample.append(urlContentsCopy[index])
-            urlContentsCopy.remove(at: index)
+        guard let randomSample = Optimizer.randomSample(urlContents: urlContents, sampleCount: sampleCount) else {
+            return
         }
         progressIndicator.isHidden = false
         computeButton.isEnabled = false
@@ -87,7 +83,7 @@ class ComputeRequiredGlyphsViewController: NSViewController {
             do {
                 // FIXME: IF this fails, do something other than spin forever
                 let data = try Data(contentsOf: url)
-                guard let jsonData = try! JSONSerialization.jsonObject(with: data) as? [Any] else {
+                guard let jsonData = try JSONSerialization.jsonObject(with: data) as? [Any] else {
                     return
                 }
                 for i in jsonData {
