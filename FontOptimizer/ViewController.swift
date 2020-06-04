@@ -37,7 +37,7 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
         }
     }
     var prunedRequiredGlyphs: [Set<CGGlyph>]?
-    var glyphMapping: [CGGlyph]? // glyphMapping[nonPrunedGlyph] = prunedGlyph
+    var glyphMapping: [CGGlyph?]? // glyphMapping[nonPrunedGlyph] = prunedGlyph
     var chosenSeeds: [[Int]]!
     var randomSeeds: [[Int]]!
     @objc dynamic var roundTripInBytes = Double(0) {

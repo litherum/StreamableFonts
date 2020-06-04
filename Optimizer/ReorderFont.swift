@@ -9,7 +9,7 @@
 import Foundation
 import Python
 
-fileprivate func convertGlyphOrder(glyphOrder: [Int]) -> UnsafeMutablePointer<PyObject>! {
+fileprivate func convertGlyphOrder(glyphOrder: [CGGlyph]) -> UnsafeMutablePointer<PyObject>! {
     guard let result = PyList_New(glyphOrder.count) else {
         return nil
     }
@@ -17,7 +17,7 @@ fileprivate func convertGlyphOrder(glyphOrder: [Int]) -> UnsafeMutablePointer<Py
     for i in 0 ..< glyphOrder.count {
         let glyph = glyphOrder[i]
 
-        guard let number = PyInt_FromLong(glyph) else {
+        guard let number = PyInt_FromLong(Int(glyph)) else {
             Py_DecRef(result)
             return nil
         }
@@ -30,7 +30,7 @@ fileprivate func convertGlyphOrder(glyphOrder: [Int]) -> UnsafeMutablePointer<Py
     return result
 }
 
-public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphOrder: [Int], outputFilename: String) -> Bool {
+public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphOrder: [CGGlyph], outputFilename: String) -> Bool {
     let scriptURL = Bundle(for: FontOptimizer.self).url(forResource: "ReorderFont", withExtension: "py")!
     let scriptContainerDirectory = scriptURL.deletingLastPathComponent()
 

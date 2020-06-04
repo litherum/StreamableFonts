@@ -9,10 +9,15 @@
 import Foundation
 import Metal
 
+public struct OptimizerResults {
+    public let glyphOrder: [Int]
+    public let finalFitness: Float
+}
+
 public protocol FontOptimizerDelegate : class {
     func prepared(success: Bool)
     func report(fitness: Float)
-    func stopped()
+    func stopped(results: OptimizerResults?)
 }
 
 public class FontOptimizer {
@@ -22,6 +27,8 @@ public class FontOptimizer {
     let threshold: Int
     let unconditionalDownloadSize: Int
     let fontSize: Int
+    let iterationCount: Int?
+    var iterationIndex: Int?
     let device: MTLDevice
     let queue: MTLCommandQueue
     var fitnessFunction: MTLFunction!
@@ -38,7 +45,8 @@ public class FontOptimizer {
     var fitnessesPerURLBuffer: MTLBuffer!
     var fitnessABuffer: MTLBuffer!
     var fitnessBBuffer: MTLBuffer!
-    var fitnessMonitorBuffer: MTLBuffer!
+    var fitnessMonitorABuffer: MTLBuffer!
+    var fitnessMonitorBBuffer: MTLBuffer!
     weak var delegate: FontOptimizerDelegate?
     var glyphCount: Int {
         get {
@@ -62,7 +70,7 @@ public class FontOptimizer {
     var stopping = false
     var state = false
 
-    public init?(glyphSizes: [Int], requiredGlyphs: [Set<CGGlyph>], seeds: [[Int]], threshold: Int, unconditionalDownloadSize: Int, fontSize: Int, device: MTLDevice, delegate: FontOptimizerDelegate) {
+    public init?(glyphSizes: [Int], requiredGlyphs: [Set<CGGlyph>], seeds: [[Int]], threshold: Int, unconditionalDownloadSize: Int, fontSize: Int, device: MTLDevice, iterationCount: Int?, delegate: FontOptimizerDelegate) {
         for seed in seeds {
             if seed.count != glyphSizes.count {
                 return nil
@@ -83,6 +91,7 @@ public class FontOptimizer {
         self.unconditionalDownloadSize = unconditionalDownloadSize
         self.fontSize = fontSize
         self.device = device
+        self.iterationCount = iterationCount
         self.delegate = delegate
 
         guard let queue = device.makeCommandQueue() else {
@@ -247,10 +256,15 @@ public class FontOptimizer {
         }
         self.fitnessBBuffer = fitnessBBuffer
 
-        guard let fitnessMonitorBuffer = device.makeBuffer(length: MemoryLayout<Float32>.stride * generationSize, options: .storageModeManaged) else {
+        guard let fitnessMonitorABuffer = device.makeBuffer(length: MemoryLayout<Float32>.stride * generationSize, options: .storageModeManaged) else {
             return false
         }
-        self.fitnessMonitorBuffer = fitnessMonitorBuffer
+        self.fitnessMonitorABuffer = fitnessMonitorABuffer
+
+        guard let fitnessMonitorBBuffer = device.makeBuffer(length: MemoryLayout<Float32>.stride * generationSize, options: .storageModeManaged) else {
+            return false
+        }
+        self.fitnessMonitorBBuffer = fitnessMonitorBBuffer
 
         return true
     }
@@ -301,7 +315,7 @@ public class FontOptimizer {
     private func computeFitnesses(computeCommandEncoder: MTLComputeCommandEncoder, fitnessBuffer: MTLBuffer) {
         computeCommandEncoder.setComputePipelineState(fitnessState)
         computeCommandEncoder.setBuffers([generationBuffer, glyphSizesBuffer, urlBitmapsBuffer, fitnessesPerURLBuffer], offsets: [0, 0, 0, 0], range: 0 ..< 4)
-        computeCommandEncoder.dispatchThreads(MTLSize(width: generationSize, height: urlCount, depth: 1), threadsPerThreadgroup: MTLSize(width: 32, height: 32, depth: 1))
+        computeCommandEncoder.dispatchThreads(MTLSize(width: generationSize, height: urlCount, depth: 1), threadsPerThreadgroup: MTLSize(width: 16, height: 16, depth: 1))
 
         computeCommandEncoder.setComputePipelineState(sumFitnessesState)
         computeCommandEncoder.setBuffers([fitnessesPerURLBuffer, fitnessBuffer], offsets: [0, 0], range: 0 ..< 2)
@@ -353,8 +367,8 @@ public class FontOptimizer {
                 callback(false)
                 return
             }
-            blitCommandEncoder.copy(from: afterFitnesses, sourceOffset: 0, to: fitnessMonitorBuffer, destinationOffset: 0, size: MemoryLayout<Float32>.stride * generationSize)
-            blitCommandEncoder.synchronize(resource: fitnessMonitorBuffer)
+            blitCommandEncoder.copy(from: afterFitnesses, sourceOffset: 0, to: fitnessMonitorABuffer, destinationOffset: 0, size: MemoryLayout<Float32>.stride * generationSize)
+            blitCommandEncoder.synchronize(resource: fitnessMonitorABuffer)
             blitCommandEncoder.endEncoding()
             monitoring = true
         }
@@ -362,7 +376,7 @@ public class FontOptimizer {
         commandBuffer.addCompletedHandler {(commandBuffer) in
             OperationQueue.main.addOperation {
                 if shouldMonitor {
-                    let pointer = self.fitnessMonitorBuffer.contents().bindMemory(to: Float32.self, capacity: self.generationSize)
+                    let pointer = self.fitnessMonitorABuffer.contents().bindMemory(to: Float32.self, capacity: self.generationSize)
                     var best = Float(0)
                     for i in 0 ..< self.generationSize {
                         best = max(best, Float(pointer[i]))
@@ -376,6 +390,51 @@ public class FontOptimizer {
         }
         commandBuffer.commit()
         state = !state
+        
+        if iterationCount != nil {
+            iterationIndex! += 1
+            if iterationCount! == iterationIndex! {
+                stopping = true
+            }
+        }
+    }
+
+    private func getBestOrder() {
+        guard let commandBuffer = queue.makeCommandBuffer(), let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder() else {
+            delegate?.stopped(results: nil)
+            return
+        }
+
+        blitCommandEncoder.synchronize(resource: generationBuffer)
+        blitCommandEncoder.copy(from: fitnessABuffer, sourceOffset: 0, to: fitnessMonitorABuffer, destinationOffset: 0, size: generationSize)
+        blitCommandEncoder.copy(from: fitnessBBuffer, sourceOffset: 0, to: fitnessMonitorBBuffer, destinationOffset: 0, size: generationSize)
+        blitCommandEncoder.synchronize(resource: fitnessMonitorABuffer)
+        blitCommandEncoder.synchronize(resource: fitnessMonitorBBuffer)
+        blitCommandEncoder.endEncoding()
+        commandBuffer.addCompletedHandler {(commandBuffer) in
+            let fitnessPointerA = self.fitnessMonitorABuffer.contents().bindMemory(to: Float32.self, capacity: self.generationSize)
+            let fitnessPointerB = self.fitnessMonitorBBuffer.contents().bindMemory(to: Float32.self, capacity: self.generationSize)
+            var best = Float(0)
+            var bestIndex = self.generationSize
+            for i in 0 ..< self.generationSize {
+                let fitness = Float(max(fitnessPointerA[i], fitnessPointerB[i]))
+                if fitness > best {
+                    best = fitness
+                    bestIndex = i
+                }
+            }
+            guard bestIndex < self.generationSize else {
+                self.delegate?.stopped(results: nil)
+                return
+            }
+            let generationPointer = self.generationBuffer.contents().bindMemory(to: UInt32.self, capacity: self.generationSize * self.glyphCount)
+            var glyphOrder = [Int]()
+            for i in self.glyphCount * bestIndex ..< self.glyphCount * (bestIndex + 1) {
+                glyphOrder.append(Int(generationPointer[i]))
+            }
+            self.delegate?.stopped(results: OptimizerResults(glyphOrder: glyphOrder, finalFitness: best))
+        }
+        commandBuffer.commit()
     }
 
     private func callback(success: Bool) {
@@ -387,7 +446,7 @@ public class FontOptimizer {
             if stopCount == inFlight {
                 stopping = false
                 stopCount = 0
-                delegate?.stopped()
+                getBestOrder()
             }
             return
         }
@@ -395,6 +454,9 @@ public class FontOptimizer {
     }
 
     public func optimize() {
+        if iterationCount != nil {
+            iterationIndex = 0
+        }
         for _ in 0 ..< inFlight {
             iteration(callback: callback)
         }

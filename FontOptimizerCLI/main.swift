@@ -23,10 +23,11 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
     public var iterations = 10
     public var sampleSize: Int?
     public var roundTripURL: URL?
-    public var roundTripTrials = 50
+    public var roundTripTrials = 10
     public var roundTripStartupCostInBytes = 0
     public var seedCount = 5
 
+    // FIXME: Better error logging
     public var callback: ((Bool) -> Void)!
 
     private var font: CTFont!
@@ -204,7 +205,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
         }
         let unconditionalDownloadSize = glyphSizes.fontSize - totalGlyphSize
 
-        guard let fontOptimizer = Optimizer.FontOptimizer(glyphSizes: prunedGlyphs.glyphSizes.glyphSizes, requiredGlyphs: prunedGlyphs.requiredGlyphs, seeds: seeds, threshold: roundTripStartupCostInBytes, unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, delegate: self) else {
+        guard let fontOptimizer = Optimizer.FontOptimizer(glyphSizes: prunedGlyphs.glyphSizes.glyphSizes, requiredGlyphs: prunedGlyphs.requiredGlyphs, seeds: seeds, threshold: roundTripStartupCostInBytes, unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, iterationCount: iterations, delegate: self) else {
             callback(false)
             return
         }
@@ -224,13 +225,36 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
     }
     
     func report(fitness: Float) {
-        OperationQueue.main.addOperation {
-            print("Fitness: \(fitness)")
-        }
     }
     
-    func stopped() {
+    func stopped(results optimizerResults: Optimizer.OptimizerResults?) {
         OperationQueue.main.addOperation {
+            guard let results = optimizerResults else {
+                self.callback(false)
+                return
+            }
+
+            print("Final fitness: \(results.finalFitness * 100)%")
+
+            var order = [CGGlyph]()
+            var usedGlyphs = Set<CGGlyph>()
+            for mappedGlyph in results.glyphOrder {
+                let unmappedGlyph = self.prunedGlyphs.reverseGlyphMapping[Int(mappedGlyph)]
+                order.append(unmappedGlyph)
+                usedGlyphs.insert(unmappedGlyph)
+            }
+            for i in 0 ..< self.glyphSizes.glyphSizes.count {
+                if !usedGlyphs.contains(CGGlyph(i)) {
+                    order.append(CGGlyph(i))
+                    usedGlyphs.insert(CGGlyph(i))
+                }
+            }
+
+            guard Optimizer.reorderFont(inputFilename: self.inputFile, fontNumber: self.fontIndex, glyphOrder: order, outputFilename: self.outputFile) else {
+                self.callback(false)
+                return
+            }
+            
             self.callback(true)
         }
     }
@@ -245,6 +269,7 @@ if CommandLine.arguments.count < 4 {
 
 var i = 1
 while i < CommandLine.arguments.count {
+    // FIXME: Consider adding arguments for number of concurrent iterations, and which GPU to use
     if CommandLine.arguments[i] == "--iterations" {
         i += 1
         if i >= CommandLine.arguments.count {
@@ -339,6 +364,8 @@ var done = false
 fontOptimizer.callback = {(success: Bool) in
     if !success {
         print("Failed!")
+    } else {
+        print("Succeeded!")
     }
     if !done {
         CFRunLoopStop(CFRunLoopGetMain())

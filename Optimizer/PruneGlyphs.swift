@@ -9,7 +9,8 @@
 import Foundation
 
 public struct PrunedGlyphs {
-    public let glyphMapping: [CGGlyph]
+    public let glyphMapping: [CGGlyph?] // glyphMapping[nonPrunedGlyph] = prunedGlyph
+    public let reverseGlyphMapping: [CGGlyph] // glyphMapping[prunedGlyph] = nonPrunedGlyph
     public let glyphSizes: GlyphSizes
     public let requiredGlyphs: [Set<CGGlyph>]
 }
@@ -20,29 +21,29 @@ public func pruneGlyphs(glyphSizes: GlyphSizes, requiredGlyphs: [Set<CGGlyph>]) 
         set = set.union(glyphs)
     }
 
-    var glyphMapping = Array(repeating: CGGlyph(0), count: glyphSizes.glyphSizes.count)
-    var newIndex = CGGlyph(1)
-    for i in 1 ..< glyphSizes.glyphSizes.count {
+    var glyphMapping: [CGGlyph?] = Array(repeating: nil, count: glyphSizes.glyphSizes.count)
+    var reverseGlyphMapping = [CGGlyph]()
+    for i in 0 ..< glyphSizes.glyphSizes.count {
         if set.contains(CGGlyph(i)) {
-            glyphMapping[i] = newIndex
-            newIndex += 1
+            glyphMapping[i] = CGGlyph(reverseGlyphMapping.count)
+            reverseGlyphMapping.append(CGGlyph(i))
         }
     }
 
-    var newGlyphSizes = Array(repeating: 0, count: Int(newIndex))
-    newGlyphSizes[0] = glyphSizes.glyphSizes[0]
-    for i in 1 ..< glyphSizes.glyphSizes.count {
-        if glyphMapping[i] != 0 {
-            newGlyphSizes[Int(glyphMapping[i])] = glyphSizes.glyphSizes[i]
+    var newGlyphSizes = Array(repeating: 0, count: Int(reverseGlyphMapping.count))
+    for i in 0 ..< glyphSizes.glyphSizes.count {
+        guard let mappedGlyph = glyphMapping[i] else {
+            continue
         }
+        newGlyphSizes[Int(mappedGlyph)] = glyphSizes.glyphSizes[i]
     }
     let prunedGlyphSizes = GlyphSizes(fontSize: glyphSizes.fontSize, glyphSizes: newGlyphSizes)
 
     var prunedRequiredGlyphs = [Set<CGGlyph>]()
     for glyphs in requiredGlyphs {
-        let newSet = Set<CGGlyph>(glyphs.map { glyphMapping[Int($0)] })
+        let newSet = Set<CGGlyph>(glyphs.map { glyphMapping[Int($0)]! })
         prunedRequiredGlyphs.append(newSet)
     }
 
-    return PrunedGlyphs(glyphMapping: glyphMapping, glyphSizes: prunedGlyphSizes, requiredGlyphs: prunedRequiredGlyphs)
+    return PrunedGlyphs(glyphMapping: glyphMapping, reverseGlyphMapping: reverseGlyphMapping, glyphSizes: prunedGlyphSizes, requiredGlyphs: prunedRequiredGlyphs)
 }

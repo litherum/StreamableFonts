@@ -72,7 +72,7 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
         }
         let unconditionalDownloadSize = glyphSizes.fontSize - totalGlyphSize
         
-        guard let fontOptimizer = FontOptimizer(glyphSizes: prunedGlyphSizes.glyphSizes, requiredGlyphs: prunedRequiredGlyphs, seeds: chosenSeeds + randomSeeds, threshold: Int(roundTripInBytes), unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, delegate: self) else {
+        guard let fontOptimizer = FontOptimizer(glyphSizes: prunedGlyphSizes.glyphSizes, requiredGlyphs: prunedRequiredGlyphs, seeds: chosenSeeds + randomSeeds, threshold: Int(roundTripInBytes), unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, iterationCount: nil, delegate: self) else {
             return
         }
         self.fontOptimizer = fontOptimizer
@@ -123,7 +123,7 @@ class OptimizerViewController: NSViewController, FontOptimizerDelegate {
         }
     }
 
-    func stopped() {
+    func stopped(results: Optimizer.OptimizerResults?) {
         OperationQueue.main.addOperation {
             self.finishedOptimizing()
         }
