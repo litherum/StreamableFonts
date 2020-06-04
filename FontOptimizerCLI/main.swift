@@ -10,7 +10,7 @@ import Foundation
 import Metal
 import Optimizer
 
-fileprivate func chineseSystemFont() -> CTFont? {
+/*fileprivate func chineseSystemFont() -> CTFont? {
     guard let font = CTFontCreateUIFontForLanguage(.system, 0, "zh-Hans" as NSString) else {
         return nil
     }
@@ -111,3 +111,14 @@ let measurer = RoundTripTimeMeasurer(url: URL(string: "https://fonts.gstatic.com
 measurer.measure()
 
 RunLoop.main.run()*/
+*/
+
+// public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphOrder: [Int], outputFilename: String) -> Bool {
+
+var order = Array(repeating: 0, count: 223)
+for i in 0 ..< 223 {
+    order[i] = 223 - i - 1
+}
+
+let result = Optimizer.reorderFont(inputFilename: "/Users/mmaxfield/tmp/archerssm-400-normal.otf", fontNumber: nil, glyphOrder: order, outputFilename: "/Users/mmaxfield/tmp/reordered.otf")
+print("\(result)")

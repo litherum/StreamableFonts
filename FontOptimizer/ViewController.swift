@@ -58,20 +58,6 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let activeDisplayID = view.window?.screen?.deviceDescription[NSDeviceDescriptionKey(rawValue: "NSScreenNumber")] as? CGDirectDisplayID {
-            if let activeDevice = CGDirectDisplayCopyCurrentMetalDevice(activeDisplayID) {
-                for device in MTLCopyAllDevices() {
-                    if activeDevice.name != device.name { // This isn't perfect, but I can't seem to get withUnsafePointer(to:) to work with these MTLDevices
-                        self.device = device
-                        break
-                    }
-                }
-            }
-        }
-        if device == nil {
-            device = MTLCreateSystemDefaultDevice()
-        }
-
         fontListViewController = (children[0] as! FontListViewController)
         settingsViewController = (children[1] as! SettingsViewController)
         optimizerViewController = (children[2] as! OptimizerViewController)
@@ -81,6 +67,22 @@ class ViewController: NSSplitViewController, FontListViewControllerDelegate, Set
         optimizerViewController.delegate = self
 
         fontListViewController.updateFont()
+    }
+
+    override func viewDidAppear() {
+        if let activeDisplayID = view.window?.screen?.deviceDescription[NSDeviceDescriptionKey(rawValue: "NSScreenNumber")] as? CGDirectDisplayID {
+            if let activeDevice = CGDirectDisplayCopyCurrentMetalDevice(activeDisplayID) {
+                for device in MTLCopyAllDevices() {
+                    if activeDevice !== device {
+                        self.device = device
+                        break
+                    }
+                }
+            }
+        }
+        if device == nil {
+            device = MTLCreateSystemDefaultDevice()
+        }
     }
 
     func setRoundTripTime(result: Double) {
