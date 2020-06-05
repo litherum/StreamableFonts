@@ -60,6 +60,14 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "--fontIndex"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "2"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "--roundTripURL"
             isEnabled = "YES">
          </CommandLineArgument>
@@ -68,15 +76,31 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "--seedCount"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "2"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--iterations"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "100000"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "/Users/mmaxfield/Library/Mobile\ Documents/com\~apple\~CloudDocs/Documents/apache-nutch-1.16/output.json"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/mmaxfield/tmp/archerssm-400-normal.otf"
+            argument = "/System/Library/Fonts/PingFang.ttc"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/mmaxfield/tmp/reordered.otf"
+            argument = "/Users/mmaxfield/tmp/reordered.ttf"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

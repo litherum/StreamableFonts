@@ -26,6 +26,7 @@ public func randomSample(urlContents: [String], sampleCount: Int) -> [String]? {
 public func computeRequiredGlyphs(font: CTFont, urlContents: [String], callback: @escaping (Int, Set<CGGlyph>?) -> Void) -> OperationQueue {
     let glyphCount = CTFontGetGlyphCount(font)
     let operationQueue = OperationQueue()
+    operationQueue.maxConcurrentOperationCount = 10
     for i in 0 ..< urlContents.count {
         operationQueue.addOperation {
             let contents = urlContents[i]

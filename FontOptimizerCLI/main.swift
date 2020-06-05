@@ -12,7 +12,7 @@ import Metal
 import Optimizer
 
 fileprivate func printUsage() {
-    print("Usage: \(CommandLine.arguments[0]) [--iterations <count>] [--fontIndex <index>] [--sampleSize <size>] [--roundTripURL <url>] [--roundTripTrials <trials>] [--roundTripStartupCostInBytes <byteCount>] [--seedCount <count>] corpusfile inputfile outputfile")
+    print("Usage: \(CommandLine.arguments[0]) [--iterations <count>] [--fontIndex <index>] [--sampleSize <size>] [--roundTripURL <url>] [--roundTripTrials <trials>] [--roundTripStartupCostInBytes <byteCount>] [--seedCount <count>] [--silent] corpusfile inputfile outputfile")
 }
 
 class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOptimizerDelegate {
@@ -26,6 +26,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
     public var roundTripTrials = 10
     public var roundTripStartupCostInBytes = 0
     public var seedCount = 5
+    public var silent = false
 
     // FIXME: Better error logging
     public var callback: ((Bool) -> Void)!
@@ -49,11 +50,18 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
         }
     }
 
+    private func log(_ message: String) {
+        if !silent {
+            print(message)
+        }
+    }
+
     public func optimize() {
         optimizeStep1()
     }
 
     private func optimizeStep1() {
+        log("Investigating input font file...")
         guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(URL(fileURLWithPath: inputFile) as NSURL) as? [CTFontDescriptor] else {
             callback(false)
             return
@@ -70,6 +78,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
         self.glyphSizes = glyphSizes
 
         do {
+            log("Investigating corpus...")
             let data = try Data(contentsOf: URL(fileURLWithPath: corpusFile))
             guard let jsonData = try JSONSerialization.jsonObject(with: data) as? [Any] else {
                 callback(false)
@@ -83,12 +92,15 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
                 urlContents.append(contents)
             }
             if sampleSize != nil {
+                log("Sampling corpus...")
                 guard let randomSample = Optimizer.randomSample(urlContents: urlContents, sampleCount: sampleSize!) else {
                     callback(false)
                     return
                 }
                 urlContents = randomSample
             }
+
+            log("Transforming corpus from character-space to glyph-space...")
             requiredGlyphs = Array(repeating: Set<CGGlyph>(), count: urlContents.count)
             var count = 0
             let _ = computeRequiredGlyphs(font: font, urlContents: urlContents) {(index: Int, set: Set<CGGlyph>?) in
@@ -97,6 +109,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
                     if let glyphs = set {
                         self.requiredGlyphs[index] = glyphs
                     }
+                    self.log("Transformed url contents #\(count) / \(self.urlContents.count)")
                     if count == self.urlContents.count {
                         self.optimizeStep2()
                     }
@@ -115,6 +128,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
             return
         }
 
+        log("Measuing round-trip time...")
         guard let roundTripTimeMeasurer = Optimizer.RoundTripTimeMeasurer(url: roundTripURL, trials: roundTripTrials, delegate: self) else {
             callback(false)
             return
@@ -129,6 +143,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
             callback(false)
             return
         }
+        print("Round trip timer prepared.")
     }
     
     func producedSample(sample: Sample?) {
@@ -136,6 +151,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
         if let producedSample = sample {
             roundTripSamples.append(producedSample)
         }
+        print("Received response #\(roundTripSampleCount) / \(roundTripTrials)")
         if roundTripSampleCount == roundTripTrials {
             OperationQueue.main.addOperation {
                 guard let roundTripOverhead = RoundTripTimeMeasurer.calculateRoundTripOverheadInBytes(samples: self.roundTripSamples) else {
@@ -155,6 +171,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
         }
         self.device = device
 
+        log("Pruning glyphs...")
         prunedGlyphs = Optimizer.pruneGlyphs(glyphSizes: glyphSizes, requiredGlyphs: requiredGlyphs)
         seeds = [[Int]]()
 
@@ -164,28 +181,41 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
         }
 
         if seeds.count < seedCount {
+            log("Calculating seed #\(seeds.count + 1)...")
             let order = Optimizer.frequencyOrder(glyphCount: prunedGlyphs.glyphSizes.glyphSizes.count, requiredGlyphs: prunedGlyphs.requiredGlyphs)
             seeds.append(order)
         }
 
         if seeds.count < seedCount {
+            log("Computing bigram scores...")
             Optimizer.computeBigramScores(glyphCount: prunedGlyphs.glyphSizes.glyphSizes.count, requiredGlyphs: prunedGlyphs.requiredGlyphs, device: device) {(bigramScores: [[Float]]?) in
                 OperationQueue.main.addOperation {
                     guard let scores = bigramScores else {
                         self.callback(false)
                         return
                     }
-                    if let order = Optimizer.lastBest(glyphCount: self.prunedGlyphs.glyphSizes.glyphSizes.count, bigramScores: scores, progressCallback: {}) {
+
+                    var count = 0
+                    let progressCallback = {
+                        self.log("Placed glyph \(count) of \(self.prunedGlyphs.glyphSizes.glyphSizes.count)")
+                        count += 1
+                    }
+
+                    self.log("Calculating seed #\(self.seeds.count + 1)...")
+                    if let order = Optimizer.lastBest(glyphCount: self.prunedGlyphs.glyphSizes.glyphSizes.count, bigramScores: scores, progressCallback: progressCallback) {
                         self.seeds.append(order)
                     }
 
                     if self.seeds.count < self.seedCount {
-                        if let order = Optimizer.placedBest(glyphCount: self.prunedGlyphs.glyphSizes.glyphSizes.count, bigramScores: scores, progressCallback: {}) {
+                        self.log("Calculating seed #\(self.seeds.count + 1)...")
+                        count = 0
+                        if let order = Optimizer.placedBest(glyphCount: self.prunedGlyphs.glyphSizes.glyphSizes.count, bigramScores: scores, progressCallback: progressCallback) {
                             self.seeds.append(order)
                         }
                     }
 
                     if self.seedCount - self.seeds.count > 0 {
+                        self.log("Generating \(self.seedCount - self.seeds.count) random seeds...")
                         let randomSeeds = Optimizer.generateRandomSeeds(glyphCount: self.prunedGlyphs.glyphSizes.glyphSizes.count, seedCount: self.seedCount - self.seeds.count)
                         self.seeds.append(contentsOf: randomSeeds)
                     }
@@ -205,6 +235,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
         }
         let unconditionalDownloadSize = glyphSizes.fontSize - totalGlyphSize
 
+        self.log("Initiating optimization...")
         guard let fontOptimizer = Optimizer.FontOptimizer(glyphSizes: prunedGlyphs.glyphSizes.glyphSizes, requiredGlyphs: prunedGlyphs.requiredGlyphs, seeds: seeds, threshold: roundTripStartupCostInBytes, unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, iterationCount: iterations, delegate: self) else {
             callback(false)
             return
@@ -216,6 +247,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
 
     func prepared(success: Bool) {
         OperationQueue.main.addOperation {
+            self.log("Optimizer prepared.")
             guard success else {
                 self.callback(false)
                 return
@@ -225,6 +257,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
     }
     
     func report(fitness: Float) {
+        self.log("Intermediate fitness: \(fitness * 100)%.")
     }
     
     func stopped(results optimizerResults: Optimizer.OptimizerResults?) {
@@ -234,8 +267,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
                 return
             }
 
-            print("Final fitness: \(results.finalFitness * 100)%")
-
+            self.log("Gathering final results...")
             var order = [CGGlyph]()
             var usedGlyphs = Set<CGGlyph>()
             for mappedGlyph in results.glyphOrder {
@@ -250,11 +282,13 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
                 }
             }
 
+            self.log("Outputting reordered font file...")
             guard Optimizer.reorderFont(inputFilename: self.inputFile, fontNumber: self.fontIndex, glyphOrder: order, outputFilename: self.outputFile) else {
                 self.callback(false)
                 return
             }
-            
+
+            self.log("Final fitness: \(results.finalFitness * 100)%")
             self.callback(true)
         }
     }
@@ -347,6 +381,8 @@ while i < CommandLine.arguments.count {
             exit(EXIT_FAILURE)
         }
         fontOptimizer.seedCount = seedCount
+    } else if CommandLine.arguments[i] == "--silent" {
+        fontOptimizer.silent = true
     } else if fontOptimizer.corpusFile == nil {
         fontOptimizer.corpusFile = CommandLine.arguments[i]
     } else if fontOptimizer.inputFile == nil {
@@ -377,6 +413,7 @@ guard fontOptimizer.isConfigured else {
     printUsage()
     exit(EXIT_FAILURE)
 }
+
 fontOptimizer.optimize()
 
 if !done {
