@@ -71,7 +71,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
             return
         }
         font = CTFontCreateWithFontDescriptor(fontDescriptors[fontIndex], 0, nil)
-        guard let glyphSizes = Optimizer.computeGlyphSizes(font: font) else {
+        guard let glyphSizes = Optimizer.GlyphSizesComputer.computeGlyphSizes(font: font) else {
             callback(false)
             return
         }

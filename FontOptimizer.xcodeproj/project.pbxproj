@@ -12,6 +12,7 @@
 		1C11E88624405E4F00E4BB78 /* OptimizerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C11E88524405E4F00E4BB78 /* OptimizerViewController.swift */; };
 		1C11E8882440694F00E4BB78 /* ComputeRequiredGlyphsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C11E8872440694F00E4BB78 /* ComputeRequiredGlyphsViewController.swift */; };
 		1C11E88A2440698300E4BB78 /* MeasureRoundTripTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C11E8892440698300E4BB78 /* MeasureRoundTripTimeViewController.swift */; };
+		1C1AFF5B248B897100A60F4D /* ComputeGlyphSizes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C1AFF5A248B897100A60F4D /* ComputeGlyphSizes.m */; };
 		1C341E52243FAF3000C3CD3B /* Optimizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C341E4B243FAF3000C3CD3B /* Optimizer.framework */; };
 		1C341E53243FAF3000C3CD3B /* Optimizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1C341E4B243FAF3000C3CD3B /* Optimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1C341E5B243FB00F00C3CD3B /* ComputeGlyphSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C341E5A243FB00F00C3CD3B /* ComputeGlyphSizes.swift */; };
@@ -93,6 +94,7 @@
 		1C11E88524405E4F00E4BB78 /* OptimizerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizerViewController.swift; sourceTree = "<group>"; };
 		1C11E8872440694F00E4BB78 /* ComputeRequiredGlyphsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComputeRequiredGlyphsViewController.swift; sourceTree = "<group>"; };
 		1C11E8892440698300E4BB78 /* MeasureRoundTripTimeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureRoundTripTimeViewController.swift; sourceTree = "<group>"; };
+		1C1AFF5A248B897100A60F4D /* ComputeGlyphSizes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ComputeGlyphSizes.m; sourceTree = "<group>"; };
 		1C341E4B243FAF3000C3CD3B /* Optimizer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Optimizer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C341E4E243FAF3000C3CD3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1C341E5A243FB00F00C3CD3B /* ComputeGlyphSizes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComputeGlyphSizes.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 			children = (
 				1C341E4E243FAF3000C3CD3B /* Info.plist */,
 				1C341E5A243FB00F00C3CD3B /* ComputeGlyphSizes.swift */,
+				1C1AFF5A248B897100A60F4D /* ComputeGlyphSizes.m */,
 				1C341E5C243FB11600C3CD3B /* ComputeRequiredGlyphs.swift */,
 				1C8AA5FC243FB82A0078686F /* MeasureRoundTripTime.swift */,
 				1C8AA60F243FF5510078686F /* FontOptimizer.swift */,
@@ -366,6 +369,7 @@
 				1C341E5D243FB11600C3CD3B /* ComputeRequiredGlyphs.swift in Sources */,
 				1C8AA5FD243FB82A0078686F /* MeasureRoundTripTime.swift in Sources */,
 				1CB017B2246924D300150FB0 /* URLBitmaps.swift in Sources */,
+				1C1AFF5B248B897100A60F4D /* ComputeGlyphSizes.m in Sources */,
 				1CD121D924884DB70084EEA2 /* Utils.c in Sources */,
 				1CD121D3248847DF0084EEA2 /* ReorderFont.swift in Sources */,
 				1C8AA612243FF8BE0078686F /* Optimize.metal in Sources */,

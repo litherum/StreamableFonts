@@ -81,14 +81,14 @@ class FontListViewController: NSViewController {
 
         let operationQueue = OperationQueue()
         if let testFont = self.chineseSystemFont() {
-            if let glyphSizes = computeGlyphSizes(font: testFont) {
+            if let glyphSizes = GlyphSizesComputer.computeGlyphSizes(font: testFont) {
                 let fontObject = FontObject(fontDescriptor: CTFontCopyFontDescriptor(testFont), glyphSizes: glyphSizes)
                 self.fontListArrayController.addObject(fontObject)
             }
         }
         if let systemFont = CTFontCreateUIFontForLanguage(.system, 0, nil) {
             let systemFontDescriptor = CTFontCopyFontDescriptor(systemFont)
-            if let glyphSizes = computeGlyphSizes(font: CTFontCreateWithFontDescriptor(systemFontDescriptor, 0, nil)) {
+            if let glyphSizes = GlyphSizesComputer.computeGlyphSizes(font: CTFontCreateWithFontDescriptor(systemFontDescriptor, 0, nil)) {
                 let systemFontObject = FontObject(fontDescriptor: systemFontDescriptor, glyphSizes: glyphSizes)
                 OperationQueue.main.addOperation {
                     self.fontListArrayController.addObject(systemFontObject)
@@ -97,7 +97,7 @@ class FontListViewController: NSViewController {
             if let cascadeList = CTFontCopyDefaultCascadeListForLanguages(systemFont, nil) as? [CTFontDescriptor] {
                 for descriptor in cascadeList {
                     operationQueue.addOperation {
-                        if let glyphSizes = computeGlyphSizes(font: CTFontCreateWithFontDescriptor(descriptor, 0, nil)) {
+                        if let glyphSizes = GlyphSizesComputer.computeGlyphSizes(font: CTFontCreateWithFontDescriptor(descriptor, 0, nil)) {
                             let fontObject = FontObject(fontDescriptor: descriptor, glyphSizes: glyphSizes)
                             OperationQueue.main.addOperation {
                                 self.fontListArrayController.addObject(fontObject)
@@ -111,7 +111,7 @@ class FontListViewController: NSViewController {
         if let allFontDescriptors = CTFontDescriptorCreateMatchingFontDescriptors(emptyFontDescriptor, nil) as? [CTFontDescriptor] {
             for fontDescriptor in allFontDescriptors {
                 operationQueue.addOperation {
-                    if let glyphSizes = computeGlyphSizes(font: CTFontCreateWithFontDescriptor(fontDescriptor, 0, nil)) {
+                    if let glyphSizes = GlyphSizesComputer.computeGlyphSizes(font: CTFontCreateWithFontDescriptor(fontDescriptor, 0, nil)) {
                         let fontObject = FontObject(fontDescriptor: fontDescriptor, glyphSizes: glyphSizes)
                         OperationQueue.main.addOperation {
                             self.fontListArrayController.addObject(fontObject)
@@ -151,7 +151,7 @@ class FontListViewController: NSViewController {
                     return
                 }
                 for fontDescriptor in fontDescriptors {
-                    if let glyphSizes = computeGlyphSizes(font: CTFontCreateWithFontDescriptor(fontDescriptor, 0, nil)) {
+                    if let glyphSizes = GlyphSizesComputer.computeGlyphSizes(font: CTFontCreateWithFontDescriptor(fontDescriptor, 0, nil)) {
                         OperationQueue.main.addOperation {
                             self.fontListArrayController.addObject(FontObject(fontDescriptor: fontDescriptor, glyphSizes: glyphSizes))
                         }

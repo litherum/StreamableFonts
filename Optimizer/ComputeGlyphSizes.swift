@@ -327,8 +327,8 @@ fileprivate func glyphSizesGlyf(glyfTable: Data, locaTable: Data, headTable: Dat
 }
 
 public class GlyphSizes: NSObject {
-    public let fontSize: Int
-    public let glyphSizes: [Int]
+    @objc public let fontSize: Int
+    @objc public let glyphSizes: [Int]
 
     public init(fontSize: Int, glyphSizes: [Int]) {
         self.fontSize = fontSize
@@ -336,58 +336,60 @@ public class GlyphSizes: NSObject {
     }
 }
 
-public func computeGlyphSizes(font: CTFont) -> GlyphSizes? {
-    let glyphCount = CTFontGetGlyphCount(font)
-    guard let tables = CTFontCopyAvailableTables(font, []) else {
-        return nil
-    }
-    var fontSize = 0
-    var glyphSizes = [Int]()
-    var foundGlyphTable = false
-    for i in 0 ..< CFArrayGetCount(tables) {
-        let tag = CFArrayGetValueAtIndex(tables, i) - UnsafeRawPointer(bitPattern: 1)! + 1
-        /*let a = Character(Unicode.Scalar((tag & 0xFF000000) >> 24)!)
-        let b = Character(Unicode.Scalar((tag & 0x00FF0000) >> 16)!)
-        let c = Character(Unicode.Scalar((tag & 0x0000FF00) >>  8)!)
-        let d = Character(Unicode.Scalar((tag & 0x000000FF) >>  0)!)*/
-        guard let cfTable = CTFontCopyTable(font, CTFontTableTag(tag), []) else {
-            //print("\(a)\(b)\(c)\(d) (empty)")
-            continue
+public class GlyphSizesComputer: NSObject {
+    @objc public class func computeGlyphSizes(font: CTFont) -> GlyphSizes? {
+        let glyphCount = CTFontGetGlyphCount(font)
+        guard let tables = CTFontCopyAvailableTables(font, []) else {
+            return nil
         }
-        let table = cfTable as Data
-        //print("\(a)\(b)\(c)\(d) \(table.count)")
-        if tag == kCTFontTableCFF {
-            if foundGlyphTable {
-                return nil
+        var fontSize = 0
+        var glyphSizes = [Int]()
+        var foundGlyphTable = false
+        for i in 0 ..< CFArrayGetCount(tables) {
+            let tag = CFArrayGetValueAtIndex(tables, i) - UnsafeRawPointer(bitPattern: 1)! + 1
+            /*let a = Character(Unicode.Scalar((tag & 0xFF000000) >> 24)!)
+            let b = Character(Unicode.Scalar((tag & 0x00FF0000) >> 16)!)
+            let c = Character(Unicode.Scalar((tag & 0x0000FF00) >>  8)!)
+            let d = Character(Unicode.Scalar((tag & 0x000000FF) >>  0)!)*/
+            guard let cfTable = CTFontCopyTable(font, CTFontTableTag(tag), []) else {
+                //print("\(a)\(b)\(c)\(d) (empty)")
+                continue
             }
-            guard let result = glyphSizesCFF(cffTable: table) else {
-                return nil
+            let table = cfTable as Data
+            //print("\(a)\(b)\(c)\(d) \(table.count)")
+            if tag == kCTFontTableCFF {
+                if foundGlyphTable {
+                    return nil
+                }
+                guard let result = glyphSizesCFF(cffTable: table) else {
+                    return nil
+                }
+                glyphSizes = result
+                foundGlyphTable = true
+                fontSize += table.count
+            } else if tag == kCTFontTableGlyf {
+                if foundGlyphTable {
+                    return nil
+                }
+                guard let loca = CTFontCopyTable(font, CTFontTableTag(kCTFontTableLoca), []) else {
+                    return nil
+                }
+                guard let head = CTFontCopyTable(font, CTFontTableTag(kCTFontTableHead), []) else {
+                    return nil
+                }
+                guard let result = glyphSizesGlyf(glyfTable: table, locaTable: loca as Data, headTable: head as Data, glyphCount: glyphCount) else {
+                    return nil
+                }
+                glyphSizes = result
+                foundGlyphTable = true
+                fontSize += result.reduce(0, +)
+            } else {
+                fontSize += table.count
             }
-            glyphSizes = result
-            foundGlyphTable = true
-            fontSize += table.count
-        } else if tag == kCTFontTableGlyf {
-            if foundGlyphTable {
-                return nil
-            }
-            guard let loca = CTFontCopyTable(font, CTFontTableTag(kCTFontTableLoca), []) else {
-                return nil
-            }
-            guard let head = CTFontCopyTable(font, CTFontTableTag(kCTFontTableHead), []) else {
-                return nil
-            }
-            guard let result = glyphSizesGlyf(glyfTable: table, locaTable: loca as Data, headTable: head as Data, glyphCount: glyphCount) else {
-                return nil
-            }
-            glyphSizes = result
-            foundGlyphTable = true
-            fontSize += result.reduce(0, +)
-        } else {
-            fontSize += table.count
         }
+        guard foundGlyphTable else {
+            return nil
+        }
+        return GlyphSizes(fontSize: fontSize, glyphSizes: glyphSizes)
     }
-    guard foundGlyphTable else {
-        return nil
-    }
-    return GlyphSizes(fontSize: fontSize, glyphSizes: glyphSizes)
 }
