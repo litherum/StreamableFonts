@@ -10,4 +10,5 @@
 
 #include <Python/Python.h>
 
-PyObject* PyTuble_Pack4(PyObject* a, PyObject* b, PyObject* c, PyObject* d);
+PyObject* PyTuple_Pack3(PyObject* a, PyObject* b, PyObject* c);
+PyObject* PyTuple_Pack4(PyObject* a, PyObject* b, PyObject* c, PyObject* d);

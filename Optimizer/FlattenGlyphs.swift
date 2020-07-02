@@ -1,36 +1,15 @@
 //
-//  ReorderFont.swift
+//  Flatten.swift
 //  Optimizer
 //
-//  Created by Myles C. Maxfield on 6/3/20.
+//  Created by Myles C. Maxfield on 7/1/20.
 //  Copyright © 2020 Myles C. Maxfield. All rights reserved.
 //
 
 import Foundation
 import Python
 
-fileprivate func convertGlyphOrder(glyphOrder: [CGGlyph]) -> UnsafeMutablePointer<PyObject>! {
-    guard let result = PyList_New(glyphOrder.count) else {
-        return nil
-    }
-
-    for i in 0 ..< glyphOrder.count {
-        let glyph = glyphOrder[i]
-
-        guard let number = PyInt_FromLong(Int(glyph)) else {
-            Py_DecRef(result)
-            return nil
-        }
-
-        assert(PyInt_AsLong(number) == Int(glyph))
-
-        PyList_SetItem(result, i, number) // "Steals" the reference to number.
-    }
-
-    return result
-}
-
-public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphOrder: [CGGlyph], outputFilename: String) -> Bool {
+public func flattenGlyphs(inputFilename: String, fontNumber: Optional<Int>, outputFilename: String) -> Bool {
     let scriptURL = Bundle(for: FontOptimizer.self).url(forResource: "ReorderFont", withExtension: "py")!
     let scriptContainerDirectory = scriptURL.deletingLastPathComponent()
 
@@ -47,7 +26,7 @@ public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphO
         Py_Finalize()
     }
 
-    guard let pythonTestModule = PyImport_ImportModule("ReorderFont") else {
+    guard let pythonTestModule = PyImport_ImportModule("FlattenGlyphs") else {
         if PyErr_Occurred() != nil {
             PyErr_PrintEx(0)
         }
@@ -57,7 +36,7 @@ public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphO
         Py_DecRef(pythonTestModule)
     }
 
-    guard let function = PyObject_GetAttrString(pythonTestModule, "reorderFont") else {
+    guard let function = PyObject_GetAttrString(pythonTestModule, "flattenGlyphs") else {
         if PyErr_Occurred() != nil {
             PyErr_PrintEx(0)
         }
@@ -87,16 +66,6 @@ public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphO
         Py_DecRef(fontNumberObject)
     }
 
-    guard let glyphOrderObject = convertGlyphOrder(glyphOrder: glyphOrder) else {
-        if PyErr_Occurred() != nil {
-            PyErr_PrintEx(0)
-        }
-        return false
-    }
-    defer {
-        Py_DecRef(glyphOrderObject)
-    }
-
     guard let outputString = PyString_FromString(outputFilename) else {
         if PyErr_Occurred() != nil {
             PyErr_PrintEx(0)
@@ -107,7 +76,7 @@ public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphO
         Py_DecRef(outputString)
     }
 
-    guard let arguments = PyTuple_Pack4(inputString, fontNumberObject, glyphOrderObject, outputString) else {
+    guard let arguments = PyTuple_Pack3(inputString, fontNumberObject, outputString) else {
         if PyErr_Occurred() != nil {
             PyErr_PrintEx(0)
         }
@@ -131,12 +100,5 @@ public func reorderFont(inputFilename: String, fontNumber: Optional<Int>, glyphO
         return false
     }
 
-    let success = withUnsafePointer(to: &_Py_TrueStruct) {(pointer: UnsafePointer<PyIntObject>) in
-        pointer.withMemoryRebound(to: PyObject.self, capacity: 1) {(pointer: UnsafePointer<PyObject>) in
-            // FIXME: Is there a way to do this without treating an immutable pointer as mutable?
-            return result == UnsafeMutablePointer(mutating: pointer)
-        }
-    }
-
-    return success
+    return true
 }

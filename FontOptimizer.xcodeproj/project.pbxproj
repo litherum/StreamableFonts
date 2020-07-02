@@ -18,6 +18,8 @@
 		1C8AA612243FF8BE0078686F /* Optimize.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1C8AA611243FF8BE0078686F /* Optimize.metal */; };
 		1CB017B02469162300150FB0 /* Seeds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB017AF2469162300150FB0 /* Seeds.swift */; };
 		1CB017B2246924D300150FB0 /* URLBitmaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB017B1246924D300150FB0 /* URLBitmaps.swift */; };
+		1CCA02D824ADB28500BA4744 /* FlattenGlyphs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCA02D724ADB28500BA4744 /* FlattenGlyphs.swift */; };
+		1CCA02DA24ADB47800BA4744 /* FlattenGlyphs.py in Resources */ = {isa = PBXBuildFile; fileRef = 1CCA02D924ADB47800BA4744 /* FlattenGlyphs.py */; };
 		1CD121D3248847DF0084EEA2 /* ReorderFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD121D2248847DF0084EEA2 /* ReorderFont.swift */; };
 		1CD121D52488487E0084EEA2 /* ReorderFont.py in Resources */ = {isa = PBXBuildFile; fileRef = 1CD121D42488487E0084EEA2 /* ReorderFont.py */; };
 		1CD121D824884DB70084EEA2 /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CD121D624884DB70084EEA2 /* Utils.h */; };
@@ -71,6 +73,8 @@
 		1C8AA611243FF8BE0078686F /* Optimize.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Optimize.metal; sourceTree = "<group>"; };
 		1CB017AF2469162300150FB0 /* Seeds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seeds.swift; sourceTree = "<group>"; };
 		1CB017B1246924D300150FB0 /* URLBitmaps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLBitmaps.swift; sourceTree = "<group>"; };
+		1CCA02D724ADB28500BA4744 /* FlattenGlyphs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlattenGlyphs.swift; sourceTree = "<group>"; };
+		1CCA02D924ADB47800BA4744 /* FlattenGlyphs.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = FlattenGlyphs.py; sourceTree = "<group>"; };
 		1CD121D2248847DF0084EEA2 /* ReorderFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReorderFont.swift; sourceTree = "<group>"; };
 		1CD121D42488487E0084EEA2 /* ReorderFont.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = ReorderFont.py; sourceTree = "<group>"; };
 		1CD121D624884DB70084EEA2 /* Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
@@ -113,6 +117,8 @@
 				1CD121DB2488B60D0084EEA2 /* PruneGlyphs.swift */,
 				1CD121D2248847DF0084EEA2 /* ReorderFont.swift */,
 				1CD121D42488487E0084EEA2 /* ReorderFont.py */,
+				1CCA02D724ADB28500BA4744 /* FlattenGlyphs.swift */,
+				1CCA02D924ADB47800BA4744 /* FlattenGlyphs.py */,
 				1CD121D624884DB70084EEA2 /* Utils.h */,
 				1CD121D724884DB70084EEA2 /* Utils.c */,
 				1CD121DA248857B00084EEA2 /* Optimizer-Bridging-Header.h */,
@@ -248,6 +254,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CCA02DA24ADB47800BA4744 /* FlattenGlyphs.py in Resources */,
 				1CD121D52488487E0084EEA2 /* ReorderFont.py in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -265,6 +272,7 @@
 				1C341E5D243FB11600C3CD3B /* ComputeRequiredGlyphs.swift in Sources */,
 				1C8AA5FD243FB82A0078686F /* MeasureRoundTripTime.swift in Sources */,
 				1CB017B2246924D300150FB0 /* URLBitmaps.swift in Sources */,
+				1CCA02D824ADB28500BA4744 /* FlattenGlyphs.swift in Sources */,
 				1C1AFF5B248B897100A60F4D /* ComputeGlyphSizes.m in Sources */,
 				1CD121D924884DB70084EEA2 /* Utils.c in Sources */,
 				1CD121D3248847DF0084EEA2 /* ReorderFont.swift in Sources */,

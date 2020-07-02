@@ -26,6 +26,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
     public var roundTripTrials = 10
     public var roundTripStartupCostInBytes = 0
     public var seedCount = 5
+    public var tmpFile: String!
     public var silent = false
 
     // FIXME: Better error logging
@@ -57,20 +58,36 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
     }
 
     public func optimize() {
+        if tmpFile == nil {
+            var fileExtension = URL(fileURLWithPath: inputFile).pathExtension
+            if fileExtension == "ttc" {
+                fileExtension = "ttf"
+            }
+            let tmpDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            tmpFile = tmpDir.appendingPathComponent("tmpFont.\(fileExtension)").path
+            do {
+                // If it doesn't exist, that's fine
+                try FileManager.default.removeItem(atPath: tmpFile)
+            } catch {
+            }
+        }
+
         optimizeStep1()
     }
 
     private func optimizeStep1() {
+        log("Flattening glyphs...")
+        guard Optimizer.flattenGlyphs(inputFilename: inputFile, fontNumber: fontIndex, outputFilename: tmpFile) else {
+            callback(false)
+            return
+        }
         log("Investigating input font file...")
-        guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(URL(fileURLWithPath: inputFile) as NSURL) as? [CTFontDescriptor] else {
+        guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(URL(fileURLWithPath: tmpFile) as NSURL) as? [CTFontDescriptor] else {
             callback(false)
             return
         }
-        if fontIndex >= fontDescriptors.count {
-            callback(false)
-            return
-        }
-        font = CTFontCreateWithFontDescriptor(fontDescriptors[fontIndex], 0, nil)
+        assert(fontDescriptors.count == 1)
+        font = CTFontCreateWithFontDescriptor(fontDescriptors[0], 0, nil)
         guard let glyphSizes = Optimizer.GlyphSizesComputer.computeGlyphSizes(font: font) else {
             callback(false)
             return
@@ -283,7 +300,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
             }
 
             self.log("Outputting reordered font file...")
-            guard Optimizer.reorderFont(inputFilename: self.inputFile, fontNumber: self.fontIndex, glyphOrder: order, outputFilename: self.outputFile) else {
+            guard Optimizer.reorderFont(inputFilename: self.tmpFile, fontNumber: 0, glyphOrder: order, outputFilename: self.outputFile) else {
                 self.callback(false)
                 return
             }
@@ -381,6 +398,14 @@ while i < CommandLine.arguments.count {
             exit(EXIT_FAILURE)
         }
         fontOptimizer.seedCount = seedCount
+    } else if CommandLine.arguments[i] == "--tmpFile" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        let tmpFile = CommandLine.arguments[i]
+        fontOptimizer.tmpFile = tmpFile
     } else if CommandLine.arguments[i] == "--silent" {
         fontOptimizer.silent = true
     } else if fontOptimizer.corpusFile == nil {
