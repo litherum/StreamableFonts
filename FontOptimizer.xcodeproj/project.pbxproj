@@ -7,14 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C11E873244027DE00E4BB78 /* FontListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C11E872244027DE00E4BB78 /* FontListViewController.swift */; };
-		1C11E8842440547000E4BB78 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C11E8832440547000E4BB78 /* SettingsViewController.swift */; };
-		1C11E88624405E4F00E4BB78 /* OptimizerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C11E88524405E4F00E4BB78 /* OptimizerViewController.swift */; };
-		1C11E8882440694F00E4BB78 /* ComputeRequiredGlyphsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C11E8872440694F00E4BB78 /* ComputeRequiredGlyphsViewController.swift */; };
-		1C11E88A2440698300E4BB78 /* MeasureRoundTripTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C11E8892440698300E4BB78 /* MeasureRoundTripTimeViewController.swift */; };
 		1C1AFF5B248B897100A60F4D /* ComputeGlyphSizes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C1AFF5A248B897100A60F4D /* ComputeGlyphSizes.m */; };
-		1C341E52243FAF3000C3CD3B /* Optimizer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C341E4B243FAF3000C3CD3B /* Optimizer.framework */; };
-		1C341E53243FAF3000C3CD3B /* Optimizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1C341E4B243FAF3000C3CD3B /* Optimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1C341E5B243FB00F00C3CD3B /* ComputeGlyphSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C341E5A243FB00F00C3CD3B /* ComputeGlyphSizes.swift */; };
 		1C341E5D243FB11600C3CD3B /* ComputeRequiredGlyphs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C341E5C243FB11600C3CD3B /* ComputeRequiredGlyphs.swift */; };
 		1C8AA5FD243FB82A0078686F /* MeasureRoundTripTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8AA5FC243FB82A0078686F /* MeasureRoundTripTime.swift */; };
@@ -23,7 +16,6 @@
 		1C8AA60B243FBC0F0078686F /* Optimizer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1C341E4B243FAF3000C3CD3B /* Optimizer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1C8AA610243FF5510078686F /* FontOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8AA60F243FF5510078686F /* FontOptimizer.swift */; };
 		1C8AA612243FF8BE0078686F /* Optimize.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1C8AA611243FF8BE0078686F /* Optimize.metal */; };
-		1CB017AE246908D200150FB0 /* ChooseSeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB017AD246908D200150FB0 /* ChooseSeedsViewController.swift */; };
 		1CB017B02469162300150FB0 /* Seeds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB017AF2469162300150FB0 /* Seeds.swift */; };
 		1CB017B2246924D300150FB0 /* URLBitmaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB017B1246924D300150FB0 /* URLBitmaps.swift */; };
 		1CD121D3248847DF0084EEA2 /* ReorderFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD121D2248847DF0084EEA2 /* ReorderFont.swift */; };
@@ -31,20 +23,9 @@
 		1CD121D824884DB70084EEA2 /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CD121D624884DB70084EEA2 /* Utils.h */; };
 		1CD121D924884DB70084EEA2 /* Utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1CD121D724884DB70084EEA2 /* Utils.c */; };
 		1CD121DC2488B60D0084EEA2 /* PruneGlyphs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CD121DB2488B60D0084EEA2 /* PruneGlyphs.swift */; };
-		1CFC4262243EDCD900769232 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFC4261243EDCD900769232 /* AppDelegate.swift */; };
-		1CFC4264243EDCD900769232 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFC4263243EDCD900769232 /* ViewController.swift */; };
-		1CFC4266243EDCDA00769232 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CFC4265243EDCDA00769232 /* Assets.xcassets */; };
-		1CFC4269243EDCDA00769232 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1CFC4267243EDCDA00769232 /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1C341E50243FAF3000C3CD3B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1CFC4256243EDCD900769232 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1C341E4A243FAF3000C3CD3B;
-			remoteInfo = Optimizer;
-		};
 		1C8AA60C243FBC0F0078686F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1CFC4256243EDCD900769232 /* Project object */;
@@ -55,17 +36,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1C341E54243FAF3000C3CD3B /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				1C341E53243FAF3000C3CD3B /* Optimizer.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1C8AA600243FBC020078686F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -89,11 +59,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1C11E872244027DE00E4BB78 /* FontListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontListViewController.swift; sourceTree = "<group>"; };
-		1C11E8832440547000E4BB78 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		1C11E88524405E4F00E4BB78 /* OptimizerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimizerViewController.swift; sourceTree = "<group>"; };
-		1C11E8872440694F00E4BB78 /* ComputeRequiredGlyphsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComputeRequiredGlyphsViewController.swift; sourceTree = "<group>"; };
-		1C11E8892440698300E4BB78 /* MeasureRoundTripTimeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureRoundTripTimeViewController.swift; sourceTree = "<group>"; };
 		1C1AFF5A248B897100A60F4D /* ComputeGlyphSizes.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ComputeGlyphSizes.m; sourceTree = "<group>"; };
 		1C341E4B243FAF3000C3CD3B /* Optimizer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Optimizer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C341E4E243FAF3000C3CD3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -104,7 +69,6 @@
 		1C8AA604243FBC020078686F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		1C8AA60F243FF5510078686F /* FontOptimizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontOptimizer.swift; sourceTree = "<group>"; };
 		1C8AA611243FF8BE0078686F /* Optimize.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Optimize.metal; sourceTree = "<group>"; };
-		1CB017AD246908D200150FB0 /* ChooseSeedsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseSeedsViewController.swift; sourceTree = "<group>"; };
 		1CB017AF2469162300150FB0 /* Seeds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seeds.swift; sourceTree = "<group>"; };
 		1CB017B1246924D300150FB0 /* URLBitmaps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLBitmaps.swift; sourceTree = "<group>"; };
 		1CD121D2248847DF0084EEA2 /* ReorderFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReorderFont.swift; sourceTree = "<group>"; };
@@ -113,13 +77,6 @@
 		1CD121D724884DB70084EEA2 /* Utils.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Utils.c; sourceTree = "<group>"; };
 		1CD121DA248857B00084EEA2 /* Optimizer-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Optimizer-Bridging-Header.h"; sourceTree = "<group>"; };
 		1CD121DB2488B60D0084EEA2 /* PruneGlyphs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PruneGlyphs.swift; sourceTree = "<group>"; };
-		1CFC425E243EDCD900769232 /* FontOptimizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FontOptimizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1CFC4261243EDCD900769232 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		1CFC4263243EDCD900769232 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		1CFC4265243EDCDA00769232 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		1CFC4268243EDCDA00769232 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		1CFC426A243EDCDA00769232 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1CFC426B243EDCDA00769232 /* FontOptimizer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FontOptimizer.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,14 +92,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C8AA60A243FBC0F0078686F /* Optimizer.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1CFC425B243EDCD900769232 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1C341E52243FAF3000C3CD3B /* Optimizer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,7 +138,6 @@
 		1CFC4255243EDCD900769232 = {
 			isa = PBXGroup;
 			children = (
-				1CFC4260243EDCD900769232 /* FontOptimizer */,
 				1C341E4C243FAF3000C3CD3B /* Optimizer */,
 				1C8AA603243FBC020078686F /* FontOptimizerCLI */,
 				1CFC425F243EDCD900769232 /* Products */,
@@ -200,30 +148,10 @@
 		1CFC425F243EDCD900769232 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1CFC425E243EDCD900769232 /* FontOptimizer.app */,
 				1C341E4B243FAF3000C3CD3B /* Optimizer.framework */,
 				1C8AA602243FBC020078686F /* FontOptimizerCLI */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		1CFC4260243EDCD900769232 /* FontOptimizer */ = {
-			isa = PBXGroup;
-			children = (
-				1CFC4261243EDCD900769232 /* AppDelegate.swift */,
-				1CFC4263243EDCD900769232 /* ViewController.swift */,
-				1C11E872244027DE00E4BB78 /* FontListViewController.swift */,
-				1C11E8832440547000E4BB78 /* SettingsViewController.swift */,
-				1C11E88524405E4F00E4BB78 /* OptimizerViewController.swift */,
-				1C11E8872440694F00E4BB78 /* ComputeRequiredGlyphsViewController.swift */,
-				1CB017AD246908D200150FB0 /* ChooseSeedsViewController.swift */,
-				1C11E8892440698300E4BB78 /* MeasureRoundTripTimeViewController.swift */,
-				1CFC4265243EDCDA00769232 /* Assets.xcassets */,
-				1CFC4267243EDCDA00769232 /* Main.storyboard */,
-				1CFC426A243EDCDA00769232 /* Info.plist */,
-				1CFC426B243EDCDA00769232 /* FontOptimizer.entitlements */,
-			);
-			path = FontOptimizer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -277,25 +205,6 @@
 			productReference = 1C8AA602243FBC020078686F /* FontOptimizerCLI */;
 			productType = "com.apple.product-type.tool";
 		};
-		1CFC425D243EDCD900769232 /* FontOptimizer */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1CFC426E243EDCDA00769232 /* Build configuration list for PBXNativeTarget "FontOptimizer" */;
-			buildPhases = (
-				1CFC425A243EDCD900769232 /* Sources */,
-				1CFC425B243EDCD900769232 /* Frameworks */,
-				1CFC425C243EDCD900769232 /* Resources */,
-				1C341E54243FAF3000C3CD3B /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				1C341E51243FAF3000C3CD3B /* PBXTargetDependency */,
-			);
-			name = FontOptimizer;
-			productName = FontOptimizer;
-			productReference = 1CFC425E243EDCD900769232 /* FontOptimizer.app */;
-			productType = "com.apple.product-type.application";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -313,9 +222,6 @@
 					1C8AA601243FBC020078686F = {
 						CreatedOnToolsVersion = 11.4;
 					};
-					1CFC425D243EDCD900769232 = {
-						CreatedOnToolsVersion = 11.4;
-					};
 				};
 			};
 			buildConfigurationList = 1CFC4259243EDCD900769232 /* Build configuration list for PBXProject "FontOptimizer" */;
@@ -331,7 +237,6 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1CFC425D243EDCD900769232 /* FontOptimizer */,
 				1C341E4A243FAF3000C3CD3B /* Optimizer */,
 				1C8AA601243FBC020078686F /* FontOptimizerCLI */,
 			);
@@ -344,15 +249,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CD121D52488487E0084EEA2 /* ReorderFont.py in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1CFC425C243EDCD900769232 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1CFC4266243EDCDA00769232 /* Assets.xcassets in Resources */,
-				1CFC4269243EDCDA00769232 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -385,46 +281,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1CFC425A243EDCD900769232 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1CFC4264243EDCD900769232 /* ViewController.swift in Sources */,
-				1C11E88624405E4F00E4BB78 /* OptimizerViewController.swift in Sources */,
-				1C11E88A2440698300E4BB78 /* MeasureRoundTripTimeViewController.swift in Sources */,
-				1C11E873244027DE00E4BB78 /* FontListViewController.swift in Sources */,
-				1CFC4262243EDCD900769232 /* AppDelegate.swift in Sources */,
-				1C11E8882440694F00E4BB78 /* ComputeRequiredGlyphsViewController.swift in Sources */,
-				1CB017AE246908D200150FB0 /* ChooseSeedsViewController.swift in Sources */,
-				1C11E8842440547000E4BB78 /* SettingsViewController.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1C341E51243FAF3000C3CD3B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1C341E4A243FAF3000C3CD3B /* Optimizer */;
-			targetProxy = 1C341E50243FAF3000C3CD3B /* PBXContainerItemProxy */;
-		};
 		1C8AA60D243FBC0F0078686F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1C341E4A243FAF3000C3CD3B /* Optimizer */;
 			targetProxy = 1C8AA60C243FBC0F0078686F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		1CFC4267243EDCDA00769232 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				1CFC4268243EDCDA00769232 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1C341E55243FAF3000C3CD3B /* Debug */ = {
@@ -615,44 +480,6 @@
 			};
 			name = Release;
 		};
-		1CFC426F243EDCDA00769232 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = FontOptimizer/FontOptimizer.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = FontOptimizer/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.myles.FontOptimizer;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		1CFC4270243EDCDA00769232 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = FontOptimizer/FontOptimizer.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = FontOptimizer/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.myles.FontOptimizer;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -679,15 +506,6 @@
 			buildConfigurations = (
 				1CFC426C243EDCDA00769232 /* Debug */,
 				1CFC426D243EDCDA00769232 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1CFC426E243EDCDA00769232 /* Build configuration list for PBXNativeTarget "FontOptimizer" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1CFC426F243EDCDA00769232 /* Debug */,
-				1CFC4270243EDCDA00769232 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
