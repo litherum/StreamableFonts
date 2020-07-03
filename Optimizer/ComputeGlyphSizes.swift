@@ -310,6 +310,7 @@ public class GlyphSizes: NSObject {
     }
 }
 
+// FIXME: Consider replacing this with FontTools.
 public class GlyphSizesComputer: NSObject {
     @objc public class func computeGlyphSizes(font: CTFont) -> GlyphSizes? {
         let glyphCount = CTFontGetGlyphCount(font)

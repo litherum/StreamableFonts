@@ -1,6 +1,19 @@
 from fontTools.ttLib.ttFont import TTFont
 from fontTools.ttLib.ttFont import reorderFontTables
+from fontTools.cffLib import TopDictCompiler
+from fontTools.cffLib import CharStringsCompiler
+from fontTools.cffLib import IndexedStrings
 from io import BytesIO
+
+class ReorderedTopDictCompiler(TopDictCompiler):
+  def getChildren(self, strings):
+    result = super(ReorderedTopDictCompiler, self).getChildren(strings)
+    for child in result:
+        if isinstance(child, CharStringsCompiler):
+            result.remove(child)
+            result.append(child)
+            break
+    return result
 
 def computeTableOrder(tags):
     count = 0
@@ -28,6 +41,13 @@ def reorderGlyphs(glyphOrder, desiredGlyphOrder):
 
 def reorderFont(input, fontNumber, desiredGlyphOrder, output):
     font = TTFont(input, fontNumber=fontNumber)
+
+    if "CFF " in font:
+        cff = font["CFF "]
+        fontName = cff.cff.fontNames[0]
+        topDict = cff.cff[fontName]
+        topDict.compilerClass = ReorderedTopDictCompiler
+
     glyphOrder = font.getGlyphOrder()
     reorderedGlyphs = reorderGlyphs(glyphOrder, desiredGlyphOrder)
     if reorderedGlyphs is None:
