@@ -57,6 +57,9 @@ def flattenGlyphs(input, fontNumber, output):
             globalSubrs = charString.globalSubrs
             inlinedProgram = inlineProgram(localSubrs, globalSubrs, charString.program)
             charString.program = inlinedProgram
+        if "Subrs" in topDict.Private.rawDict:
+            del topDict.Private.rawDict["Subrs"]
+        topDict.GlobalSubrs.items = []
     else:
         raise FlattenError("Could not flatten glyphs.")
 
