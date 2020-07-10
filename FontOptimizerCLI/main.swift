@@ -110,7 +110,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
             }
             if sampleSize != nil {
                 log("Sampling corpus...")
-                guard let randomSample = Optimizer.randomSample(urlContents: urlContents, sampleCount: sampleSize!) else {
+                guard let randomSample = Optimizer.randomSample(urlContents: urlContents, sampleCount: min(sampleSize!, urlContents.count)) else {
                     callback(false)
                     return
                 }
@@ -422,12 +422,14 @@ while i < CommandLine.arguments.count {
 }
 
 var done = false
+var succeeded = false
 fontOptimizer.callback = {(success: Bool) in
     if !success {
         print("Failed!")
     } else {
         print("Succeeded!")
     }
+    succeeded = success
     if !done {
         CFRunLoopStop(CFRunLoopGetMain())
     }
@@ -443,4 +445,8 @@ fontOptimizer.optimize()
 
 if !done {
     CFRunLoopRun()
+}
+
+if !succeeded {
+    exit(EXIT_FAILURE)
 }

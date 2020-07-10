@@ -57,7 +57,7 @@ def flattenGlyphs(input, fontNumber, output):
             globalSubrs = charString.globalSubrs
             inlinedProgram = inlineProgram(localSubrs, globalSubrs, charString.program)
             charString.program = inlinedProgram
-        if "Subrs" in topDict.Private.rawDict:
+        if "Private" in topDict.rawDict and "Subrs" in topDict.Private.rawDict:
             topDict.Private.Subrs
             del topDict.Private.rawDict["Subrs"]
             del topDict.Private.Subrs
