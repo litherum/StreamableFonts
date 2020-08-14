@@ -12,7 +12,7 @@ import Metal
 import Optimizer
 
 fileprivate func printUsage() {
-    print("Usage: \(CommandLine.arguments[0]) [--iterations <count>] [--fontIndex <index>] [--sampleSize <size>] [--roundTripURL <url>] [--roundTripTrials <trials>] [--roundTripStartupCostInBytes <byteCount>] [--seedCount <count>] [--silent] corpusfile inputfile outputfile")
+    print("Usage: \(CommandLine.arguments[0]) [--iterations <count>] [--fontIndex <index>] [--sampleSize <size>] [--roundTripURL <url>] [--roundTripTrials <trials>] [--roundTripStartupCostInBytes <byteCount>] [--seedCount <count>] [--tmpFile <path>] [--glyphMapFile <path>] [--silent] corpusfile inputfile outputfile")
 }
 
 class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOptimizerDelegate {
@@ -27,6 +27,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
     public var roundTripStartupCostInBytes = 0
     public var seedCount = 5
     public var tmpFile: String!
+    public var glyphMapFile: String?
     public var silent = false
 
     // FIXME: Better error logging
@@ -34,7 +35,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
 
     private var font: CTFont!
     private var glyphSizes: Optimizer.GlyphSizes!
-    private var urlContents = [String]()
+    private var urlContents = [[CGGlyph]]()
     private var requiredGlyphs = [Set<CGGlyph>]()
     private var roundTripTimeMeasurer: Optimizer.RoundTripTimeMeasurer!
     private var roundTripSamples = [Optimizer.Sample]()
@@ -102,11 +103,11 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
                 return
             }
             for i in jsonData {
-                guard let item = i as? NSDictionary, let c = item.value(forKey: "Contents"), let contents = c as? String else {
+                guard let item = i as? NSDictionary, let g = item.value(forKey: "Glyphs"), let glyphs = g as? [CGGlyph] else {
                     callback(false)
                     return
                 }
-                urlContents.append(contents)
+                urlContents.append(glyphs)
             }
             if sampleSize != nil {
                 log("Sampling corpus...")
@@ -118,20 +119,8 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
             }
 
             log("Transforming corpus from character-space to glyph-space...")
-            requiredGlyphs = Array(repeating: Set<CGGlyph>(), count: urlContents.count)
-            var count = 0
-            let _ = computeRequiredGlyphs(font: font, urlContents: urlContents) {(index: Int, set: Set<CGGlyph>?) in
-                OperationQueue.main.addOperation {
-                    count += 1
-                    if let glyphs = set {
-                        self.requiredGlyphs[index] = glyphs
-                    }
-                    self.log("Transformed url contents #\(count) / \(self.urlContents.count)")
-                    if count == self.urlContents.count {
-                        self.optimizeStep2()
-                    }
-                }
-            }
+            requiredGlyphs = urlContents.map { Set($0) }
+            self.optimizeStep2()
             
         } catch {
             callback(false)
@@ -305,6 +294,16 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
                 return
             }
 
+            if let glyphMapFile = self.glyphMapFile {
+                self.log("Outputting glyph map...")
+                do {
+                    let data = try JSONSerialization.data(withJSONObject: order, options: .prettyPrinted)
+                    try data.write(to: URL(fileURLWithPath: glyphMapFile))
+                } catch {
+                    print("Could not output glyph map!")
+                }
+            }
+
             self.log("Final fitness: \(results.finalFitness * 100)%")
             self.callback(true)
         }
@@ -406,6 +405,14 @@ while i < CommandLine.arguments.count {
         }
         let tmpFile = CommandLine.arguments[i]
         fontOptimizer.tmpFile = tmpFile
+    } else if CommandLine.arguments[i] == "--glyphMapFile" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        let glyphMapFile = CommandLine.arguments[i]
+        fontOptimizer.glyphMapFile = glyphMapFile
     } else if CommandLine.arguments[i] == "--silent" {
         fontOptimizer.silent = true
     } else if fontOptimizer.corpusFile == nil {

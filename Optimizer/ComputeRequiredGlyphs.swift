@@ -9,12 +9,12 @@
 import Foundation
 import CoreText
 
-public func randomSample(urlContents: [String], sampleCount: Int) -> [String]? {
+public func randomSample(urlContents: [[CGGlyph]], sampleCount: Int) -> [[CGGlyph]]? {
     guard sampleCount <= urlContents.count else {
         return nil
     }
     var urlContentsCopy = urlContents
-    var randomSample = [String]()
+    var randomSample = [[CGGlyph]]()
     for _ in 0 ..< sampleCount {
         let index = Int(arc4random_uniform(UInt32(urlContentsCopy.count)))
         randomSample.append(urlContentsCopy[index])
