@@ -12,7 +12,7 @@ import Metal
 import Optimizer
 
 fileprivate func printUsage() {
-    print("Usage: \(CommandLine.arguments[0]) [--iterations <count>] [--fontIndex <index>] [--sampleSize <size>] [--roundTripURL <url>] [--roundTripTrials <trials>] [--roundTripStartupCostInBytes <byteCount>] [--seedCount <count>] [--tmpFile <path>] [--glyphMapFile <path>] [--silent] corpusfile inputfile outputfile")
+    print("Usage: \(CommandLine.arguments[0]) [--iterations <count>] [--timeLimit <number-of-minutes>] [--fontIndex <index>] [--sampleSize <size>] [--roundTripURL <url>] [--roundTripTrials <trials>] [--roundTripStartupCostInBytes <byteCount>] [--seedCount <count>] [--tmpFile <path>] [--glyphMapFile <path>] [--silent] corpusfile inputfile outputfile")
 }
 
 class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOptimizerDelegate {
@@ -21,6 +21,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
     public var outputFile: String!
     public var fontIndex = 0
     public var iterations = 10
+    public var timeLimit: TimeInterval?
     public var sampleSize: Int?
     public var roundTripURL: URL?
     public var roundTripTrials = 10
@@ -242,7 +243,7 @@ class FontOptimizer: Optimizer.RoundTripTimeMeasurerDelegate, Optimizer.FontOpti
         let unconditionalDownloadSize = glyphSizes.fontSize - totalGlyphSize
 
         self.log("Initiating optimization...")
-        guard let fontOptimizer = Optimizer.FontOptimizer(glyphSizes: prunedGlyphs.glyphSizes.glyphSizes, requiredGlyphs: prunedGlyphs.requiredGlyphs, seeds: seeds, threshold: roundTripStartupCostInBytes, unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, iterationCount: iterations, delegate: self) else {
+        guard let fontOptimizer = Optimizer.FontOptimizer(glyphSizes: prunedGlyphs.glyphSizes.glyphSizes, requiredGlyphs: prunedGlyphs.requiredGlyphs, seeds: seeds, threshold: roundTripStartupCostInBytes, unconditionalDownloadSize: unconditionalDownloadSize, fontSize: glyphSizes.fontSize, device: device, iterationCount: iterations, timeLimit: timeLimit, delegate: self) else {
             callback(false)
             return
         }
@@ -413,6 +414,17 @@ while i < CommandLine.arguments.count {
         }
         let glyphMapFile = CommandLine.arguments[i]
         fontOptimizer.glyphMapFile = glyphMapFile
+    } else if CommandLine.arguments[i] == "--timeLimit" {
+        i += 1
+        if i >= CommandLine.arguments.count {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        guard let timeLimit = TimeInterval(CommandLine.arguments[i]) else {
+            printUsage()
+            exit(EXIT_FAILURE)
+        }
+        fontOptimizer.timeLimit = timeLimit
     } else if CommandLine.arguments[i] == "--silent" {
         fontOptimizer.silent = true
     } else if fontOptimizer.corpusFile == nil {

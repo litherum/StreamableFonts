@@ -29,6 +29,8 @@ public class FontOptimizer {
     let fontSize: Int
     let iterationCount: Int?
     var iterationIndex: Int?
+    let timeLimit: TimeInterval?
+    var startTime: Date?
     let device: MTLDevice
     let queue: MTLCommandQueue
     var fitnessFunction: MTLFunction!
@@ -70,7 +72,7 @@ public class FontOptimizer {
     var stopping = false
     var state = false
 
-    public init?(glyphSizes: [Int], requiredGlyphs: [Set<CGGlyph>], seeds: [[Int]], threshold: Int, unconditionalDownloadSize: Int, fontSize: Int, device: MTLDevice, iterationCount: Int?, delegate: FontOptimizerDelegate) {
+    public init?(glyphSizes: [Int], requiredGlyphs: [Set<CGGlyph>], seeds: [[Int]], threshold: Int, unconditionalDownloadSize: Int, fontSize: Int, device: MTLDevice, iterationCount: Int?, timeLimit: TimeInterval?, delegate: FontOptimizerDelegate) {
         for seed in seeds {
             if seed.count != glyphSizes.count {
                 return nil
@@ -92,12 +94,17 @@ public class FontOptimizer {
         self.fontSize = fontSize
         self.device = device
         self.iterationCount = iterationCount
+        self.timeLimit = timeLimit
         self.delegate = delegate
 
         guard let queue = device.makeCommandQueue() else {
             return nil
         }
         self.queue = queue
+
+        guard iterationCount == nil || iterationCount! >= inFlight else {
+            return nil
+        }
     }
 
     private func loadShaders(callback: @escaping (Bool) -> Void) {
@@ -376,6 +383,7 @@ public class FontOptimizer {
         commandBuffer.addCompletedHandler {(commandBuffer) in
             OperationQueue.main.addOperation {
                 if shouldMonitor {
+                    // FIXME: Get this state tracking out of this function
                     let pointer = self.fitnessMonitorABuffer.contents().bindMemory(to: Float32.self, capacity: self.generationSize)
                     var best = Float(0)
                     for i in 0 ..< self.generationSize {
@@ -389,14 +397,7 @@ public class FontOptimizer {
             }
         }
         commandBuffer.commit()
-        state = !state
         
-        if iterationCount != nil {
-            iterationIndex! += 1
-            if iterationCount! == iterationIndex! {
-                stopping = true
-            }
-        }
     }
 
     private func getBestOrder() {
@@ -437,6 +438,21 @@ public class FontOptimizer {
         commandBuffer.commit()
     }
 
+    private func iterationWrapper(callback: @escaping (Bool) -> Void) {
+        iteration(callback: callback)
+        
+        state = !state
+        if iterationCount != nil && !stopping {
+            iterationIndex! += 1
+            if iterationCount! == iterationIndex! {
+                stopping = true
+            }
+        }
+        if timeLimit != nil && Date().timeIntervalSince(startTime!) > timeLimit! && !stopping {
+            stopping = true
+        }
+    }
+
     private func callback(success: Bool) {
         if !success {
             stopping = true
@@ -450,15 +466,18 @@ public class FontOptimizer {
             }
             return
         }
-        iteration(callback: callback)
+        iterationWrapper(callback: callback)
     }
 
     public func optimize() {
         if iterationCount != nil {
             iterationIndex = 0
         }
+        if timeLimit != nil {
+            startTime = Date()
+        }
         for _ in 0 ..< inFlight {
-            iteration(callback: callback)
+            iterationWrapper(callback: callback)
         }
     }
 
