@@ -58,7 +58,7 @@ def dfs(table, font):
       values = table
     elif type(table) == dict:
       values = table.values()
-    elif not table or type(table) == int or type(table) == str:
+    elif not table or type(table) == int or type(table) == str or type(table) == float:
       values = []
     else:
       values = table.__dict__.values()
@@ -95,9 +95,17 @@ def reorderFont(input, fontNumber, desiredGlyphOrder, output):
 
     font.setGlyphOrder(reorderedGlyphs)
     # Glyph order is cached in a few places, clear those out.
-    del font["glyf"].glyphOrder
+    if "glyf" in font:
+      del font["glyf"].glyphOrder
     if hasattr(font, "_reverseGlyphOrderDict"):
       del font._reverseGlyphOrderDict
+
+    # CFF stores glyph order internally, set it:
+    if "CFF " in font:
+      cff = font["CFF "]
+      fontName = cff.cff.fontNames[0]
+      topDict = cff.cff[fontName]
+      topDict.charset = reorderedGlyphs
 
     fixLayoutCoverage(font)
 
